@@ -1,0 +1,42 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Combined Sales and Ads Data
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body
+    .container-fluid
+      h1.my-4 Combined Sales and Ads Data
+      p
+        strong Date Range:
+        | #{startDate} to #{endDate}
+      table.table.table-striped.table-bordered
+        thead.thead-dark
+          tr
+            th SalesDrive Order ID
+            th Customer Name
+            th Order Time
+            th Source Identifier
+            th Google Ads Title
+            th Clicks
+            th Impressions
+            th Cost (Micros)
+        tbody
+          if data && data.length
+            each item in data
+              tr
+                td= item.id
+                td= `${item.fName} ${item.lName}`
+                td= item.orderTime
+                td= item.istocnikProdaziIdent
+                if item.googleAdsData
+                  td= item.googleAdsData.title
+                  td= item.googleAdsData.clicks
+                  td= item.googleAdsData.impressions
+                  td= item.googleAdsData.costMicros
+                else
+                  td(colspan="4").text-muted No matching Google Ads data
+          else
+            tr
+              td(colspan="8").text-center No data available

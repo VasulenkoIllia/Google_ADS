@@ -162,6 +162,8 @@ async function getGoogleAdsData() {
   }
 }
 
+import express from 'express';
+
 // --- ФУНКЦІЯ ОБ'ЄДНАННЯ ДАНИХ ---
 
 async function combineAllData() {
@@ -214,9 +216,43 @@ async function combineAllData() {
 
   console.log("\n--- Об'єднані дані ---");
   console.log(`Всього об'єднаних записів: ${combinedData.length}`);
-  console.log(JSON.stringify(combinedData, null, 2));
+  // console.log(JSON.stringify(combinedData, null, 2));
+  // console.table(combinedData);
   return combinedData;
 }
 
+// --- СТВОРЕННЯ EXPRESS СЕРВЕРА ---
 
-combineAllData();
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Налаштування шаблонізатора Pug
+app.set('views', './views');
+app.set('view engine', 'pug');
+
+app.get('/', async (req, res) => {
+  try {
+    const data = await combineAllData();
+    // Використовуємо startDate та endDate з першого елемента, якщо він існує
+    const startDate = data.length > 0 ? data[0].startDate : 'N/A';
+    const endDate = data.length > 0 ? data[0].endDate : 'N/A';
+    res.render('index', { data, startDate, endDate });
+  } catch (error) {
+    console.error("Помилка на сервері:", error);
+    res.status(500).render('error', { message: "Внутрішня помилка сервера", error });
+  }
+});
+
+app.get('/api/data', async (req, res) => {
+  try {
+    const data = await combineAllData();
+    res.json(data);
+  } catch (error) {
+    console.error("Помилка на сервері:", error);
+    res.status(500).json({ message: "Внутрішня помилка сервера" });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Сервер запущено на http://localhost:${port}`);
+});
