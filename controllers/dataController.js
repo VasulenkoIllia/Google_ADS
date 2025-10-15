@@ -73,8 +73,6 @@ async function getGoogleAdsData({ startDate, endDate }) {
         const { token } = await auth.getAccessToken();
         if (!token) throw new Error('Failed to get access_token for Google Ads.');
         console.log('Access token for Google Ads obtained successfully.');
-
-
         console.log('\n2. Requesting product data from Google Ads...');
         const query = `
             SELECT shopping_product.item_id, shopping_product.title, metrics.cost_micros, metrics.impressions, metrics.clicks
