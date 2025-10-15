@@ -3,40 +3,127 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Combined Sales and Ads Data
+    title Sales and Ads Data Dashboard
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body
     .container-fluid
-      h1.my-4 Combined Sales and Ads Data
+      h1.my-4 Sales and Ads Data Dashboard
       p
         strong Date Range:
         | #{startDate} to #{endDate}
-      table.table.table-striped.table-bordered
-        thead.thead-dark
-          tr
-            th SalesDrive Order ID
-            th Customer Name
-            th Order Time
-            th Source Identifier
-            th Google Ads Title
-            th Clicks
-            th Impressions
-            th Cost (Micros)
-        tbody
-          if data && data.length
-            each item in data
+
+      form.form-inline.mb-4(action="/", method="get")
+        .form-group.mr-2
+          label.sr-only(for="startDate") Start date
+          input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
+        .form-group.mr-2
+          label.sr-only(for="endDate") End date
+          input#endDate.form-control(type="date", name="endDate", value=endDate, min=startDate)
+        button.btn.btn-primary(type="submit") Update range
+        a.btn.btn-outline-secondary.ml-2(href="/") Reset
+
+      // Nav tabs
+      ul.nav.nav-tabs(id="myTab", role="tablist")
+        li.nav-item
+          a.nav-link.active(id="google-ads-tab", data-toggle="tab", href="#google-ads", role="tab", aria-controls="google-ads", aria-selected="true") Google Ads
+        li.nav-item
+          a.nav-link(id="salesdrive-tab", data-toggle="tab", href="#salesdrive", role="tab", aria-controls="salesdrive", aria-selected="false") SalesDrive CRM
+        li.nav-item
+          a.nav-link(id="combined-tab", data-toggle="tab", href="#combined", role="tab", aria-controls="combined", aria-selected="false") Combined Data
+
+      // Tab content
+      .tab-content(id="myTabContent")
+        // Google Ads Tab
+        #google-ads.tab-pane.fade.show.active(role="tabpanel", aria-labelledby="google-ads-tab")
+          h3.mt-3 Google Ads Data
+          table.table.table-striped.table-bordered.mt-2
+            thead.thead-dark
               tr
-                td= item.id
-                td= `${item.fName} ${item.lName}`
-                td= item.orderTime
-                td= item.istocnikProdaziIdent
-                if item.googleAdsData
-                  td= item.googleAdsData.title
-                  td= item.googleAdsData.clicks
-                  td= item.googleAdsData.impressions
-                  td= item.googleAdsData.costMicros
-                else
-                  td(colspan="4").text-muted No matching Google Ads data
-          else
-            tr
-              td(colspan="8").text-center No data available
+                th Source Identifier
+                th Ad Title
+                th Clicks
+                th Impressions
+                th Cost (Micros)
+            tbody
+              if googleAdsData && googleAdsData.length
+                each item in googleAdsData
+                  tr
+                    td= item.istocnikProdaziIdent
+                    td= item.title
+                    td= item.clicks
+                    td= item.impressions
+                    td= item.costMicros
+              else
+                tr
+                  td(colspan="5").text-center No Google Ads data available
+
+        // SalesDrive Tab
+        #salesdrive.tab-pane.fade(role="tabpanel", aria-labelledby="salesdrive-tab")
+          h3.mt-3 SalesDrive CRM Data
+          table.table.table-striped.table-bordered.mt-2
+            thead.thead-dark
+              tr
+                th Order ID
+                th Customer Name
+                th Order Time
+                th Products
+                th Order Status
+                th Total Cost
+                th Source Identifier
+            tbody
+              if salesDriveData && salesDriveData.length
+                each item in salesDriveData
+                  tr
+                    td= item.id
+                    td= `${item.fName} ${item.lName}`
+                    td= item.orderTime
+                    td= item.products
+                    td= item.statusName
+                    td= item.totalCost
+                    td= item.istocnikProdaziIdent
+              else
+                tr
+                  td(colspan="7").text-center No SalesDrive data available
+
+        // Combined Tab
+        #combined.tab-pane.fade(role="tabpanel", aria-labelledby="combined-tab")
+          h3.mt-3 Combined Data
+          table.table.table-striped.table-bordered.mt-2
+            thead.thead-dark
+              tr
+                th SalesDrive Order ID
+                th Customer Name
+                th Order Time
+                th Products
+                th Order Status
+                th Total Cost
+                th Source Identifier
+                th Google Ads Title
+                th Clicks
+                th Impressions
+                th Cost (Micros)
+            tbody
+              if combinedData && combinedData.length
+                each item in combinedData
+                  tr
+                    td= item.id
+                    td= `${item.fName} ${item.lName}`
+                    td= item.orderTime
+                    td= item.products
+                    td= item.statusName
+                    td= item.totalCost
+                    td= item.istocnikProdaziIdent
+                    if item.googleAdsData
+                      td= item.googleAdsData.title
+                      td= item.googleAdsData.clicks
+                      td= item.googleAdsData.impressions
+                      td= item.googleAdsData.costMicros
+                    else
+                      td(colspan="4").text-muted No matching Google Ads data
+              else
+                tr
+                  td(colspan="11").text-center No combined data available
+
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
