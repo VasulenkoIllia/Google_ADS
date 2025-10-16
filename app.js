@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000;
 // Налаштування шаблонізатора Pug
 app.set('views', './views');
 app.set('view engine', 'pug');
+app.set('query parser', 'extended');
 
 app.use('/', indexRouter);
 

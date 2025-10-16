@@ -1,4 +1,144 @@
 doctype html
+mixin summaryTables(summary)
+  .row
+    .col-md-6
+      h4.mt-3 Advertising & Funnel
+      table.table.table-bordered
+        tbody
+          tr
+            th Реклама (грн)
+            td= summary.adSpend
+          tr
+            th Цена за клик (CPC)
+            td= summary.cpc
+          tr
+            th Показы
+            td= summary.impressions
+          tr
+            th CTR (% конв показы/клики)
+            td #{summary.ctr}%
+          tr
+            th Клики
+            td= summary.clicks
+          tr
+            th % конв клики/транз
+            td #{summary.clickToTransConversion}%
+          tr
+            th Транзакции
+            td= summary.transactions
+          tr
+            th Цена конверсии (CPA)
+            td= summary.cpa
+    .col-md-6
+      h4.mt-3 Financials & Ratios
+      table.table.table-bordered
+        tbody
+          tr
+            th Продажи (грн)
+            td= summary.sales
+          tr
+            th Себестоимость (грн)
+            td= summary.costOfGoods
+          tr
+            th Маржа (грн)
+            td= summary.margin
+          tr
+            th Прибыль (грн)
+            td= summary.profit
+          tr
+            th Средний чек (AOV)
+            td= summary.aov
+          tr
+            th ROI
+            td #{summary.roi}%
+          tr
+            th Средняя прибыль
+            td= summary.avgProfitPerTransaction
+          tr
+            th % рекл от оборота
+            td #{summary.adSpendToSalesRatio}%
+          tr
+            th % себест от оборота
+            td #{summary.cogsToSalesRatio}%
+          tr
+            th % прибыли от оборота
+            td(style=summary.profitToSalesRatioStyle)= `${summary.profitToSalesRatio}%`
+  .row
+    .col-md-6
+      h4.mt-3 Sales Plan
+      table.table.table-bordered
+        tbody
+          tr
+            th ПЛАН ПРОДАЖ (період)
+            td= summary.planSales
+          tr
+            th ПЛАН ПРОДАЖ (місяць)
+            td= summary.planSalesMonthly
+          tr
+            th ПЛАН ПРОДАЖ (грн/день)
+            td= summary.planSalesPerDay
+          tr
+            th Прогноз продаж (період)
+            td= summary.projectedSales
+          tr
+            th % отклонения (прогноз)
+            td #{summary.salesPlanDeviation}%
+          tr
+            th ПЛАН ПРОДАЖ НАКОПИТЕЛЬНО (період)
+            td= summary.planCumulativeSales
+          tr
+            th ФАКТ НАКОПИТЕЛЬНО (грн)
+            td= summary.salesFactCumulative
+          tr
+            th % отклонения (факт vs план накопит.)
+            td #{summary.salesCumulativePlanDeviation}%
+          tr
+            th % отклонения (факт vs план період)
+            td #{summary.salesFactDeviation}%
+          tr
+            th Днів у періоді
+            td= summary.daysInPeriod
+          tr
+            th Днів у місяці
+            td= summary.daysInMonth
+          tr
+            th Днів у місяці
+            td= summary.daysInMonth
+    .col-md-6
+      h4.mt-3 Profit Plan
+      table.table.table-bordered
+        tbody
+          tr
+            th ПЛАН ПРИБЫЛИ (період)
+            td= summary.planProfit
+          tr
+            th ПЛАН ПРИБЫЛИ (місяць)
+            td= summary.planProfitMonthly
+          tr
+            th ПЛАН ПРИБЫЛИ (грн/день)
+            td= summary.planProfitPerDay
+          tr
+            th Прогноз прибутку (період)
+            td= summary.projectedProfit
+          tr
+            th % отклонения (прогноз)
+            td #{summary.profitPlanDeviation}%
+          tr
+            th ПЛАН НАКОПИТЕЛЬНО прибуток (період)
+            td= summary.planCumulativeProfit
+          tr
+            th ФАКТ НАКОПИТЕЛЬНО (грн)
+            td= summary.profitFactCumulative
+          tr
+            th % отклонения (факт vs план накопит.)
+            td #{summary.profitCumulativePlanDeviation}%
+          tr
+            th % отклонения (факт vs план період)
+            td #{summary.profitFactDeviation}%
+          tr
+            th Днів у періоді
+            td= summary.daysInPeriod
+
 html(lang="en")
   head
     meta(charset="UTF-8")
@@ -6,6 +146,19 @@ html(lang="en")
     title Sales and Ads Data Dashboard
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body
+    if alerts && alerts.length
+      .position-fixed(style="top: 1rem; right: 1rem; z-index: 1080; width: 320px;")
+        each alertMessage in alerts
+          .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+            span= alertMessage
+            button.close(type="button", data-dismiss="alert", aria-label="Close")
+              span(aria-hidden="true") &times;
+    if rateLimitCooldown
+      .position-fixed(style="top: 1rem; left: 50%; transform: translateX(-50%); z-index: 1090; width: 360px;")
+        .alert.alert-warning.text-center.mb-0(role="alert")
+          span Запит можна повторити через&nbsp;
+          strong#rate-limit-timer(data-seconds="65") 65
+          span &nbsp;секунд
     .container-fluid
       h1.my-4 Sales and Ads Data Dashboard
       p
@@ -19,22 +172,87 @@ html(lang="en")
         .form-group.mr-2
           label.sr-only(for="endDate") End date
           input#endDate.form-control(type="date", name="endDate", value=endDate, min=startDate)
+
+        .form-group.mr-2
+          label.sr-only(for="source") Sales Source
+          select#source.form-control(name="source", multiple, size="6")
+            if salesDriveIstocniki
+              each source in salesDriveIstocniki
+                - const isSelected = Array.isArray(selectedSources) ? selectedSources.includes(source.id.toString()) : false
+                option(value=source.id, selected=isSelected)= source.ident
+            else
+              option(value="", selected=false) No sources configured
+        .form-group.mr-2
+          label.sr-only(for="planSales") План продаж
+          - const planSalesPlaceholder = planDefaults && typeof planDefaults.sales === 'number' ? planDefaults.sales.toFixed(2) : ''
+          input#planSales.form-control(type="number", min="0", step="0.01", name="planSales", value=planInputs && planInputs.sales !== undefined ? planInputs.sales : '', placeholder=planSalesPlaceholder, title=`Поточний план продаж (місяць): ${planSalesPlaceholder || 'невизначено'}`)
+        .form-group.mr-2
+          label.sr-only(for="planProfit") План прибутку
+          - const planProfitPlaceholder = planDefaults && typeof planDefaults.profit === 'number' ? planDefaults.profit.toFixed(2) : ''
+          input#planProfit.form-control(type="number", min="0", step="0.01", name="planProfit", value=planInputs && planInputs.profit !== undefined ? planInputs.profit : '', placeholder=planProfitPlaceholder, title=`Поточний план прибутку (місяць): ${planProfitPlaceholder || 'невизначено'}`)
+
         button.btn.btn-primary(type="submit") Update range
         a.btn.btn-outline-secondary.ml-2(href="/") Reset
 
+        input(type="hidden", name="activeTab", id="activeTabInput", value=activeTab || 'summary')
+        if salesDriveLimit
+          input(type="hidden", name="limit", value=salesDriveLimit)
+
+
       // Nav tabs
       ul.nav.nav-tabs(id="myTab", role="tablist")
+        - const currentTab = activeTab || 'summary-tab'
         li.nav-item
-          a.nav-link.active(id="google-ads-tab", data-toggle="tab", href="#google-ads", role="tab", aria-controls="google-ads", aria-selected="true") Google Ads
+          a.nav-link(id="summary-tab", class=(currentTab === 'summary-tab' ? 'active' : ''), data-toggle="tab", href="#summary", role="tab", aria-controls="summary", aria-selected=(currentTab === 'summary-tab')) Summary Report
         li.nav-item
-          a.nav-link(id="salesdrive-tab", data-toggle="tab", href="#salesdrive", role="tab", aria-controls="salesdrive", aria-selected="false") SalesDrive CRM
+          a.nav-link(id="google-ads-tab", class=(currentTab === 'google-ads-tab' ? 'active' : ''), data-toggle="tab", href="#google-ads", role="tab", aria-controls="google-ads", aria-selected=(currentTab === 'google-ads-tab')) Google Ads
         li.nav-item
-          a.nav-link(id="combined-tab", data-toggle="tab", href="#combined", role="tab", aria-controls="combined", aria-selected="false") Combined Data
+          a.nav-link(id="salesdrive-tab", class=(currentTab === 'salesdrive-tab' ? 'active' : ''), data-toggle="tab", href="#salesdrive", role="tab", aria-controls="salesdrive", aria-selected=(currentTab === 'salesdrive-tab')) SalesDrive CRM
+        li.nav-item
+          a.nav-link(id="combined-tab", class=(currentTab === 'combined-tab' ? 'active' : ''), data-toggle="tab", href="#combined", role="tab", aria-controls="combined", aria-selected=(currentTab === 'combined-tab')) Combined Data
 
       // Tab content
       .tab-content(id="myTabContent")
+        // Summary Tab
+        #summary.tab-pane.fade(class=(currentTab === 'summary-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="summary-tab")
+          h3.mt-3 Summary Report
+          if summaryReport
+            if sourceSummaries && sourceSummaries.length
+              if sourceSummaries.length > 1
+                h4.mt-3.text-primary Деталізація за джерелами
+                .accordion(id="sourceSummaryAccordion")
+                  each sourceSummary, idx in sourceSummaries
+                    - const collapseId = `source-summary-${idx}`
+                    - const headerLabel = sourceSummary.name || sourceSummary.ident
+                    .card.mb-2
+                      .card-header.p-0
+                        h5.mb-0
+                          button.btn.btn-link.btn-block.text-left(type="button", data-toggle="collapse", data-target=`#${collapseId}`, aria-expanded=(idx === 0 ? 'true' : 'false'), aria-controls=collapseId)= headerLabel
+                      .collapse(id=collapseId, class=(idx === 0 ? 'show' : ''), data-parent="#sourceSummaryAccordion")
+                        .card-body
+                          +summaryTables(sourceSummary.summary)
+              else
+                - const onlySource = sourceSummaries[0]
+                h4.mt-3.text-primary= `Джерело: ${onlySource.name || onlySource.ident}`
+                +summaryTables(onlySource.summary)
+            if sourceSummaries && sourceSummaries.length > 1
+              hr.my-4(style="border-top: 3px solid #dc3545;")
+            h4.mt-3.text-danger Загальна інформація по вибраних джерелах
+            +summaryTables(summaryReport)
+            .card.mt-3.border-info
+              .card-header.bg-info.text-white ПЛАН НА МІСЯЦЬ
+              .card-body.py-3
+                p.mb-2
+                  strong Продаж:
+                  |  #{summaryReport.planSalesMonthly} грн
+                p.mb-0
+                  strong Прибуток:
+                  |  #{summaryReport.planProfitMonthly} грн
+          else
+            .alert.alert-warning No summary data available.
+
         // Google Ads Tab
-        #google-ads.tab-pane.fade.show.active(role="tabpanel", aria-labelledby="google-ads-tab")
+        #google-ads.tab-pane.fade(class=(currentTab === 'google-ads-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="google-ads-tab")
           h3.mt-3 Google Ads Data
           table.table.table-striped.table-bordered.mt-2
             thead.thead-dark
@@ -43,7 +261,7 @@ html(lang="en")
                 th Ad Title
                 th Clicks
                 th Impressions
-                th Cost (Micros)
+                th Витрати (грн)
             tbody
               if googleAdsData && googleAdsData.length
                 each item in googleAdsData
@@ -52,13 +270,13 @@ html(lang="en")
                     td= item.title
                     td= item.clicks
                     td= item.impressions
-                    td= item.costMicros
+                    td= item.costUah
               else
                 tr
                   td(colspan="5").text-center No Google Ads data available
 
         // SalesDrive Tab
-        #salesdrive.tab-pane.fade(role="tabpanel", aria-labelledby="salesdrive-tab")
+        #salesdrive.tab-pane.fade(class=(currentTab === 'salesdrive-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="salesdrive-tab")
           h3.mt-3 SalesDrive CRM Data
           table.table.table-striped.table-bordered.mt-2
             thead.thead-dark
@@ -86,7 +304,7 @@ html(lang="en")
                   td(colspan="7").text-center No SalesDrive data available
 
         // Combined Tab
-        #combined.tab-pane.fade(role="tabpanel", aria-labelledby="combined-tab")
+        #combined.tab-pane.fade(class=(currentTab === 'combined-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="combined-tab")
           h3.mt-3 Combined Data
           table.table.table-striped.table-bordered.mt-2
             thead.thead-dark
@@ -101,7 +319,7 @@ html(lang="en")
                 th Google Ads Title
                 th Clicks
                 th Impressions
-                th Cost (Micros)
+                th Витрати (грн)
             tbody
               if combinedData && combinedData.length
                 each item in combinedData
@@ -117,7 +335,7 @@ html(lang="en")
                       td= item.googleAdsData.title
                       td= item.googleAdsData.clicks
                       td= item.googleAdsData.impressions
-                      td= item.googleAdsData.costMicros
+                      td= item.googleAdsData.costUah
                     else
                       td(colspan="4").text-muted No matching Google Ads data
               else
@@ -127,3 +345,26 @@ html(lang="en")
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+    script.
+      $(document).ready(function () {
+        // When a new tab is shown, update the hidden input field
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          var tabId = $(e.target).attr('id');
+          $('#activeTabInput').val(tabId);
+        });
+
+        var timerNode = document.getElementById('rate-limit-timer');
+        if (timerNode) {
+          var remaining = parseInt(timerNode.getAttribute('data-seconds'), 10) || 65;
+          timerNode.textContent = remaining;
+          var intervalId = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+              timerNode.textContent = '0';
+              clearInterval(intervalId);
+            } else {
+              timerNode.textContent = remaining;
+            }
+          }, 1000);
+        }
+      });
