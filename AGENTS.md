@@ -4,13 +4,21 @@
 - `app.js` bootstraps Express, loads `.env` with `dotenv`, and mounts the root router.
 - `routes/index.js` exposes HTTP entry points, forwarding to controllers; add new routers under `routes/`.
 - `controllers/dataController.js` aggregates Google Ads and SalesDrive data; split helpers into additional files when logic grows.
-- `views/` hosts Pug templates (`index.pug` dashboard, `error.pug` fallback); store shared fragments in `views/partials/`.
+- `views/` hosts Pug templates (`index.pug` dashboard, `loading.pug` очікування, `error.pug` fallback); store shared fragments in `views/partials/`.
 - Runtime secrets stay in `.env`; keep the file out of version control and document required keys separately.
 
 ## Build, Test, and Development Commands
 - `npm install` to pull dependencies before the first run or after lockfile changes.
 - `npm start` runs `node app.js` with production-ready logging and uses live API credentials.
 - `npm run dev` starts `nodemon app.js` for local work; it reloads on file changes and requires a populated `.env`.
+
+## Environment Variables
+- `SALESDRIVE_RATE_LIMIT_MAX_PER_MINUTE` (optional, default `10`): cap SalesDrive requests per minute.
+- `SALESDRIVE_RATE_LIMIT_INTERVAL_MS` (optional, default `60000`): window for the limiter when the API changes its quota cadence.
+- `SALESDRIVE_RATE_LIMIT_QUEUE_SIZE` (optional, default `120`): safety valve to avoid unbounded request buffering.
+- `SALESDRIVE_RETRY_MAX_ATTEMPTS` (optional, default `3`): maximum resend attempts for throttled SalesDrive calls.
+- `SALESDRIVE_RETRY_BASE_DELAY_MS` (optional, default `5000`): base delay for exponential backoff after a 429/5xx.
+- `SALESDRIVE_HOURLY_LIMIT` (optional, default `100`): максимальна кількість запитів до SalesDrive за одну годину.
 
 ## Coding Style & Naming Conventions
 - Stick with ES modules, `async/await`, and camelCase identifiers (`renderCombinedData`); prefer descriptive names for new sources and helpers.

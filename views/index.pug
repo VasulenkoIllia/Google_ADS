@@ -1,143 +1,42 @@
 doctype html
-mixin summaryTables(summary)
-  .row
-    .col-md-6
-      h4.mt-3 Advertising & Funnel
-      table.table.table-bordered
-        tbody
-          tr
-            th Реклама (грн)
-            td= summary.adSpend
-          tr
-            th Цена за клик (CPC)
-            td= summary.cpc
-          tr
-            th Показы
-            td= summary.impressions
-          tr
-            th CTR (% конв показы/клики)
-            td #{summary.ctr}%
-          tr
-            th Клики
-            td= summary.clicks
-          tr
-            th % конв клики/транз
-            td #{summary.clickToTransConversion}%
-          tr
-            th Транзакции
-            td= summary.transactions
-          tr
-            th Цена конверсии (CPA)
-            td= summary.cpa
-    .col-md-6
-      h4.mt-3 Financials & Ratios
-      table.table.table-bordered
-        tbody
-          tr
-            th Продажи (грн)
-            td= summary.sales
-          tr
-            th Себестоимость (грн)
-            td= summary.costOfGoods
-          tr
-            th Маржа (грн)
-            td= summary.margin
-          tr
-            th Прибыль (грн)
-            td= summary.profit
-          tr
-            th Средний чек (AOV)
-            td= summary.aov
-          tr
-            th ROI
-            td #{summary.roi}%
-          tr
-            th Средняя прибыль
-            td= summary.avgProfitPerTransaction
-          tr
-            th % рекл от оборота
-            td #{summary.adSpendToSalesRatio}%
-          tr
-            th % себест от оборота
-            td #{summary.cogsToSalesRatio}%
-          tr
-            th % прибыли от оборота
-            td(style=summary.profitToSalesRatioStyle)= `${summary.profitToSalesRatio}%`
-  .row
-    .col-md-6
-      h4.mt-3 Sales Plan
-      table.table.table-bordered
-        tbody
-          tr
-            th ПЛАН ПРОДАЖ (період)
-            td= summary.planSales
-          tr
-            th ПЛАН ПРОДАЖ (місяць)
-            td= summary.planSalesMonthly
-          tr
-            th ПЛАН ПРОДАЖ (грн/день)
-            td= summary.planSalesPerDay
-          tr
-            th Прогноз продаж (період)
-            td= summary.projectedSales
-          tr
-            th % отклонения (прогноз)
-            td #{summary.salesPlanDeviation}%
-          tr
-            th ПЛАН ПРОДАЖ НАКОПИТЕЛЬНО (період)
-            td= summary.planCumulativeSales
-          tr
-            th ФАКТ НАКОПИТЕЛЬНО (грн)
-            td= summary.salesFactCumulative
-          tr
-            th % отклонения (факт vs план накопит.)
-            td #{summary.salesCumulativePlanDeviation}%
-          tr
-            th % отклонения (факт vs план період)
-            td #{summary.salesFactDeviation}%
-          tr
-            th Днів у періоді
-            td= summary.daysInPeriod
-          tr
-            th Днів у місяці
-            td= summary.daysInMonth
-          tr
-            th Днів у місяці
-            td= summary.daysInMonth
-    .col-md-6
-      h4.mt-3 Profit Plan
-      table.table.table-bordered
-        tbody
-          tr
-            th ПЛАН ПРИБЫЛИ (період)
-            td= summary.planProfit
-          tr
-            th ПЛАН ПРИБЫЛИ (місяць)
-            td= summary.planProfitMonthly
-          tr
-            th ПЛАН ПРИБЫЛИ (грн/день)
-            td= summary.planProfitPerDay
-          tr
-            th Прогноз прибутку (період)
-            td= summary.projectedProfit
-          tr
-            th % отклонения (прогноз)
-            td #{summary.profitPlanDeviation}%
-          tr
-            th ПЛАН НАКОПИТЕЛЬНО прибуток (період)
-            td= summary.planCumulativeProfit
-          tr
-            th ФАКТ НАКОПИТЕЛЬНО (грн)
-            td= summary.profitFactCumulative
-          tr
-            th % отклонения (факт vs план накопит.)
-            td #{summary.profitCumulativePlanDeviation}%
-          tr
-            th % отклонения (факт vs план період)
-            td #{summary.profitFactDeviation}%
-          tr
-            th Днів у періоді
-            td= summary.daysInPeriod
+mixin summaryCards(summary)
+  - const headlineCards = [];
+  - headlineCards.push({ label: 'Продажі (грн)', value: summary.sales, accent: 'text-primary' });
+  - headlineCards.push({ label: 'Прибуток (грн)', value: summary.profit, accent: 'text-danger' });
+  - headlineCards.push({ label: 'Маржа (грн)', value: summary.margin });
+  - headlineCards.push({ label: 'Витрати на рекламу (грн)', value: summary.adSpend });
+  - const performanceCards = [];
+  - performanceCards.push({ label: 'Impressions', value: summary.impressions });
+  - performanceCards.push({ label: 'Кліки', value: summary.clicks });
+  - performanceCards.push({ label: 'CTR', value: `${summary.ctr}%` });
+  - performanceCards.push({ label: 'CPA', value: summary.cpa });
+  - performanceCards.push({ label: 'Конверсія кліки→транзакції', value: `${summary.clickToTransConversion}%` });
+  - performanceCards.push({ label: 'Транзакції', value: summary.transactions });
+  - performanceCards.push({ label: 'ROI', value: `${summary.roi}%` });
+  - performanceCards.push({ label: '% прибутку від обороту', value: `${summary.profitToSalesRatio}%`, style: summary.profitToSalesRatioStyle });
+  - const planCards = [];
+  - planCards.push({ label: 'План продаж (період)', value: summary.planSales });
+  - planCards.push({ label: 'Факт vs план (період)', value: `${summary.salesFactDeviation}%` });
+  - planCards.push({ label: 'План продаж (місяць)', value: summary.planSalesMonthly });
+  - planCards.push({ label: 'План прибутку (період)', value: summary.planProfit });
+  - planCards.push({ label: 'Факт прибутку vs план', value: `${summary.profitFactDeviation}%` });
+  - planCards.push({ label: 'План прибутку (місяць)', value: summary.planProfitMonthly });
+  - planCards.push({ label: 'Середній чек', value: summary.aov });
+  - planCards.push({ label: 'Днів у періоді', value: summary.daysInPeriod });
+
+  each group, groupIndex in [headlineCards, performanceCards, planCards]
+    .row(class=groupIndex === 0 ? '' : 'mt-1')
+      each metric, idx in group
+        .col-xl-3.col-lg-4.col-sm-6.mt-3
+          .card.shadow-sm.border-0
+            .card-body
+              small.text-uppercase.text-muted= metric.label
+              if metric.style
+                h4.mb-0(style=metric.style)= metric.value
+              else if metric.accent
+                h4.mb-0(class=metric.accent)= metric.value
+              else
+                h4.mb-0= metric.value
 
 html(lang="en")
   head
@@ -153,14 +52,21 @@ html(lang="en")
             span= alertMessage
             button.close(type="button", data-dismiss="alert", aria-label="Close")
               span(aria-hidden="true") &times;
-    if rateLimitCooldown
-      .position-fixed(style="top: 1rem; left: 50%; transform: translateX(-50%); z-index: 1090; width: 360px;")
-        .alert.alert-warning.text-center.mb-0(role="alert")
-          span Запит можна повторити через&nbsp;
-          strong#rate-limit-timer(data-seconds="65") 65
-          span &nbsp;секунд
     .container-fluid
       h1.my-4 Sales and Ads Data Dashboard
+      if hourlyStats || typeof hourlyLimit === 'number'
+        - const resolvedHourlyLimit = typeof (hourlyStats && hourlyStats.limit) === 'number' ? hourlyStats.limit : (typeof hourlyLimit === 'number' ? hourlyLimit : 100)
+        - const resolvedMinuteLimit = typeof minuteLimit === 'number' ? minuteLimit : 10
+        - const resolvedMinuteSeconds = typeof minuteIntervalSeconds === 'number' ? minuteIntervalSeconds : 60
+        - const hourlyUsed = typeof (hourlyStats && hourlyStats.used) === 'number' ? hourlyStats.used : 0
+        - const hourlyRemaining = Math.max(resolvedHourlyLimit - hourlyUsed, 0)
+        - const hourlyResetSeconds = typeof (hourlyStats && hourlyStats.resetInMs) === 'number' ? Math.ceil(hourlyStats.resetInMs / 1000) : 0
+        - const hourlyResetMinutes = Math.floor(hourlyResetSeconds / 60)
+        - const hourlyResetSecs = hourlyResetSeconds % 60
+        .alert.alert-info.mt-3(role="alert")
+          | CRM дозволяє #{resolvedMinuteLimit} запитів за #{resolvedMinuteSeconds} секунд та #{resolvedHourlyLimit} запитів за годину.
+          br
+          | Використано #{hourlyUsed}, залишилось #{hourlyRemaining}. Квота оновиться приблизно через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
       p
         strong Date Range:
         | #{startDate} to #{endDate}
@@ -230,15 +136,15 @@ html(lang="en")
                           button.btn.btn-link.btn-block.text-left(type="button", data-toggle="collapse", data-target=`#${collapseId}`, aria-expanded=(idx === 0 ? 'true' : 'false'), aria-controls=collapseId)= headerLabel
                       .collapse(id=collapseId, class=(idx === 0 ? 'show' : ''), data-parent="#sourceSummaryAccordion")
                         .card-body
-                          +summaryTables(sourceSummary.summary)
+                          +summaryCards(sourceSummary.summary)
               else
                 - const onlySource = sourceSummaries[0]
                 h4.mt-3.text-primary= `Джерело: ${onlySource.name || onlySource.ident}`
-                +summaryTables(onlySource.summary)
+                +summaryCards(onlySource.summary)
             if sourceSummaries && sourceSummaries.length > 1
               hr.my-4(style="border-top: 3px solid #dc3545;")
             h4.mt-3.text-danger Загальна інформація по вибраних джерелах
-            +summaryTables(summaryReport)
+            +summaryCards(summaryReport)
             .card.mt-3.border-info
               .card-header.bg-info.text-white ПЛАН НА МІСЯЦЬ
               .card-body.py-3
@@ -254,93 +160,96 @@ html(lang="en")
         // Google Ads Tab
         #google-ads.tab-pane.fade(class=(currentTab === 'google-ads-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="google-ads-tab")
           h3.mt-3 Google Ads Data
-          table.table.table-striped.table-bordered.mt-2
-            thead.thead-dark
-              tr
-                th Source Identifier
-                th Ad Title
-                th Clicks
-                th Impressions
-                th Витрати (грн)
-            tbody
-              if googleAdsData && googleAdsData.length
-                each item in googleAdsData
-                  tr
-                    td= item.istocnikProdaziIdent
-                    td= item.title
-                    td= item.clicks
-                    td= item.impressions
-                    td= item.costUah
-              else
+          .table-responsive.mt-2
+            table.table.table-striped.table-bordered
+              thead.thead-dark
                 tr
-                  td(colspan="5").text-center No Google Ads data available
+                  th Source Identifier
+                  th Ad Title
+                  th Clicks
+                  th Impressions
+                  th Витрати (грн)
+              tbody
+                if googleAdsData && googleAdsData.length
+                  each item in googleAdsData
+                    tr
+                      td= item.istocnikProdaziIdent
+                      td= item.title
+                      td= item.clicks
+                      td= item.impressions
+                      td= item.costUah
+                else
+                  tr
+                    td(colspan="5").text-center No Google Ads data available
 
         // SalesDrive Tab
         #salesdrive.tab-pane.fade(class=(currentTab === 'salesdrive-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="salesdrive-tab")
           h3.mt-3 SalesDrive CRM Data
-          table.table.table-striped.table-bordered.mt-2
-            thead.thead-dark
-              tr
-                th Order ID
-                th Customer Name
-                th Order Time
-                th Products
-                th Order Status
-                th Total Cost
-                th Source Identifier
-            tbody
-              if salesDriveData && salesDriveData.length
-                each item in salesDriveData
-                  tr
-                    td= item.id
-                    td= `${item.fName} ${item.lName}`
-                    td= item.orderTime
-                    td= item.products
-                    td= item.statusName
-                    td= item.totalCost
-                    td= item.istocnikProdaziIdent
-              else
+          .table-responsive.mt-2
+            table.table.table-striped.table-bordered
+              thead.thead-dark
                 tr
-                  td(colspan="7").text-center No SalesDrive data available
+                  th Order ID
+                  th Customer Name
+                  th Order Time
+                  th Products
+                  th Order Status
+                  th Total Cost
+                  th Source Identifier
+              tbody
+                if salesDriveData && salesDriveData.length
+                  each item in salesDriveData
+                    tr
+                      td= item.id
+                      td= `${item.fName} ${item.lName}`
+                      td= item.orderTime
+                      td= item.products
+                      td= item.statusName
+                      td= item.totalCost
+                      td= item.istocnikProdaziIdent
+                else
+                  tr
+                    td(colspan="7").text-center No SalesDrive data available
 
         // Combined Tab
         #combined.tab-pane.fade(class=(currentTab === 'combined-tab' ? 'show active' : ''), role="tabpanel", aria-labelledby="combined-tab")
           h3.mt-3 Combined Data
-          table.table.table-striped.table-bordered.mt-2
-            thead.thead-dark
-              tr
-                th SalesDrive Order ID
-                th Customer Name
-                th Order Time
-                th Products
-                th Order Status
-                th Total Cost
-                th Source Identifier
-                th Google Ads Title
-                th Clicks
-                th Impressions
-                th Витрати (грн)
-            tbody
-              if combinedData && combinedData.length
-                each item in combinedData
-                  tr
-                    td= item.id
-                    td= `${item.fName} ${item.lName}`
-                    td= item.orderTime
-                    td= item.products
-                    td= item.statusName
-                    td= item.totalCost
-                    td= item.istocnikProdaziIdent
-                    if item.googleAdsData
-                      td= item.googleAdsData.title
-                      td= item.googleAdsData.clicks
-                      td= item.googleAdsData.impressions
-                      td= item.googleAdsData.costUah
-                    else
-                      td(colspan="4").text-muted No matching Google Ads data
-              else
+          .table-responsive.mt-2
+            table.table.table-striped.table-bordered
+              thead.thead-dark
                 tr
-                  td(colspan="11").text-center No combined data available
+                  th SalesDrive Order ID
+                  th Customer Name
+                  th Order Time
+                  th Products
+                  th Order Status
+                  th Total Cost
+                  th Source Identifier
+                  th Google Ads Title
+                  th Clicks
+                  th Impressions
+                  th Витрати (грн)
+              tbody
+                if combinedData && combinedData.length
+                  each item in combinedData
+                    tr
+                      td= item.id
+                      td= `${item.fName} ${item.lName}`
+                      td= item.orderTime
+                      td= item.products
+                      td= item.statusName
+                      td= item.totalCost
+                      td= item.istocnikProdaziIdent
+                      if item.googleAdsData
+                        td= item.googleAdsData.title
+                        td= item.googleAdsData.clicks
+                        td= item.googleAdsData.impressions
+                        td= item.googleAdsData.costUah
+                      else
+                        td(colspan="4").text-muted No matching Google Ads data
+                else
+                  tr
+                    td(colspan="11").text-center No combined data available
 
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
