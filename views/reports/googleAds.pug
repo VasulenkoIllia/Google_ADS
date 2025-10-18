@@ -1,0 +1,71 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Звіт Google Ads
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body
+    if alerts && alerts.length
+      .position-fixed(style="top: 1rem; right: 1rem; z-index: 1080; width: 320px;")
+        each alertMessage in alerts
+          .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+            span= alertMessage
+            button.close(type="button", data-dismiss="alert", aria-label="Close")
+              span(aria-hidden="true") &times;
+    .container-fluid
+      .d-flex.justify-content-between.align-items-center.mt-4
+        h1.mb-0.text-primary Звіт Google Ads
+        a.btn.btn-outline-secondary(href="/") До вибору звітів
+      p.text-muted.mt-2.mb-4
+        | Період:
+        strong #{startDate} – #{endDate}
+
+      form.form-inline.mb-4(action="/reports/google-ads", method="get")
+        .form-group.mr-2
+          label.sr-only(for="startDate") Початок
+          input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
+        .form-group.mr-2
+          label.sr-only(for="endDate") Кінець
+          input#endDate.form-control(type="date", name="endDate", value=endDate, min=startDate)
+        .form-group.mr-2
+          label.sr-only(for="source") Джерело продажу
+          select#source.form-control(name="source", multiple, size="6")
+            if salesDriveIstocniki
+              each source in salesDriveIstocniki
+                - const isSelected = Array.isArray(selectedSources) ? selectedSources.includes(source.id.toString()) : false
+                option(value=source.id, selected=isSelected)= `${source.ident} (${source.name || source.id})`
+            else
+              option(value="", selected=false) Джерела не налаштовані
+        button.btn.btn-primary(type="submit") Оновити
+        a.btn.btn-outline-secondary.ml-2(href="/reports/google-ads") Скинути
+
+      if totals
+        .alert.alert-info
+          | Витрати: #{totals.totalCostUah} грн • Покази: #{totals.totalImpressions} • Кліки: #{totals.totalClicks}
+
+      .table-responsive.mt-3
+        table.table.table-striped.table-bordered
+          thead.thead-dark
+            tr
+              th Source Identifier
+              th Назва оголошення
+              th Витрати (грн)
+              th Impressions
+              th Clicks
+          tbody
+            if googleAdsData && googleAdsData.length
+              each item in googleAdsData
+                tr
+                  td= item.istocnikProdaziIdent
+                  td= item.title
+                  td= item.costUah
+                  td= item.impressions
+                  td= item.clicks
+            else
+              tr
+                td(colspan="5").text-center Даних не знайдено
+
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

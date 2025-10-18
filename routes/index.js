@@ -1,9 +1,8 @@
 import express from 'express';
-import { renderCombinedData } from '../controllers/dataController.js';
+import { renderHome } from '../controllers/homeController.js';
 
 const router = express.Router();
 
-/* GET home page. */
-router.get('/', renderCombinedData);
+router.get('/', renderHome);
 
 export default router;

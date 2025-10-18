@@ -2,9 +2,9 @@
 
 ## Project Structure & Module Organization
 - `app.js` bootstraps Express, loads `.env` with `dotenv`, and mounts the root router.
-- `routes/index.js` exposes HTTP entry points, forwarding to controllers; add new routers under `routes/`.
-- `controllers/dataController.js` aggregates Google Ads and SalesDrive data; split helpers into additional files when logic grows.
-- `views/` hosts Pug templates (`index.pug` dashboard, `loading.pug` очікування, `error.pug` fallback); store shared fragments in `views/partials/`.
+- `routes/index.js` обробляє домашню сторінку; нові звіти додавайте у `routes/reports.js`.
+- Контролери розділені за звітами (`homeController.js`, `summaryReportController.js`, `googleAdsReportController.js`, `salesDriveReportController.js`, `combinedReportController.js`), а спільна логіка винесена в `services/reportDataService.js`.
+- `views/` містить шаблони (`home.pug`, `reports/*.pug`, `loading.pug`, `error.pug`); спільні фрагменти зберігайте у `views/partials/`.
 - Runtime secrets stay in `.env`; keep the file out of version control and document required keys separately.
 
 ## Build, Test, and Development Commands
@@ -21,18 +21,18 @@
 - `SALESDRIVE_HOURLY_LIMIT` (optional, default `100`): максимальна кількість запитів до SalesDrive за одну годину.
 
 ## Coding Style & Naming Conventions
-- Stick with ES modules, `async/await`, and camelCase identifiers (`renderCombinedData`); prefer descriptive names for new sources and helpers.
+- Stick with ES modules, `async/await`, and camelCase identifiers (`renderSummaryReport` тощо); prefer descriptive names for нових джерел та хелперів.
 - Use 4-space indentation in JavaScript/JSON and 2-space indentation in Pug. Retain semicolons and keep import order logical: core modules, third-party, then local files.
 - Collect environment reads near the top of a module and fail fast with clear errors when critical keys are missing.
 
 ## Testing Guidelines
 - No automated suite exists yet; introduce Jest + Supertest and wire it to `npm test` when adding regression coverage.
-- Until then, verify updates by running `npm run dev`, exercising the `/` dashboard tabs, and capturing sample payloads via mocked responses when external APIs are unavailable.
+- Until then, verify updates by running `npm run dev`, переходячи за маршрутами `/reports/*`, та готуючи мокові відповіді API за потреби.
 
 ## Commit & Pull Request Guidelines
 - Write concise, present-tense commit subjects (`server: fetch combined data`); avoid bundling unrelated features.
 - PRs should outline intent, note affected routes/controllers, summarize manual or automated test runs, and list any new environment variables or configuration steps.
-- Attach UI screenshots when modifying `views/index.pug` to show the resulting tables.
+- Attach UI screenshots when modifying шаблони у `views/reports/` to show the resulting tables.
 
 ## Configuration & Security Tips
 - Keep Google Ads and SalesDrive keys in local process managers or `.env`; rotate tokens after sharing access.

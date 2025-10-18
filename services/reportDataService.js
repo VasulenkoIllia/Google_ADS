@@ -26,7 +26,7 @@ const {
     SALESDRIVE_RETRY_BASE_DELAY_MS
 } = process.env;
 
-const SALESDRIVE_ISTOCHNIKI = JSON.parse(process.env.SALESDRIVE_ISTOCHNIKI || '[]');
+export const SALESDRIVE_ISTOCHNIKI = JSON.parse(process.env.SALESDRIVE_ISTOCHNIKI || '[]');
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const ZERO_EPSILON = 1e-6;
@@ -35,7 +35,7 @@ const DEFAULT_SALESDRIVE_INTERVAL_MS = 60000;
 const DEFAULT_SALESDRIVE_QUEUE_SIZE = 120;
 const DEFAULT_SALESDRIVE_RETRY_ATTEMPTS = 3;
 const DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS = 5000;
-const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
+export const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
 
 function parsePositiveInt(value, fallback) {
     const parsed = Number.parseInt(value, 10);
@@ -82,11 +82,11 @@ function parseRetryAfter(retryAfterHeader) {
     return null;
 }
 
-const SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS = parsePositiveInt(
+export const SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS = parsePositiveInt(
     SALESDRIVE_RATE_LIMIT_MAX_PER_MINUTE,
     DEFAULT_SALESDRIVE_MAX_PER_MINUTE
 );
-const SALES_DRIVE_RATE_LIMIT_INTERVAL = parsePositiveNumber(
+export const SALES_DRIVE_RATE_LIMIT_INTERVAL = parsePositiveNumber(
     SALESDRIVE_RATE_LIMIT_INTERVAL_MS,
     DEFAULT_SALESDRIVE_INTERVAL_MS
 );
@@ -104,7 +104,7 @@ const SALES_DRIVE_RETRY_BASE_DELAY_MS = parsePositiveNumber(
 );
 const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 100;
 const SALES_DRIVE_HOURLY_WINDOW_MS = 60 * 60 * 1000;
-const SALES_DRIVE_HOURLY_LIMIT = parsePositiveInt(
+export const SALES_DRIVE_HOURLY_LIMIT = parsePositiveInt(
     process.env.SALESDRIVE_HOURLY_LIMIT,
     DEFAULT_SALESDRIVE_HOURLY_LIMIT
 );
@@ -145,7 +145,7 @@ function consumeSalesDriveRetryFlag() {
     return snapshot;
 }
 
-function evaluateRateLimit(extraQueuedRequests = 0) {
+export function evaluateRateLimit(extraQueuedRequests = 0) {
     if (typeof salesDriveRateLimiter.estimateWait !== 'function') {
         return null;
     }
@@ -167,7 +167,7 @@ function noteHourlyRequest() {
     return getHourlyStats(now);
 }
 
-function getHourlyStats(now = Date.now()) {
+export function getHourlyStats(now = Date.now()) {
     resetHourlyWindowIfNeeded(now);
     const limit = SALES_DRIVE_HOURLY_LIMIT;
     const used = Math.max(0, Math.min(salesDriveHourlyWindow.count, limit));
@@ -199,7 +199,7 @@ function reportJobPushProgress(job, patch = {}) {
     });
 }
 
-class DateRangeError extends Error {
+export class DateRangeError extends Error {
     constructor(message) {
         super(message);
         this.name = 'DateRangeError';
@@ -211,13 +211,14 @@ const REPORT_JOB_TTL_MS = 5 * 60 * 1000;
 const REPORT_JOB_ERROR_TTL_MS = 30 * 1000;
 const reportJobs = new Map();
 
-function buildReportJobKey({
+export function buildReportJobKey({
     startDate,
     endDate,
     selectedSourceIds = [],
     salesDriveFilter = {},
     salesDriveLimit = null,
-    planOverrides = {}
+    planOverrides = {},
+    reportType = 'summary'
 }) {
     const normalizedSources = [...selectedSourceIds].map(id => id != null ? id.toString() : '').sort();
     const normalizedFilter = salesDriveFilter && typeof salesDriveFilter === 'object'
@@ -233,7 +234,8 @@ function buildReportJobKey({
         sources: normalizedSources,
         filter: normalizedFilter,
         limit: salesDriveLimit ?? null,
-        plan: normalizedPlan
+        plan: normalizedPlan,
+        reportType
     });
 }
 
@@ -290,7 +292,7 @@ function createReportJob(key, workFactory) {
     return job;
 }
 
-function getOrCreateReportJob(key, workFactory) {
+export function getOrCreateReportJob(key, workFactory) {
     let job = reportJobs.get(key);
     if (job) {
         const age = Date.now() - job.updatedAt;
@@ -320,7 +322,7 @@ function coerceQueryParam(value) {
     return value;
 }
 
-function resolveDateRange(requestedStart, requestedEnd) {
+export function resolveDateRange(requestedStart, requestedEnd) {
     if (!DEFAULT_DATE_START_DAY || !DEFAULT_DATE_END_DAY) {
         throw new Error('GLOBAL_DATE_START_DAY and GLOBAL_DATE_END_DAY must be set in the environment.');
     }
@@ -350,7 +352,7 @@ function isPlainObject(value) {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function normalizeToArray(value) {
+export function normalizeToArray(value) {
     const input = Array.isArray(value) ? value : [value];
     return input
         .flatMap(item => {
@@ -413,7 +415,7 @@ function mergeFilterObjects(base = {}, overrides = {}) {
     return result;
 }
 
-function sanitizeSalesDriveFilter(rawFilter) {
+export function sanitizeSalesDriveFilter(rawFilter) {
     if (!isPlainObject(rawFilter)) {
         return {};
     }
@@ -458,7 +460,7 @@ function determineProfitRatioColor(value) {
 
 // --- GOOGLE ADS API FUNCTIONS ---
 
-async function getGoogleAdsData({ startDate, endDate }) {
+export async function getGoogleAdsData({ startDate, endDate }) {
     try {
         console.log('1. Getting a fresh access_token for Google Ads...');
         const auth = new OAuth2Client({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET, redirectUri: 'http://localhost' });
@@ -944,7 +946,7 @@ function calculateSummaryReport(googleAdsTotals, salesDriveTotals, { startDate, 
 }
 
 
-async function prepareAllDataForView(
+async function buildReportData(
     { startDate, endDate, selectedSourceIds = [], salesDriveRequestOptions = {}, planOverrides = {} },
     { reportJob } = {}
 ) {
@@ -1266,7 +1268,9 @@ async function prepareAllDataForView(
     console.log(`\n--- Data Preparation Complete ---`);
     return {
         googleAdsData: googleAdsDataForTable,
+        googleAdsTotals,
         salesDriveData,
+        salesDriveTotals,
         combinedData,
         summaryReport,
         sourceSummaries,
@@ -1277,212 +1281,97 @@ async function prepareAllDataForView(
     };
 }
 
-// --- CONTROLLER EXPORTS ---
-
-export const renderCombinedData = async (req, res) => {
-    try {
-        const dateRange = resolveDateRange(req.query.startDate, req.query.endDate);
-        const { startDate, endDate } = dateRange;
-        const rawSelectedSources = req.query.source !== undefined ? req.query.source : [];
-        const selectedSourceIds = normalizeToArray(rawSelectedSources);
-        const selectedIdSet = new Set(selectedSourceIds.map(id => (id != null ? id.toString() : '')));
-        const activeTab = req.query.activeTab || 'summary-tab';
-        const rawFilterFromQuery = req.query.filter || {};
-        const salesDriveFilter = sanitizeSalesDriveFilter(rawFilterFromQuery);
-        const limitCandidate = Array.isArray(req.query.limit)
-            ? req.query.limit[req.query.limit.length - 1]
-            : req.query.limit;
-        const limitOverride = limitCandidate !== undefined ? parseInt(limitCandidate, 10) : NaN;
-        const salesDriveRequestOptions = {};
-        if (Object.keys(salesDriveFilter).length > 0) {
-            salesDriveRequestOptions.filter = salesDriveFilter;
-        }
-        if (!Number.isNaN(limitOverride)) {
-            salesDriveRequestOptions.limit = limitOverride;
-        }
-
-        const fallbackPlanSales = parseFloat(PLAN_SALES_MONTH || '0') || 0;
-        const fallbackPlanProfit = parseFloat(PLAN_PROFIT_MONTH || '0') || 0;
-        const planSalesRaw = Array.isArray(req.query.planSales)
-            ? req.query.planSales[req.query.planSales.length - 1]
-            : req.query.planSales;
-        const planProfitRaw = Array.isArray(req.query.planProfit)
-            ? req.query.planProfit[req.query.planProfit.length - 1]
-            : req.query.planProfit;
-
-        const parsePlanInput = (value) => {
-            if (value === undefined || value === null || value === '') {
-                return null;
-            }
-            const parsed = parseFloat(value);
-            return Number.isFinite(parsed) ? parsed : null;
-        };
-
-        const planSalesParsed = parsePlanInput(planSalesRaw);
-        const planProfitParsed = parsePlanInput(planProfitRaw);
-
-        const planOverrides = {};
-        if (planSalesParsed !== null) {
-            planOverrides.sales = planSalesParsed;
-        }
-        if (planProfitParsed !== null) {
-            planOverrides.profit = planProfitParsed;
-        }
-
-        const planInputs = {
-            sales: planSalesRaw !== undefined ? planSalesRaw : '',
-            profit: planProfitRaw !== undefined ? planProfitRaw : ''
-        };
-
-        const planDefaults = {
-            sales: fallbackPlanSales,
-            profit: fallbackPlanProfit
-        };
-
-        const minuteQuotaLimit = SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS;
-        const minuteQuotaIntervalSeconds = Math.ceil(SALES_DRIVE_RATE_LIMIT_INTERVAL / 1000);
-
-        const allConfiguredSources = Array.isArray(SALESDRIVE_ISTOCHNIKI) ? SALESDRIVE_ISTOCHNIKI : [];
-        let sourcesForEstimation = allConfiguredSources;
-        if (selectedIdSet.size > 0) {
-            sourcesForEstimation = allConfiguredSources.filter(source => selectedIdSet.has(source?.id?.toString()));
-            if (sourcesForEstimation.length === 0) {
-                sourcesForEstimation = allConfiguredSources;
-            }
-        }
-        const estimatedMinuteRequests = Math.max(sourcesForEstimation.length, 1);
-        const hourlyStatsBefore = getHourlyStats();
-        const limiterQueueEmpty = salesDriveRateLimiter.pendingRequests === 0;
-
-        if (
-            estimatedMinuteRequests <= minuteQuotaLimit &&
-            hourlyStatsBefore.remaining >= estimatedMinuteRequests &&
-            limiterQueueEmpty
-        ) {
-            const directResult = await prepareAllDataForView(
-                {
-                    startDate,
-                    endDate,
-                    selectedSourceIds,
-                    salesDriveRequestOptions,
-                    planOverrides
-                },
-                { reportJob: null }
-            );
-
-            return res.render('index', {
-                ...directResult,
-                startDate,
-                endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
-                selectedSources: selectedSourceIds,
-                activeTab,
-                salesDriveFilter,
-                salesDriveLimit: salesDriveRequestOptions.limit,
-                planInputs,
-                planDefaults,
-                minuteLimit: minuteQuotaLimit,
-                minuteIntervalSeconds: minuteQuotaIntervalSeconds,
-                hourlyLimit: SALES_DRIVE_HOURLY_LIMIT
-            });
-        }
-
-        const reportKey = buildReportJobKey({
-            startDate,
-            endDate,
-            selectedSourceIds,
-            salesDriveFilter,
-            salesDriveLimit: salesDriveRequestOptions.limit,
-            planOverrides
-        });
-
-        const job = getOrCreateReportJob(reportKey, (jobRef) =>
-            prepareAllDataForView(
-                {
-                    startDate,
-                    endDate,
-                    selectedSourceIds,
-                    salesDriveRequestOptions,
-                    planOverrides
-                },
-                { reportJob: jobRef }
-            )
-        );
-
-        if (job.status === 'ready' && job.result) {
-            const {
-                googleAdsData,
-                salesDriveData,
-                combinedData,
-                summaryReport,
-                alerts,
-                rateLimitCooldown,
-                rateLimitCooldownSeconds,
-                sourceSummaries,
-                hourlyStats
-            } = job.result;
-
-            return res.render('index', {
-                googleAdsData,
-                salesDriveData,
-                combinedData,
-                summaryReport,
-                sourceSummaries,
-                startDate,
-                endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
-                selectedSources: selectedSourceIds,
-                activeTab,
-                salesDriveFilter,
-                salesDriveLimit: salesDriveRequestOptions.limit,
-                alerts,
-                rateLimitCooldown,
-                rateLimitCooldownSeconds,
-                hourlyStats,
-                minuteLimit: minuteQuotaLimit,
-                minuteIntervalSeconds: minuteQuotaIntervalSeconds,
-                hourlyLimit: SALES_DRIVE_HOURLY_LIMIT,
-                planInputs,
-                planDefaults
-            });
-        }
-
-        if (job.status === 'error') {
-            if (reportJobs.get(reportKey) === job) {
-                reportJobs.delete(reportKey);
-            }
-            throw job.error || new Error('Не вдалося сформувати звіт.');
-        }
-
-        const progress = job.progress || {};
-        const waitMs = Number.isFinite(job.waitMs) ? job.waitMs : SALES_DRIVE_RATE_LIMIT_INTERVAL;
-        const waitSeconds = Math.max(Math.ceil(waitMs / 1000), MIN_PLACEHOLDER_WAIT_SECONDS);
-        const reloadUrl = req.originalUrl || req.url || '/';
-
-        res.set('Retry-After', waitSeconds.toString());
-        return res.status(202).render('loading', {
-            waitSeconds,
-            reloadUrl,
-            message: progress.message || 'Формуємо звіт…',
-            alerts: Array.isArray(progress.alerts) ? progress.alerts : [],
-            salesDriveLimit: progress.maxPerInterval ?? SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS,
-            intervalSeconds: Math.ceil((progress.intervalMs ?? SALES_DRIVE_RATE_LIMIT_INTERVAL) / 1000),
-            hourlyLimit: SALES_DRIVE_HOURLY_LIMIT,
-            queueInfo: {
-                ...progress,
-                waitMs,
-                waitSeconds
-            }
-        });
-    } catch (error) {
-        console.error("Server Error:", error);
-        if (error instanceof DateRangeError || error.statusCode === 400) {
-            const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
-            return res.status(400).render('error', {
-                message: error.message,
-                error: includeStack ? error : {}
-            });
-        }
-        res.status(500).render('error', { message: "Internal Server Error", error });
+function parsePlanInputValue(value) {
+    if (value === undefined || value === null || value === '') {
+        return null;
     }
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+export function resolvePlanConfig(planSalesRaw, planProfitRaw) {
+    const fallbackPlanSales = parseFloat(PLAN_SALES_MONTH || '0') || 0;
+    const fallbackPlanProfit = parseFloat(PLAN_PROFIT_MONTH || '0') || 0;
+
+    const planOverrides = {};
+    const parsedSales = parsePlanInputValue(planSalesRaw);
+    const parsedProfit = parsePlanInputValue(planProfitRaw);
+
+    if (parsedSales !== null) {
+        planOverrides.sales = parsedSales;
+    }
+    if (parsedProfit !== null) {
+        planOverrides.profit = parsedProfit;
+    }
+
+    const planInputs = {
+        sales: planSalesRaw !== undefined ? planSalesRaw : '',
+        profit: planProfitRaw !== undefined ? planProfitRaw : ''
+    };
+
+    const planDefaults = {
+        sales: fallbackPlanSales,
+        profit: fallbackPlanProfit
+    };
+
+    return {
+        planOverrides,
+        planInputs,
+        planDefaults
+    };
+}
+
+export function getRateLimitMeta() {
+    return {
+        minuteLimit: SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS,
+        minuteIntervalSeconds: Math.ceil(SALES_DRIVE_RATE_LIMIT_INTERVAL / 1000),
+        hourlyLimit: SALES_DRIVE_HOURLY_LIMIT
+    };
+}
+
+export function getSalesDriveLimiterState() {
+    return {
+        pendingRequests: salesDriveRateLimiter.pendingRequests,
+        isCoolingDown: salesDriveRateLimiter.isCoolingDown,
+        downstreamDelayMs: salesDriveRateLimiter.downstreamDelayMs
+    };
+}
+
+export function resolveSourcesForRequest(selectedSourceIds = []) {
+    const selectedIdSet = new Set((selectedSourceIds || []).map(id => id != null ? id.toString() : ''));
+    const allSources = Array.isArray(SALESDRIVE_ISTOCHNIKI) ? SALESDRIVE_ISTOCHNIKI : [];
+
+    if (selectedIdSet.size === 0) {
+        return { sourcesToProcess: allSources, selectedIdSet, isFiltering: false };
+    }
+
+    const filtered = allSources.filter(source => selectedIdSet.has(source?.id?.toString()));
+    if (filtered.length === 0) {
+        return { sourcesToProcess: allSources, selectedIdSet, isFiltering: true, fellBackToAll: true };
+    }
+
+    return { sourcesToProcess: filtered, selectedIdSet, isFiltering: true, fellBackToAll: false };
+}
+
+export function shouldProcessDirectly(selectedSourceIds = []) {
+    const { sourcesToProcess } = resolveSourcesForRequest(selectedSourceIds);
+    const estimatedMinuteRequests = Math.max(sourcesToProcess.length, 1);
+    const limiterState = getSalesDriveLimiterState();
+    const hourlyStatsBefore = getHourlyStats();
+    const minuteLimit = SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS;
+
+    const canProcessDirect = estimatedMinuteRequests <= minuteLimit
+        && hourlyStatsBefore.remaining >= estimatedMinuteRequests
+        && limiterState.pendingRequests === 0;
+
+    return {
+        canProcessDirect,
+        estimatedMinuteRequests,
+        limiterState,
+        hourlyStatsBefore
+    };
+}
+
+export {
+    buildReportData
 };

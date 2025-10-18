@@ -1,0 +1,157 @@
+doctype html
+mixin summaryCards(summary)
+  - const headlineCards = []
+  - headlineCards.push({ label: 'Продажі (грн)', value: summary.sales, accent: 'text-primary' })
+  - headlineCards.push({ label: 'Прибуток (грн)', value: summary.profit, accent: 'text-danger' })
+  - headlineCards.push({ label: 'Маржа (грн)', value: summary.margin })
+  - headlineCards.push({ label: 'Витрати на рекламу (грн)', value: summary.adSpend })
+  - const performanceCards = []
+  - performanceCards.push({ label: 'Impressions', value: summary.impressions })
+  - performanceCards.push({ label: 'Кліки', value: summary.clicks })
+  - performanceCards.push({ label: 'CTR', value: `${summary.ctr}%` })
+  - performanceCards.push({ label: 'CPA', value: summary.cpa })
+  - performanceCards.push({ label: 'Конверсія кліки→транзакції', value: `${summary.clickToTransConversion}%` })
+  - performanceCards.push({ label: 'Транзакції', value: summary.transactions })
+  - performanceCards.push({ label: 'ROI', value: `${summary.roi}%` })
+  - performanceCards.push({ label: '% прибутку від обороту', value: `${summary.profitToSalesRatio}%`, style: summary.profitToSalesRatioStyle })
+  - const planCards = []
+  - planCards.push({ label: 'План продаж (період)', value: summary.planSales })
+  - planCards.push({ label: 'Факт vs план (період)', value: `${summary.salesFactDeviation}%` })
+  - planCards.push({ label: 'План продаж (місяць)', value: summary.planSalesMonthly })
+  - planCards.push({ label: 'План прибутку (період)', value: summary.planProfit })
+  - planCards.push({ label: 'Факт прибутку vs план', value: `${summary.profitFactDeviation}%` })
+  - planCards.push({ label: 'План прибутку (місяць)', value: summary.planProfitMonthly })
+  - planCards.push({ label: 'Середній чек', value: summary.aov })
+  - planCards.push({ label: 'Днів у періоді', value: summary.daysInPeriod })
+
+  each group, groupIndex in [headlineCards, performanceCards, planCards]
+    .row(class=groupIndex === 0 ? '' : 'mt-2')
+      each metric in group
+        .col-xl-3.col-lg-4.col-sm-6.mt-3
+          .card.shadow-sm.border-0
+            .card-body
+              small.text-uppercase.text-muted= metric.label
+              if metric.style
+                h4.mb-0(style=metric.style)= metric.value
+              else if metric.accent
+                h4.mb-0(class=metric.accent)= metric.value
+              else
+                h4.mb-0= metric.value
+
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Об’єднаний звіт
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body
+    if alerts && alerts.length
+      .position-fixed(style="top: 1rem; right: 1rem; z-index: 1080; width: 320px;")
+        each alertMessage in alerts
+          .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+            span= alertMessage
+            button.close(type="button", data-dismiss="alert", aria-label="Close")
+              span(aria-hidden="true") &times;
+    .container-fluid
+      .d-flex.justify-content-between.align-items-center.mt-4
+        h1.mb-0.text-primary Об’єднаний звіт
+        a.btn.btn-outline-secondary(href="/") До вибору звітів
+      p.text-muted.mt-2.mb-4
+        | Період:
+        strong #{startDate} – #{endDate}
+
+      if rateLimitMeta
+        - const minuteLimit = rateLimitMeta.minuteLimit
+        - const minuteIntervalSeconds = rateLimitMeta.minuteIntervalSeconds
+        - const hourlyLimit = rateLimitMeta.hourlyLimit
+        - const hourlyUsed = hourlyStats && typeof hourlyStats.used === 'number' ? hourlyStats.used : 0
+        - const hourlyRemaining = hourlyStats && typeof hourlyStats.remaining === 'number' ? hourlyStats.remaining : Math.max(hourlyLimit - hourlyUsed, 0)
+        - const hourlyResetMs = hourlyStats && typeof hourlyStats.resetInMs === 'number' ? hourlyStats.resetInMs : 0
+        - const hourlyResetSeconds = Math.max(Math.ceil(hourlyResetMs / 1000), 0)
+        - const hourlyResetMinutes = Math.floor(hourlyResetSeconds / 60)
+        - const hourlyResetSecs = hourlyResetSeconds % 60
+        .alert.alert-info(role="alert")
+          | SalesDrive: #{minuteLimit} запитів / #{minuteIntervalSeconds} с та #{hourlyLimit} запитів / годину.
+          br
+          | Використано #{hourlyUsed}, залишилось #{hourlyRemaining}. Оновлення квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
+
+      form.form-inline.mb-4(action="/reports/combined", method="get")
+        .form-group.mr-2
+          label.sr-only(for="startDate") Початок
+          input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
+        .form-group.mr-2
+          label.sr-only(for="endDate") Кінець
+          input#endDate.form-control(type="date", name="endDate", value=endDate, min=startDate)
+        .form-group.mr-2
+          label.sr-only(for="source") Джерело продажу
+          select#source.form-control(name="source", multiple, size="6")
+            if salesDriveIstocniki
+              each source in salesDriveIstocniki
+                - const isSelected = Array.isArray(selectedSources) ? selectedSources.includes(source.id.toString()) : false
+                option(value=source.id, selected=isSelected)= `${source.ident} (${source.name || source.id})`
+            else
+              option(value="", selected=false) Джерела не налаштовані
+        .form-group.mr-2
+          label.sr-only(for="planSales") План продаж
+          - const planSalesPlaceholder = planDefaults && typeof planDefaults.sales === 'number' ? planDefaults.sales.toFixed(2) : ''
+          input#planSales.form-control(type="number", min="0", step="0.01", name="planSales", value=planInputs && planInputs.sales !== undefined ? planInputs.sales : '', placeholder=planSalesPlaceholder, title=`Поточний план продаж (місяць): ${planSalesPlaceholder || 'невизначено'}`)
+        .form-group.mr-2
+          label.sr-only(for="planProfit") План прибутку
+          - const planProfitPlaceholder = planDefaults && typeof planDefaults.profit === 'number' ? planDefaults.profit.toFixed(2) : ''
+          input#planProfit.form-control(type="number", min="0", step="0.01", name="planProfit", value=planInputs && planInputs.profit !== undefined ? planInputs.profit : '', placeholder=planProfitPlaceholder, title=`Поточний план прибутку (місяць): ${planProfitPlaceholder || 'невизначено'}`)
+        button.btn.btn-primary(type="submit") Оновити
+        a.btn.btn-outline-secondary.ml-2(href="/reports/combined") Скинути
+        if salesDriveLimit
+          input(type="hidden", name="limit", value=salesDriveLimit)
+
+      if rateLimitCooldown
+        .alert.alert-warning
+          | CRM тимчасово обмежила частоту запитів. Орієнтовний час очікування: #{rateLimitCooldownSeconds || '—'} с.
+
+      if summaryReport
+        h3.mt-4.text-secondary Зведені показники
+        +summaryCards(summaryReport)
+      else
+        .alert.alert-warning Не вдалося побудувати зведену статистику.
+
+      h3.mt-5.text-secondary Об’єднані дані
+      .table-responsive.mt-3
+        table.table.table-striped.table-bordered
+          thead.thead-dark
+            tr
+              th SalesDrive Order ID
+              th Customer Name
+              th Order Time
+              th Products
+              th Order Status
+              th Total Cost
+              th Source Identifier
+              th Google Ads Title
+              th Clicks
+              th Impressions
+              th Витрати (грн)
+          tbody
+            if combinedData && combinedData.length
+              each item in combinedData
+                tr
+                  td= item.id
+                  td= `${item.fName} ${item.lName}`.trim()
+                  td= item.orderTime
+                  td= item.products
+                  td= item.statusName
+                  td= item.totalCost
+                  td= item.istocnikProdaziIdent
+                  if item.googleAdsData
+                    td= item.googleAdsData.title
+                    td= item.googleAdsData.clicks
+                    td= item.googleAdsData.impressions
+                    td= item.googleAdsData.costUah
+                  else
+                    td(colspan="4").text-muted Немає даних Google Ads
+            else
+              tr
+                td(colspan="11").text-center Даних не знайдено
+
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

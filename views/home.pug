@@ -1,0 +1,24 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Аналітика Google Ads & SalesDrive
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body.bg-light
+    .container.py-5
+      h1.mb-3.text-primary Аналітичні звіти
+      p.text-muted.mb-4 Оберіть звіт, щоб налаштувати фільтри та сформувати вибірку даних.
+      .row
+        each report in reports
+          .col-xl-3.col-lg-4.col-md-6.mb-4
+            .card.shadow-sm.h-100
+              .card-body.d-flex.flex-column
+                h5.card-title= report.title
+                p.card-text.flex-grow-1= report.description
+                a.btn.btn-primary.mt-3(href=`/reports/${report.id}`) Перейти до звіту
+      if typeof sourcesCount === 'number'
+        p.text-muted.small.mt-4 У конфігурації доступно #{sourcesCount} джерел продажів.
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
