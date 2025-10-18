@@ -26,10 +26,9 @@ html(lang="uk")
         .alert.alert-danger.mb-3= errorMessage
       if months && months.length
         - let defaultMonth = months[months.length - 1]
-        if typeof activeMonthKey === 'string'
-          - const activeCandidate = months.find(m => m.key === activeMonthKey)
-          if activeCandidate
-            - defaultMonth = activeCandidate
+        - const activeCandidate = typeof activeMonthKey === 'string' ? months.find(m => m.key === activeMonthKey) : null
+        if activeCandidate
+          - defaultMonth = activeCandidate
         form#rebuildForm.form-inline.mb-3(method="post", action="/reports/monthly/rebuild")
           input#rebuildYear(type="hidden", name="year", value=defaultMonth.year)
           input#rebuildMonth(type="hidden", name="month", value=defaultMonth.month)

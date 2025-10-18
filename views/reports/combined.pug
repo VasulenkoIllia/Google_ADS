@@ -129,31 +129,31 @@ html(lang="uk")
       h3.mt-5.text-secondary Об’єднані дані
       .table-responsive.mt-3
         table.table.table-striped.table-bordered
-              thead.thead-dark
-                tr
-                  th SalesDrive Order ID
-                  th Customer Name
-                  th Order Time
-                  th Products
-                  th Order Status
-                  th Total Cost
-                  th Джерело
-                  th Google Ads Title
-                  th Clicks
-                  th Impressions
-                  th Витрати (грн)
+          thead.thead-dark
+            tr
+              th SalesDrive Order ID
+              th Customer Name
+              th Order Time
+              th Products
+              th Order Status
+              th Total Cost
+              th Джерело
+              th Google Ads Title
+              th Clicks
+              th Impressions
+              th Витрати (грн)
           tbody
-                if combinedData && combinedData.length
-                  each item in combinedData
-                    tr
-                      td= item.id
-                      td= `${item.fName} ${item.lName}`.trim()
-                      td= item.orderTime
-                      td= item.products
-                      td= item.statusName
-                      td= item.totalCost
-                      - const sourceDisplay = item.sourceNameView && item.sourceNameView !== item.istocnikProdaziIdent ? `${item.sourceNameView} (${item.istocnikProdaziIdent})` : item.istocnikProdaziIdent
-                      td= sourceDisplay
+            if combinedData && combinedData.length
+              each item in combinedData
+                tr
+                  td= item.id
+                  td= `${item.fName} ${item.lName}`.trim()
+                  td= item.orderTime
+                  td= item.products
+                  td= item.statusName
+                  td= item.totalCost
+                  - const sourceDisplay = item.sourceNameView && item.sourceNameView !== item.istocnikProdaziIdent ? `${item.sourceNameView} (${item.istocnikProdaziIdent})` : item.istocnikProdaziIdent
+                  td= sourceDisplay
                   if item.googleAdsData
                     td= item.googleAdsData.title
                     td= item.googleAdsData.clicks

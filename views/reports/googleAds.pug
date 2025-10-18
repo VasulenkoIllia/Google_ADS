@@ -48,19 +48,19 @@ html(lang="uk")
 
       .table-responsive.mt-3
         table.table.table-striped.table-bordered
-              thead.thead-dark
-                tr
-                  th Джерело
-                  th Назва оголошення
-                  th Витрати (грн)
-                  th Impressions
-                  th Clicks
+          thead.thead-dark
+            tr
+              th Джерело
+              th Назва оголошення
+              th Витрати (грн)
+              th Impressions
+              th Clicks
           tbody
-                if googleAdsData && googleAdsData.length
-                  each item in googleAdsData
-                    tr
-                      - const displayName = item.sourceNameView && item.sourceNameView !== item.istocnikProdaziIdent ? `${item.sourceNameView} (${item.istocnikProdaziIdent})` : item.istocnikProdaziIdent
-                      td= displayName
+            if googleAdsData && googleAdsData.length
+              each item in googleAdsData
+                tr
+                  - const displayName = item.sourceNameView && item.sourceNameView !== item.istocnikProdaziIdent ? `${item.sourceNameView} (${item.istocnikProdaziIdent})` : item.istocnikProdaziIdent
+                  td= displayName
                   td= item.title
                   td= item.costUah
                   td= item.impressions
