@@ -5,6 +5,7 @@
 - `routes/index.js` обробляє домашню сторінку; нові звіти додавайте у `routes/reports.js`.
 - Контролери розділені за звітами (`homeController.js`, `summaryReportController.js`, `googleAdsReportController.js`, `salesDriveReportController.js`, `combinedReportController.js`, `monthlyReportController.js`), а спільна логіка винесена в `services/reportDataService.js` та `services/monthlyReportService.js`.
 - Статичні місячні дані зберігаються у `data/monthly/YYYY-MM.json`, плани — у `data/plans/YYYY.json`.
+- Список джерел SalesDrive зберігається у `data/config/salesdrive-sources.json` (див. `services/salesdriveSourcesService.js`); керування доступне через `/reports/config/sources`.
 - `views/` містить шаблони (`home.pug`, `reports/*.pug`, `loading.pug`, `error.pug`); спільні фрагменти зберігайте у `views/partials/`.
 - Runtime secrets stay in `.env`; keep the file out of version control and document required keys separately.
 
@@ -39,3 +40,4 @@
 ## Configuration & Security Tips
 - Keep Google Ads and SalesDrive keys in local process managers or `.env`; rotate tokens after sharing access.
 - Redact personally identifiable data from logs, fixtures, and issue attachments before committing or posting.
+- Керування списком джерел SalesDrive виконується через `/reports/config/sources`; зміни зберігаються у JSON і підхоплюються всіма звітами.

@@ -1,10 +1,10 @@
 import {
-    SALESDRIVE_ISTOCHNIKI,
     resolveDateRange,
     normalizeToArray,
     resolveSourcesForRequest,
     getGoogleAdsData,
-    DateRangeError
+    DateRangeError,
+    getSalesdriveSources
 } from '../services/reportDataService.js';
 
 function mapGoogleAdsDataToRows(dataMap, sourcesToProcess, isFiltering) {
@@ -50,6 +50,7 @@ export async function renderGoogleAdsReport(req, res) {
 
         const googleAdsResult = await getGoogleAdsData({ startDate, endDate });
         const alerts = Array.isArray(googleAdsResult.errors) ? googleAdsResult.errors : [];
+        const salesDriveSources = getSalesdriveSources();
 
         const rows = mapGoogleAdsDataToRows(
             googleAdsResult.data,
@@ -61,7 +62,7 @@ export async function renderGoogleAdsReport(req, res) {
         return res.render('reports/googleAds', {
             startDate,
             endDate,
-            salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
+            salesDriveIstocniki: salesDriveSources,
             selectedSources: selectedSourceIds,
             alerts,
             googleAdsData: rows,

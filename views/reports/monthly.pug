@@ -20,8 +20,16 @@ html(lang="uk")
       .d-flex.justify-content-between.align-items-center.mb-4
         h1.mb-0.text-primary Статичний місячний звіт
         a.btn.btn-outline-secondary(href="/") До вибору звітів
+      if successMessage
+        .alert.alert-success.mb-3= successMessage
+      if errorMessage
+        .alert.alert-danger.mb-3= errorMessage
       if months && months.length
-        - const defaultMonth = months[months.length - 1]
+        - let defaultMonth = months[months.length - 1]
+        if typeof activeMonthKey === 'string'
+          - const activeCandidate = months.find(m => m.key === activeMonthKey)
+          if activeCandidate
+            - defaultMonth = activeCandidate
         form#rebuildForm.form-inline.mb-3(method="post", action="/reports/monthly/rebuild")
           input#rebuildYear(type="hidden", name="year", value=defaultMonth.year)
           input#rebuildMonth(type="hidden", name="month", value=defaultMonth.month)
@@ -162,6 +170,8 @@ html(lang="uk")
                             th % виконання прибутку
                         tbody
                           each source in month.sources
+                            - const nameViewSafe = typeof source.nameView === 'string' ? source.nameView.trim() : ''
+                            - const displayName = nameViewSafe || source.name || source.ident
                             - const sourcePlanSales = source.display.raw ? source.display.raw.planSalesMonthly || 0 : 0
                             - const sourcePlanProfit = source.display.raw ? source.display.raw.planProfitMonthly || 0 : 0
                             - const sourceFactSales = source.display.raw ? source.display.raw.factSalesCumulative || 0 : 0
@@ -169,7 +179,7 @@ html(lang="uk")
                             - const sourceSalesCompletion = sourcePlanSales > 0 ? (sourceFactSales / sourcePlanSales) * 100 : null
                             - const sourceProfitCompletion = sourcePlanProfit > 0 ? (sourceFactProfit / sourcePlanProfit) * 100 : null
                             tr
-                              td= source.name
+                              td= displayName
                               - const salesClass = sourceSalesCompletion === null ? '' : (sourceSalesCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
                               - const profitClass = sourceProfitCompletion === null ? '' : (sourceProfitCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
                               td= source.display.formatted.planSalesMonthly
@@ -203,13 +213,17 @@ html(lang="uk")
                     label.font-weight-bold(for=`source-select-${anchorId}`) Джерело
                     select.form-control.source-select(id=`source-select-${anchorId}` data-default-source=(month.sources[0] && month.sources[0].ident) ? month.sources[0].ident : '')
                       each source in month.sources
-                        option(value=source.ident)= `${source.name}`
+                        - const nameViewSafe = typeof source.nameView === 'string' ? source.nameView.trim() : ''
+                        - const displayName = nameViewSafe || source.name || source.ident
+                        option(value=source.ident)= displayName
                   each source, sourceIndex in month.sources
                     - const planSalesValue = (source.plan && source.plan.sales !== undefined) ? source.plan.sales : ''
                     - const planProfitValue = (source.plan && source.plan.profit !== undefined) ? source.plan.profit : ''
+                    - const nameViewSafe = typeof source.nameView === 'string' ? source.nameView.trim() : ''
+                    - const displayNameDetail = nameViewSafe || source.name || source.ident
                     - const isSourceDefault = sourceIndex === 0
                     .source-plan.mt-4(data-source=source.ident class=isSourceDefault ? '' : 'd-none')
-                      h3.h6.text-secondary= `Показники для ${source.name}`
+                      h3.h6.text-secondary= `Показники для ${displayNameDetail}`
                       .table-responsive.table-scroll
                         table.table.table-sm.table-bordered
                           thead.thead-light

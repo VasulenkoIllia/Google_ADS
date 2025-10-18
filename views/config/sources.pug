@@ -1,0 +1,66 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Джерела SalesDrive
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body
+    .container.py-4
+      .d-flex.justify-content-between.align-items-center.mb-4
+        h1.mb-0.text-primary Джерела SalesDrive
+        a.btn.btn-outline-secondary(href="/") До вибору звітів
+
+      if successMessage
+        .alert.alert-success(role="alert")= successMessage
+      if errorMessage
+        .alert.alert-danger(role="alert")= errorMessage
+
+      .card.mb-4
+        .card-header.bg-white
+          h2.h5.mb-0 Існуючі джерела
+        .card-body.p-0
+          if sources && sources.length
+            .table-responsive
+              table.table.table-striped.table-bordered.mb-0
+                thead.thead-dark
+                  tr
+                    th(scope="col") ID
+                    th(scope="col") Ident
+                    th(scope="col") Назва для відображення
+                    th(scope="col" style="width: 200px;") Дії
+                tbody
+                  each source in sources
+                    - const formId = `form-update-${source.id}`
+                    tr
+                      td
+                        input.form-control(type="number", name="id", value=source.id, readonly, form=formId)
+                      td
+                        input.form-control(type="text", name="ident", value=source.ident, required, form=formId)
+                      td
+                        input.form-control(type="text", name="nameView", value=source.nameView, form=formId)
+                      td.text-right
+                        form.d-inline(id=formId, method="post", action=`/reports/config/sources/${source.id}/update`)
+                          button.btn.btn-sm.btn-primary.mr-2(type="submit") Зберегти
+                        form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');")
+                          button.btn.btn-sm.btn-outline-danger(type="submit") Видалити
+          else
+            .p-3
+              .alert.alert-info.mb-0 Джерела ще не налаштовані.
+
+      .card
+        .card-header.bg-white
+          h2.h5.mb-0 Додати нове джерело
+        .card-body
+          form(method="post", action="/reports/config/sources/add")
+            .form-row
+              .col-md-3.mb-3
+                label(for="new-id") ID
+                input#new-id.form-control(type="number", name="id", min="1", required)
+              .col-md-4.mb-3
+                label(for="new-ident") Ident
+                input#new-ident.form-control(type="text", name="ident", required)
+              .col-md-5.mb-3
+                label(for="new-nameView") Назва для відображення
+                input#new-nameView.form-control(type="text", name="nameView")
+            button.btn.btn-success(type="submit") Додати джерело

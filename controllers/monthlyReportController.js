@@ -28,8 +28,18 @@ export async function renderMonthlyReport(req, res) {
     try {
         await ensureDataDirectories();
         const report = await composeMonthlyReportData();
+        const activeMonthKey = typeof req.query?.activeMonth === 'string' ? req.query.activeMonth : null;
+        const successMessage = typeof req.query?.success === 'string' && req.query.success.length > 0
+            ? req.query.success
+            : null;
+        const errorMessage = typeof req.query?.error === 'string' && req.query.error.length > 0
+            ? req.query.error
+            : null;
         return res.render('reports/monthly', {
-            months: report.months
+            months: report.months,
+            activeMonthKey,
+            successMessage,
+            errorMessage
         });
     } catch (error) {
         console.error('[monthlyReport] render failed:', error);
@@ -42,7 +52,10 @@ export async function renderMonthlyReport(req, res) {
 
 export async function handleMonthlyRebuild(req, res) {
     try {
-        const { year: rawYear, month: rawMonth } = req.body || {};
+        const { year: rawYearBody, month: rawMonthBody } = req.body || {};
+        const { year: rawYearQuery, month: rawMonthQuery } = req.query || {};
+        const rawYear = rawYearBody ?? rawYearQuery;
+        const rawMonth = rawMonthBody ?? rawMonthQuery;
         const { year, month } = parseYearMonth(rawYear, rawMonth);
         await ensureDataDirectories();
         const monthKey = String(month).padStart(2, '0');
@@ -70,7 +83,8 @@ export async function handleMonthlyRebuild(req, res) {
         });
 
         if (job.status === 'ready') {
-            return res.redirect(`/reports/monthly#month-${year}-${monthKey}`);
+            const successQuery = encodeURIComponent(`Звіт за ${monthKey}.${year} оновлено`);
+            return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&success=${successQuery}#month-${year}-${monthKey}`);
         }
 
         if (job.status === 'error') {
@@ -92,7 +106,7 @@ export async function handleMonthlyRebuild(req, res) {
         res.set('Retry-After', waitSeconds.toString());
         return res.status(202).render('loading', {
             waitSeconds,
-            reloadUrl: `/reports/monthly#month-${year}-${monthKey}`,
+            reloadUrl: `/reports/monthly/rebuild?year=${year}&month=${month}`,
             message: progress.message || `Формуємо звіт за ${monthKey}.${year}…`,
             alerts: Array.isArray(progress.alerts) ? progress.alerts : [],
             salesDriveLimit: rateLimitMeta.minuteLimit,
@@ -149,12 +163,13 @@ export async function handleMonthlyPlanUpdate(req, res) {
             sources: sourcePlans
         });
 
-        return res.redirect(`/reports/monthly#month-${year}-${String(month).padStart(2, '0')}`);
+        const monthKey = String(month).padStart(2, '0');
+        const successQuery = encodeURIComponent('Плани оновлено');
+        return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&success=${successQuery}#month-${year}-${monthKey}`);
     } catch (error) {
         console.error('[monthlyReport] plan update failed:', error);
-        return res.status(500).render('error', {
-            message: 'Не вдалося оновити плани для місяця.',
-            error
-        });
+        const monthKey = String(month).padStart(2, '0');
+        const message = encodeURIComponent(error.message || 'Не вдалося оновити плани для місяця.');
+        return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&error=${message}#month-${year}-${monthKey}`);
     }
 }

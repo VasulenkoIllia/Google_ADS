@@ -2,6 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import axios from "axios";
 import dotenv from 'dotenv';
 import { RateLimiter } from '../utils/rateLimiter.js';
+import { loadSalesdriveSourcesSync } from './salesdriveSourcesService.js';
 
 dotenv.config();
 
@@ -26,7 +27,9 @@ const {
     SALESDRIVE_RETRY_BASE_DELAY_MS
 } = process.env;
 
-export const SALESDRIVE_ISTOCHNIKI = JSON.parse(process.env.SALESDRIVE_ISTOCHNIKI || '[]');
+function getSalesdriveSourcesInternal() {
+    return loadSalesdriveSourcesSync();
+}
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const ZERO_EPSILON = 1e-6;
@@ -38,6 +41,10 @@ const DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS = 5000;
 const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 200;
 const DEFAULT_SALESDRIVE_DAILY_LIMIT = 2000;
 export const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
+
+export function getSalesdriveSources() {
+    return getSalesdriveSourcesInternal();
+}
 
 function parsePositiveInt(value, fallback) {
     const parsed = Number.parseInt(value, 10);
@@ -1035,14 +1042,18 @@ async function buildReportData(
     };
     const perSourceSalesTotals = {};
 
-    let sourcesToProcess = SALESDRIVE_ISTOCHNIKI;
+    const allConfiguredSources = getSalesdriveSources();
+    let sourcesToProcess = allConfiguredSources;
     if (isFiltering) {
-        sourcesToProcess = SALESDRIVE_ISTOCHNIKI.filter(s => selectedIdSet.has(s.id.toString()));
+        sourcesToProcess = allConfiguredSources.filter(s => selectedIdSet.has(s.id.toString()));
         if (sourcesToProcess.length === 0) {
             console.warn('Selected sources were not found. Falling back to all configured sources.');
-            sourcesToProcess = SALESDRIVE_ISTOCHNIKI;
+            sourcesToProcess = allConfiguredSources;
         }
     }
+    const sourceNameMap = new Map(
+        allConfiguredSources.map(source => [source.ident, source.nameView || source.name || source.ident])
+    );
 
     const initialExtraRequests = Math.max(sourcesToProcess.length - 1, 0);
     const initialEstimate = evaluateRateLimit(initialExtraRequests) || {};
@@ -1236,6 +1247,7 @@ async function buildReportData(
         googleAdsTotals.totalClicks += clicks;
         return {
             istocnikProdaziIdent: ident,
+            sourceNameView: sourceNameMap.get(ident) || ident,
             ...ads
         };
     });
@@ -1250,6 +1262,7 @@ async function buildReportData(
         statusName: order.statusName || "N/A",
         totalCost: order.totalCost || 0,
         istocnikProdaziIdent: order.istocnikProdaziIdent,
+        sourceNameView: sourceNameMap.get(order.istocnikProdaziIdent) || order.istocnikProdaziIdent,
     }));
 
     // 3. Prepare Combined data for the third tab
@@ -1264,6 +1277,7 @@ async function buildReportData(
             products: order.products?.[0]?.text || "N/A",
             statusName: order.statusName || "N/A",
             totalCost: order.totalCost || 0,
+            sourceNameView: sourceNameMap.get(order.istocnikProdaziIdent) || order.istocnikProdaziIdent,
             googleAdsData: googleAdsData
         };
     });
@@ -1294,7 +1308,8 @@ async function buildReportData(
         return {
             id: source.id,
             ident: ident,
-            name: source.name || ident,
+            name: source.nameView || source.name || ident,
+            nameView: source.nameView || source.name || ident,
             summary,
             salesTotals: salesTotalsForSource,
             googleTotals: googleTotalsForSource,
@@ -1404,7 +1419,7 @@ export function getSalesDriveLimiterState() {
 
 export function resolveSourcesForRequest(selectedSourceIds = []) {
     const selectedIdSet = new Set((selectedSourceIds || []).map(id => id != null ? id.toString() : ''));
-    const allSources = Array.isArray(SALESDRIVE_ISTOCHNIKI) ? SALESDRIVE_ISTOCHNIKI : [];
+    const allSources = getSalesdriveSources();
 
     if (selectedIdSet.size === 0) {
         return { sourcesToProcess: allSources, selectedIdSet, isFiltering: false };

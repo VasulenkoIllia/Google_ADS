@@ -1,5 +1,4 @@
 import {
-    SALESDRIVE_ISTOCHNIKI,
     MIN_PLACEHOLDER_WAIT_SECONDS,
     resolveDateRange,
     normalizeToArray,
@@ -10,7 +9,8 @@ import {
     buildReportJobKey,
     getOrCreateReportJob,
     buildReportData,
-    DateRangeError
+    DateRangeError,
+    getSalesdriveSources
 } from '../services/reportDataService.js';
 
 const REPORT_TYPE = 'combined';
@@ -55,6 +55,7 @@ export async function renderCombinedReport(req, res) {
 
         const { planSalesRaw, planProfitRaw } = extractPlanRawValues(req.query);
         const { planOverrides, planInputs, planDefaults } = resolvePlanConfig(planSalesRaw, planProfitRaw);
+        const salesDriveSources = getSalesdriveSources();
 
         const rateLimitMeta = getRateLimitMeta();
         const directDecision = shouldProcessDirectly(selectedSourceIds);
@@ -74,7 +75,7 @@ export async function renderCombinedReport(req, res) {
             return res.render('reports/combined', {
                 startDate,
                 endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
+                salesDriveIstocniki: salesDriveSources,
                 selectedSources: selectedSourceIds,
                 salesDriveFilter,
                 salesDriveLimit: salesDriveRequestOptions.limit,
@@ -118,7 +119,7 @@ export async function renderCombinedReport(req, res) {
             return res.render('reports/combined', {
                 startDate,
                 endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
+                salesDriveIstocniki: salesDriveSources,
                 selectedSources: selectedSourceIds,
                 salesDriveFilter,
                 salesDriveLimit: salesDriveRequestOptions.limit,

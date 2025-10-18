@@ -1,4 +1,4 @@
-import { SALESDRIVE_ISTOCHNIKI } from '../services/reportDataService.js';
+import { getSalesdriveSources } from '../services/reportDataService.js';
 
 const REPORT_LIST = [
     {
@@ -29,8 +29,9 @@ const REPORT_LIST = [
 ];
 
 export function renderHome(req, res) {
+    const sources = getSalesdriveSources();
     return res.render('home', {
         reports: REPORT_LIST,
-        sourcesCount: Array.isArray(SALESDRIVE_ISTOCHNIKI) ? SALESDRIVE_ISTOCHNIKI.length : 0
+        sourcesCount: Array.isArray(sources) ? sources.length : 0
     });
 }

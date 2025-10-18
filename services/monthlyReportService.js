@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import {
-    SALESDRIVE_ISTOCHNIKI,
     buildReportData,
-    waitForSalesDriveIdle
+    waitForSalesDriveIdle,
+    getSalesdriveSources
 } from './reportDataService.js';
 
 const ROOT_DATA_DIR = path.resolve('data');
@@ -267,7 +267,8 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
         });
     }
 
-    const sources = (Array.isArray(SALESDRIVE_ISTOCHNIKI) ? SALESDRIVE_ISTOCHNIKI : []).map(source => {
+    const configuredSources = getSalesdriveSources();
+    const sources = configuredSources.map(source => {
         const summary = summaryByIdent.get(source.ident) || {};
         const googleTotals = summary.googleTotals || {};
         const salesTotals = summary.salesTotals || {};
@@ -282,7 +283,8 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
         return {
             id: source.id,
             ident: source.ident,
-            name: source.name || source.ident,
+            name: source.nameView || source.ident,
+            nameView: source.nameView || source.ident,
             metrics
         };
     });
@@ -431,12 +433,21 @@ function buildMonthReportObject({ year, month, facts, planConfig, isCurrentMonth
     const elapsedDays = facts?.elapsedDays || getElapsedDays(year, month, asOfDate);
     const planSources = planConfig?.sources || {};
 
-    const sourceRows = (facts?.sources || (SALESDRIVE_ISTOCHNIKI || []).map(source => ({
+    const fallbackSources = getSalesdriveSources().map(source => ({
+        id: source.id,
+        ident: source.ident,
+        name: source.nameView || source.ident,
+        nameView: source.nameView || source.ident,
+        metrics: createEmptyMetrics()
+    }));
+
+    const sourceRows = (facts?.sources || fallbackSources).map(source => ({
         id: source.id,
         ident: source.ident,
         name: source.name || source.ident,
-        metrics: createEmptyMetrics()
-    })) || []).map(source => {
+        nameView: source.nameView || source.name || source.ident,
+        metrics: source.metrics || createEmptyMetrics()
+    })).map(source => {
         const plan = resolvePlanForSource(source.ident, { sources: planSources });
         const derived = computeDerivedMetrics(source.metrics, plan, daysInMonth, elapsedDays);
         const metrics = buildDisplayMetrics(source.metrics, derived);

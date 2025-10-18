@@ -8,12 +8,23 @@ import {
     handleMonthlyRebuild,
     handleMonthlyPlanUpdate
 } from '../controllers/monthlyReportController.js';
+import {
+    renderSourcesConfig,
+    handleSourceAdd,
+    handleSourceUpdate,
+    handleSourceDelete
+} from '../controllers/sourcesController.js';
 
 const router = express.Router();
 
 router.get('/monthly', renderMonthlyReport);
+router.get('/monthly/rebuild', handleMonthlyRebuild);
 router.post('/monthly/rebuild', handleMonthlyRebuild);
 router.post('/monthly/plans', handleMonthlyPlanUpdate);
+router.get('/config/sources', renderSourcesConfig);
+router.post('/config/sources/add', handleSourceAdd);
+router.post('/config/sources/:id/update', handleSourceUpdate);
+router.post('/config/sources/:id/delete', handleSourceDelete);
 router.get('/summary', renderSummaryReport);
 router.get('/google-ads', renderGoogleAdsReport);
 router.get('/salesdrive', renderSalesDriveReport);

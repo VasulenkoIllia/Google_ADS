@@ -3,7 +3,10 @@ html(lang="uk")
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     if waitSeconds && waitSeconds > 0
-      meta(http-equiv="refresh", content=waitSeconds)
+      if reloadUrl && reloadUrl.length
+        meta(http-equiv="refresh", content=`${waitSeconds};url=${reloadUrl}`)
+      else
+        meta(http-equiv="refresh", content=waitSeconds)
     title Формування звіту
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body.bg-light
@@ -18,7 +21,10 @@ html(lang="uk")
           if waitSeconds && waitSeconds > 0
             p.lead.mb-3
               | Орієнтовний час очікування:&nbsp;
-              strong#etaCounter(data-seconds=waitSeconds)= waitSeconds + ' с'
+              if reloadUrl && reloadUrl.length
+                strong#etaCounter(data-seconds=waitSeconds data-reload=reloadUrl)= waitSeconds + ' с'
+              else
+                strong#etaCounter(data-seconds=waitSeconds)= waitSeconds + ' с'
           if queueInfo
             - const fallbackMaxPerInterval = typeof salesDriveLimit === 'number' && salesDriveLimit > 0 ? salesDriveLimit : 10
             - const fallbackIntervalSeconds = typeof intervalSeconds === 'number' && intervalSeconds > 0 ? intervalSeconds : 60
@@ -68,8 +74,9 @@ html(lang="uk")
     if waitSeconds && waitSeconds > 0
       script.
         (function() {
-          var seconds = parseInt(document.getElementById('etaCounter')?.dataset.seconds || '0', 10);
           var el = document.getElementById('etaCounter');
+          var seconds = parseInt(el?.dataset.seconds || '0', 10);
+          var reloadTarget = el?.dataset.reload || null;
           if (!el || !seconds || seconds <= 0) {
             return;
           }
@@ -79,7 +86,11 @@ html(lang="uk")
             remaining -= 1;
             if (remaining <= 0) {
               clearInterval(timer);
-              window.location.reload();
+              if (reloadTarget && reloadTarget.length) {
+                window.location.href = reloadTarget;
+              } else {
+                window.location.reload();
+              }
               return;
             }
             el.textContent = remaining + ' с';

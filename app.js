@@ -3,6 +3,7 @@ import indexRouter from './routes/index.js';
 import reportsRouter from './routes/reports.js';
 import dotenv from 'dotenv';
 import { ensureDataDirectories, rebuildMonthlyFacts } from './services/monthlyReportService.js';
+import { loadSalesdriveSources } from './services/salesdriveSourcesService.js';
 
 // Завантажуємо змінні з .env файлу в process.env
 dotenv.config();
@@ -47,7 +48,7 @@ function scheduleMonthlyJob() {
   scheduleNextRun();
 }
 
-ensureDataDirectories()
+Promise.all([ensureDataDirectories(), loadSalesdriveSources()])
   .then(() => {
     scheduleMonthlyJob();
   })

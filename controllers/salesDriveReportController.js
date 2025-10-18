@@ -1,5 +1,4 @@
 import {
-    SALESDRIVE_ISTOCHNIKI,
     MIN_PLACEHOLDER_WAIT_SECONDS,
     resolveDateRange,
     normalizeToArray,
@@ -9,7 +8,8 @@ import {
     buildReportJobKey,
     getOrCreateReportJob,
     buildReportData,
-    DateRangeError
+    DateRangeError,
+    getSalesdriveSources
 } from '../services/reportDataService.js';
 
 const REPORT_TYPE = 'salesdrive';
@@ -43,6 +43,7 @@ export async function renderSalesDriveReport(req, res) {
         const salesDriveRequestOptions = buildSalesDriveRequestOptions(salesDriveFilter, limitOverride);
 
         const rateLimitMeta = getRateLimitMeta();
+        const salesDriveSources = getSalesdriveSources();
         const directDecision = shouldProcessDirectly(selectedSourceIds);
 
         if (directDecision.canProcessDirect) {
@@ -60,7 +61,7 @@ export async function renderSalesDriveReport(req, res) {
             return res.render('reports/salesDrive', {
                 startDate,
                 endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
+                salesDriveIstocniki: salesDriveSources,
                 selectedSources: selectedSourceIds,
                 salesDriveFilter,
                 salesDriveLimit: salesDriveRequestOptions.limit,
@@ -103,7 +104,7 @@ export async function renderSalesDriveReport(req, res) {
             return res.render('reports/salesDrive', {
                 startDate,
                 endDate,
-                salesDriveIstocniki: SALESDRIVE_ISTOCHNIKI,
+                salesDriveIstocniki: salesDriveSources,
                 selectedSources: selectedSourceIds,
                 salesDriveFilter,
                 salesDriveLimit: salesDriveRequestOptions.limit,

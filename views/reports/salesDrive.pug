@@ -59,7 +59,9 @@ html(lang="uk")
             if salesDriveIstocniki
               each source in salesDriveIstocniki
                 - const isSelected = Array.isArray(selectedSources) ? selectedSources.includes(source.id.toString()) : false
-                option(value=source.id, selected=isSelected)= `${source.ident} (${source.name || source.id})`
+                - const nameViewSafe = typeof source.nameView === 'string' ? source.nameView.trim() : ''
+                - const displayName = nameViewSafe || source.name || source.ident
+                option(value=source.id, selected=isSelected)= `${source.ident} (${displayName || source.id})`
             else
               option(value="", selected=false) Джерела не налаштовані
         button.btn.btn-primary(type="submit") Оновити
@@ -116,7 +118,8 @@ html(lang="uk")
                 - const sourceCost = sourceSummary.salesTotals && typeof sourceSummary.salesTotals.totalCostPriceAmount === 'number' ? sourceSummary.salesTotals.totalCostPriceAmount.toFixed(2) : (sourceSummary.salesTotals && sourceSummary.salesTotals.totalCostPriceAmount !== undefined ? sourceSummary.salesTotals.totalCostPriceAmount : '-')
                 - const sourceOrders = sourceSummary.salesTotals && sourceSummary.salesTotals.totalTransactions !== undefined ? sourceSummary.salesTotals.totalTransactions : '-'
                 tr
-                  td= sourceSummary.name || sourceSummary.ident
+                  - const summaryLabelView = typeof sourceSummary.nameView === 'string' ? sourceSummary.nameView.trim() : ''
+                  td= summaryLabelView || sourceSummary.name || sourceSummary.ident
                   td= sourcePayment
                   td= sourceProfit
                   td= sourceCost
@@ -125,26 +128,27 @@ html(lang="uk")
       h3.mt-5.text-secondary Замовлення
       .table-responsive.mt-3
         table.table.table-striped.table-bordered
-          thead.thead-dark
-            tr
-              th Order ID
-              th Customer
-              th Order Time
-              th Products
-              th Status
-              th Total Cost
-              th Source Ident
-          tbody
-            if salesDriveData && salesDriveData.length
-              each item in salesDriveData
+              thead.thead-dark
                 tr
-                  td= item.id
-                  td= `${item.fName} ${item.lName}`.trim()
-                  td= item.orderTime
-                  td= item.products
-                  td= item.statusName
-                  td= item.totalCost
-                  td= item.istocnikProdaziIdent
+                  th Order ID
+                  th Customer
+                  th Order Time
+                  th Products
+                  th Status
+                  th Total Cost
+                  th Джерело
+              tbody
+                if salesDriveData && salesDriveData.length
+                  each item in salesDriveData
+                    tr
+                      td= item.id
+                      td= `${item.fName} ${item.lName}`.trim()
+                      td= item.orderTime
+                      td= item.products
+                      td= item.statusName
+                      td= item.totalCost
+                      - const displayName = item.sourceNameView && item.sourceNameView !== item.istocnikProdaziIdent ? `${item.sourceNameView} (${item.istocnikProdaziIdent})` : item.istocnikProdaziIdent
+                      td= displayName
             else
               tr
                 td(colspan="7").text-center Даних не знайдено
