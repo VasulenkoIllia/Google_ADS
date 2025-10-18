@@ -1,0 +1,367 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Місячний статичний звіт
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+    style.
+      .table-scroll {
+        overflow-x: auto;
+      }
+      .month-card + .month-card {
+        margin-top: 2rem;
+      }
+      .source-plan.d-none {
+        display: none !important;
+      }
+  body
+    .container-fluid.py-4
+      .d-flex.justify-content-between.align-items-center.mb-4
+        h1.mb-0.text-primary Статичний місячний звіт
+        a.btn.btn-outline-secondary(href="/") До вибору звітів
+      if months && months.length
+        - const defaultMonth = months[months.length - 1]
+        form#rebuildForm.form-inline.mb-3(method="post", action="/reports/monthly/rebuild")
+          input#rebuildYear(type="hidden", name="year", value=defaultMonth.year)
+          input#rebuildMonth(type="hidden", name="month", value=defaultMonth.month)
+          button.btn.btn-outline-primary(type="submit") Примусово сформувати обраний місяць
+        .form-group.mb-4
+          label.font-weight-bold(for="monthSelect") Оберіть місяць:
+          select#monthSelect.form-control.form-control-sm(style="max-width: 260px;")
+            each month in months
+              option(value=month.key selected=(month.key === defaultMonth.key) ? true : false)= month.label
+        each month, monthIndex in months
+          - const anchorId = `month-${month.year}-${String(month.month).padStart(2, '0')}`
+          - const isDefaultMonth = month.key === defaultMonth.key
+          .card.shadow-sm.mb-3(data-month-card=month.key data-year=month.year data-month=month.month class=isDefaultMonth ? '' : 'd-none')
+            .card-header.bg-white
+              .d-flex.justify-content-between.align-items-center
+                h2.h5.mb-0.text-capitalize= month.label
+                .text-muted.small
+                  | Період:&nbsp;
+                  strong #{month.startDate} – #{month.endDate}
+                  if month.generatedAt
+                    | &nbsp;•&nbsp;Оновлено:&nbsp;
+                    strong= new Date(month.generatedAt).toLocaleString('uk-UA')
+                  if month.isCurrent
+                    span.badge.badge-info.ml-2 Поточний місяць
+            .card-body
+              .mb-4
+                h3.h6.text-secondary.mb-3 Загальні показники
+                .table-responsive.table-scroll
+                  table.table.table-sm.table-bordered
+                    thead.thead-light
+                      tr
+                        th Реклама (грн)
+                        th Ціна за клік
+                        th Покази
+                        th % конв. покази/кліки
+                        th Кліки
+                        th % конв. кліки/транз
+                        th Транзакції
+                        th Ціна конверсії
+                        th Продажі (грн)
+                        th Собівартість
+                        th Маржа
+                        th Прибуток (грн)
+                        th Середній чек
+                        th ROI
+                        th Середня прибуток
+                        th % рекл. від обороту
+                        th % себест. від обороту
+                        th % прибутку від обороту
+                    tbody
+                      tr
+                        td= month.totals.display.formatted.adSpend
+                        td= month.totals.display.formatted.costPerClick
+                        td= month.totals.display.formatted.impressions
+                        td= month.totals.display.formatted.ctr
+                        td= month.totals.display.formatted.clicks
+                        td= month.totals.display.formatted.clickToTransConversion
+                        td= month.totals.display.formatted.transactions
+                        td= month.totals.display.formatted.costPerTransaction
+                        td= month.totals.display.formatted.sales
+                        td= month.totals.display.formatted.costOfGoods
+                        td= month.totals.display.formatted.margin
+                        td= month.totals.display.formatted.profit
+                        td= month.totals.display.formatted.avgCheck
+                        td= month.totals.display.formatted.roi
+                        td= month.totals.display.formatted.avgProfitPerTransaction
+                        td= month.totals.display.formatted.adSpendShare
+                        td= month.totals.display.formatted.costShare
+                        td= month.totals.display.formatted.profitShare
+                .table-responsive.table-scroll.mt-3
+                  table.table.table-sm.table-bordered
+                    thead.thead-light
+                      tr
+                        th План продаж (грн)
+                        th Закончим продажі (грн)
+                        th % відхилення (план місяця)
+                        th План продаж накопич.
+                        th Факт продаж накопич.
+                        th % відхилення (накопич.)
+                        th План прибутку (грн)
+                        th Закончим прибуток (грн)
+                        th % відхилення (план прибутку)
+                        th План прибутку накопич.
+                        th Факт прибутку накопич.
+                        th % відхилення (накоп. прибуток)
+                    tbody
+                      tr
+                        td= month.totals.display.formatted.planSalesMonthly
+                        td= month.totals.display.formatted.projectedSales
+                        td= month.totals.display.formatted.deviationProjectedSales
+                        td= month.totals.display.formatted.planSalesCumulative
+                        td= month.totals.display.formatted.factSalesCumulative
+                        td= month.totals.display.formatted.deviationSalesCumulative
+                        td= month.totals.display.formatted.planProfitMonthly
+                        td= month.totals.display.formatted.projectedProfit
+                        td= month.totals.display.formatted.deviationProjectedProfit
+                        td= month.totals.display.formatted.planProfitCumulative
+                        td= month.totals.display.formatted.factProfitCumulative
+                        td= month.totals.display.formatted.deviationProfitCumulative
+                if month.sources && month.sources.length
+                  - const totalPlanSales = month.totals.display.raw ? month.totals.display.raw.planSalesMonthly || 0 : 0
+                  - const totalPlanProfit = month.totals.display.raw ? month.totals.display.raw.planProfitMonthly || 0 : 0
+                  - const totalFactSales = month.totals.display.raw ? month.totals.display.raw.factSalesCumulative || 0 : 0
+                  - const totalFactProfit = month.totals.display.raw ? month.totals.display.raw.factProfitCumulative || 0 : 0
+                  - const salesCompletion = totalPlanSales > 0 ? (totalFactSales / totalPlanSales) * 100 : null
+                  - const profitCompletion = totalPlanProfit > 0 ? (totalFactProfit / totalPlanProfit) * 100 : null
+                  - const overallSalesClass = salesCompletion === null ? '' : (salesCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
+                  - const overallProfitClass = profitCompletion === null ? '' : (profitCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
+                  .mb-2
+                    h3.h6.text-secondary Планові показники (сума по джерелах)
+                    ul.list-unstyled.mb-2
+                      li
+                        strong План продаж:&nbsp;
+                        | #{month.totals.display.formatted.planSalesMonthly}
+                        | &nbsp;•&nbsp;Факт:&nbsp;#{month.totals.display.formatted.factSalesCumulative}
+                        | &nbsp;•&nbsp;
+                        span(class=overallSalesClass)= salesCompletion !== null ? salesCompletion.toFixed(2) + '%' : '—'
+                      li
+                        strong План прибутку:&nbsp;
+                        | #{month.totals.display.formatted.planProfitMonthly}
+                        | &nbsp;•&nbsp;Факт:&nbsp;#{month.totals.display.formatted.factProfitCumulative}
+                        | &nbsp;•&nbsp;
+                        span(class=overallProfitClass)= profitCompletion !== null ? profitCompletion.toFixed(2) + '%' : '—'
+                  button.btn.btn-link.p-0.mb-2.plan-toggle(type="button", data-target=`plans-details-${anchorId}`)
+                    span.toggle-icon.mr-1 ▼
+                    | Деталізація планів по джерелах
+                  .plan-details.d-none(id=`plans-details-${anchorId}`)
+                    .table-responsive.table-scroll.mt-2
+                      table.table.table-sm.table-bordered
+                        thead.thead-light
+                          tr
+                            th Джерело
+                            th План продаж (грн)
+                            th Факт продаж (грн)
+                            th % виконання продаж
+                            th План прибутку (грн)
+                            th Факт прибутку (грн)
+                            th % виконання прибутку
+                        tbody
+                          each source in month.sources
+                            - const sourcePlanSales = source.display.raw ? source.display.raw.planSalesMonthly || 0 : 0
+                            - const sourcePlanProfit = source.display.raw ? source.display.raw.planProfitMonthly || 0 : 0
+                            - const sourceFactSales = source.display.raw ? source.display.raw.factSalesCumulative || 0 : 0
+                            - const sourceFactProfit = source.display.raw ? source.display.raw.factProfitCumulative || 0 : 0
+                            - const sourceSalesCompletion = sourcePlanSales > 0 ? (sourceFactSales / sourcePlanSales) * 100 : null
+                            - const sourceProfitCompletion = sourcePlanProfit > 0 ? (sourceFactProfit / sourcePlanProfit) * 100 : null
+                            tr
+                              td= source.name
+                              - const salesClass = sourceSalesCompletion === null ? '' : (sourceSalesCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
+                              - const profitClass = sourceProfitCompletion === null ? '' : (sourceProfitCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
+                              td= source.display.formatted.planSalesMonthly
+                              td= source.display.formatted.factSalesCumulative
+                              td(class=salesClass)= sourceSalesCompletion !== null ? sourceSalesCompletion.toFixed(2) + '%' : '—'
+                              td= source.display.formatted.planProfitMonthly
+                              td= source.display.formatted.factProfitCumulative
+                              td(class=profitClass)= sourceProfitCompletion !== null ? sourceProfitCompletion.toFixed(2) + '%' : '—'
+                        tfoot
+                          tr.table-secondary.font-weight-bold
+                            td Разом
+                            td= month.totals.display.formatted.planSalesMonthly
+                            td= month.totals.display.formatted.factSalesCumulative
+                            td(class=overallSalesClass)= salesCompletion !== null ? salesCompletion.toFixed(2) + '%' : '—'
+                            td= month.totals.display.formatted.planProfitMonthly
+                            td= month.totals.display.formatted.factProfitCumulative
+                            td(class=overallProfitClass)= profitCompletion !== null ? profitCompletion.toFixed(2) + '%' : '—'
+              form(method="post", action="/reports/monthly/plans")
+                input(type="hidden", name="year", value=month.year)
+                input(type="hidden", name="month", value=month.month)
+                .form-row.align-items-end
+                  .col-md-3.col-sm-6.mb-3
+                    label.form-label Днів у місяці
+                    input.form-control(type="text", readonly, value=month.daysInMonth)
+                  .col-md-3.col-sm-6.mb-3
+                    label.form-label Пройшло днів
+                    input.form-control(type="text", readonly, value=month.elapsedDays)
+                hr
+                if month.sources && month.sources.length
+                  .form-group
+                    label.font-weight-bold(for=`source-select-${anchorId}`) Джерело
+                    select.form-control.source-select(id=`source-select-${anchorId}` data-default-source=(month.sources[0] && month.sources[0].ident) ? month.sources[0].ident : '')
+                      each source in month.sources
+                        option(value=source.ident)= `${source.name}`
+                  each source, sourceIndex in month.sources
+                    - const planSalesValue = (source.plan && source.plan.sales !== undefined) ? source.plan.sales : ''
+                    - const planProfitValue = (source.plan && source.plan.profit !== undefined) ? source.plan.profit : ''
+                    - const isSourceDefault = sourceIndex === 0
+                    .source-plan.mt-4(data-source=source.ident class=isSourceDefault ? '' : 'd-none')
+                      h3.h6.text-secondary= `Показники для ${source.name}`
+                      .table-responsive.table-scroll
+                        table.table.table-sm.table-bordered
+                          thead.thead-light
+                            tr
+                              th Реклама (грн)
+                              th Ціна за клік
+                              th Покази
+                              th % конв. покази/кліки
+                              th Кліки
+                              th % конв. кліки/транз
+                              th Транзакції
+                              th Ціна конверсії
+                              th Продажі (грн)
+                              th Собівартість
+                              th Маржа
+                              th Прибуток (грн)
+                          tbody
+                            tr
+                              td= source.display.formatted.adSpend
+                              td= source.display.formatted.costPerClick
+                              td= source.display.formatted.impressions
+                              td= source.display.formatted.ctr
+                              td= source.display.formatted.clicks
+                              td= source.display.formatted.clickToTransConversion
+                              td= source.display.formatted.transactions
+                              td= source.display.formatted.costPerTransaction
+                              td= source.display.formatted.sales
+                              td= source.display.formatted.costOfGoods
+                              td= source.display.formatted.margin
+                              td= source.display.formatted.profit
+                      .table-responsive.table-scroll.mt-3
+                        table.table.table-sm.table-bordered
+                          thead.thead-light
+                            tr
+                              th Середній чек
+                              th ROI
+                              th Середня прибуток
+                              th % рекл. від обороту
+                              th % себест. від обороту
+                              th % прибутку від обороту
+                              th План продаж (грн)
+                              th Закончим продажі (грн)
+                              th % відхилення (план місяця)
+                              th План продаж накопич.
+                              th Факт продаж накопич.
+                              th % відхилення (накопич.)
+                              th План прибутку (грн)
+                              th Закончим прибуток (грн)
+                              th % відхилення (план прибутку)
+                              th План прибутку накопич.
+                              th Факт прибутку накопич.
+                              th % відхилення (накоп. прибуток)
+                          tbody
+                            tr
+                              td= source.display.formatted.avgCheck
+                              td= source.display.formatted.roi
+                              td= source.display.formatted.avgProfitPerTransaction
+                              td= source.display.formatted.adSpendShare
+                              td= source.display.formatted.costShare
+                              td= source.display.formatted.profitShare
+                              td= source.display.formatted.planSalesMonthly
+                              td= source.display.formatted.projectedSales
+                              td= source.display.formatted.deviationProjectedSales
+                              td= source.display.formatted.planSalesCumulative
+                              td= source.display.formatted.factSalesCumulative
+                              td= source.display.formatted.deviationSalesCumulative
+                              td= source.display.formatted.planProfitMonthly
+                              td= source.display.formatted.projectedProfit
+                              td= source.display.formatted.deviationProjectedProfit
+                              td= source.display.formatted.planProfitCumulative
+                              td= source.display.formatted.factProfitCumulative
+                              td= source.display.formatted.deviationProfitCumulative
+                      .form-row.mt-3
+                        .col-md-3.col-sm-6.mb-3
+                          label.form-label План продаж (грн)
+                          input.form-control(type="number", step="0.01", min="0", name=`sources[${source.ident}][sales]`, value=planSalesValue)
+                        .col-md-3.col-sm-6.mb-3
+                          label.form-label План прибутку (грн)
+                          input.form-control(type="number", step="0.01", min="0", name=`sources[${source.ident}][profit]`, value=planProfitValue)
+                else
+                  .alert.alert-warning Для цього місяця немає налаштованих джерел.
+                button.btn.btn-primary.mt-3(type="submit") Зберегти плани
+      else
+        .alert.alert-info Немає доступних місяців для відображення.
+
+    script.
+      document.addEventListener('DOMContentLoaded', function () {
+        var monthSelect = document.getElementById('monthSelect');
+        var rebuildYear = document.getElementById('rebuildYear');
+        var rebuildMonth = document.getElementById('rebuildMonth');
+        var monthCards = document.querySelectorAll('[data-month-card]');
+
+        function showMonth(key) {
+          monthCards.forEach(function (card) {
+            var isActive = card.getAttribute('data-month-card') === key;
+            if (isActive) {
+              card.classList.remove('d-none');
+              rebuildYear.value = card.getAttribute('data-year');
+              rebuildMonth.value = card.getAttribute('data-month');
+            } else {
+              card.classList.add('d-none');
+            }
+          });
+        }
+
+        if (monthSelect) {
+          showMonth(monthSelect.value);
+          monthSelect.addEventListener('change', function () {
+            showMonth(this.value);
+          });
+        }
+
+        document.querySelectorAll('.source-select').forEach(function (select) {
+          var card = select.closest('[data-month-card]');
+          var defaultSource = select.getAttribute('data-default-source');
+
+          function updateSources(value) {
+            var panels = card.querySelectorAll('.source-plan');
+            panels.forEach(function (panel) {
+              if (panel.getAttribute('data-source') === value) {
+                panel.classList.remove('d-none');
+              } else {
+                panel.classList.add('d-none');
+              }
+            });
+          }
+
+          if (defaultSource) {
+            updateSources(defaultSource);
+            select.value = defaultSource;
+          } else if (select.options.length) {
+            updateSources(select.options[0].value);
+          }
+
+          select.addEventListener('change', function () {
+            updateSources(this.value);
+          });
+        });
+
+        document.querySelectorAll('.plan-toggle').forEach(function (button) {
+          var targetId = button.getAttribute('data-target');
+          var icon = button.querySelector('.toggle-icon');
+          var panel = document.getElementById(targetId);
+          if (!panel) {
+            return;
+          }
+          button.addEventListener('click', function () {
+            var isHidden = panel.classList.contains('d-none');
+            panel.classList.toggle('d-none');
+            if (icon) {
+              icon.textContent = isHidden ? '▲' : '▼';
+            }
+          });
+        });
+      });

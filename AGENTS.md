@@ -3,7 +3,8 @@
 ## Project Structure & Module Organization
 - `app.js` bootstraps Express, loads `.env` with `dotenv`, and mounts the root router.
 - `routes/index.js` обробляє домашню сторінку; нові звіти додавайте у `routes/reports.js`.
-- Контролери розділені за звітами (`homeController.js`, `summaryReportController.js`, `googleAdsReportController.js`, `salesDriveReportController.js`, `combinedReportController.js`), а спільна логіка винесена в `services/reportDataService.js`.
+- Контролери розділені за звітами (`homeController.js`, `summaryReportController.js`, `googleAdsReportController.js`, `salesDriveReportController.js`, `combinedReportController.js`, `monthlyReportController.js`), а спільна логіка винесена в `services/reportDataService.js` та `services/monthlyReportService.js`.
+- Статичні місячні дані зберігаються у `data/monthly/YYYY-MM.json`, плани — у `data/plans/YYYY.json`.
 - `views/` містить шаблони (`home.pug`, `reports/*.pug`, `loading.pug`, `error.pug`); спільні фрагменти зберігайте у `views/partials/`.
 - Runtime secrets stay in `.env`; keep the file out of version control and document required keys separately.
 
@@ -13,12 +14,13 @@
 - `npm run dev` starts `nodemon app.js` for local work; it reloads on file changes and requires a populated `.env`.
 
 ## Environment Variables
-- `SALESDRIVE_RATE_LIMIT_MAX_PER_MINUTE` (optional, default `10`): cap SalesDrive requests per minute.
+- `SALESDRIVE_RATE_LIMIT_MAX_PER_MINUTE` (optional, default `20`): cap SalesDrive requests per minute.
 - `SALESDRIVE_RATE_LIMIT_INTERVAL_MS` (optional, default `60000`): window for the limiter when the API changes its quota cadence.
 - `SALESDRIVE_RATE_LIMIT_QUEUE_SIZE` (optional, default `120`): safety valve to avoid unbounded request buffering.
 - `SALESDRIVE_RETRY_MAX_ATTEMPTS` (optional, default `3`): maximum resend attempts for throttled SalesDrive calls.
 - `SALESDRIVE_RETRY_BASE_DELAY_MS` (optional, default `5000`): base delay for exponential backoff after a 429/5xx.
-- `SALESDRIVE_HOURLY_LIMIT` (optional, default `100`): максимальна кількість запитів до SalesDrive за одну годину.
+- `SALESDRIVE_HOURLY_LIMIT` (optional, default `200`): максимальна кількість запитів до SalesDrive за одну годину.
+- `SALESDRIVE_DAILY_LIMIT` (optional, default `2000`): максимальна кількість запитів до SalesDrive за добу.
 
 ## Coding Style & Naming Conventions
 - Stick with ES modules, `async/await`, and camelCase identifiers (`renderSummaryReport` тощо); prefer descriptive names for нових джерел та хелперів.
@@ -27,7 +29,7 @@
 
 ## Testing Guidelines
 - No automated suite exists yet; introduce Jest + Supertest and wire it to `npm test` when adding regression coverage.
-- Until then, verify updates by running `npm run dev`, переходячи за маршрутами `/reports/*`, та готуючи мокові відповіді API за потреби.
+- Until then, verify updates by running `npm run dev`, переходячи за маршрутами `/reports/*`, та готуючи мокові відповіді API за потреби. Для статичного місячного звіту використовуйте кнопки оновлення і перевіряйте збереження файлів у `data/`.
 
 ## Commit & Pull Request Guidelines
 - Write concise, present-tense commit subjects (`server: fetch combined data`); avoid bundling unrelated features.

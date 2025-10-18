@@ -86,7 +86,8 @@ export async function renderCombinedReport(req, res) {
                 alerts: directResult.alerts,
                 rateLimitCooldown: directResult.rateLimitCooldown,
                 rateLimitCooldownSeconds: directResult.rateLimitCooldownSeconds,
-                hourlyStats: directResult.hourlyStats
+                hourlyStats: directResult.hourlyStats,
+                dailyStats: directResult.dailyStats
             });
         }
 
@@ -129,7 +130,8 @@ export async function renderCombinedReport(req, res) {
                 alerts: job.result.alerts,
                 rateLimitCooldown: job.result.rateLimitCooldown,
                 rateLimitCooldownSeconds: job.result.rateLimitCooldownSeconds,
-                hourlyStats: job.result.hourlyStats
+                hourlyStats: job.result.hourlyStats,
+                dailyStats: job.result.dailyStats
             });
         }
 
@@ -161,6 +163,7 @@ export async function renderCombinedReport(req, res) {
                 (progress.intervalMs ?? rateLimitMeta.minuteIntervalSeconds * 1000) / 1000
             ),
             hourlyLimit: rateLimitMeta.hourlyLimit,
+            dailyLimit: rateLimitMeta.dailyLimit,
             queueInfo: {
                 ...progress,
                 waitMs: waitMsCandidate,

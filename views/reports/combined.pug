@@ -64,16 +64,26 @@ html(lang="uk")
         - const minuteLimit = rateLimitMeta.minuteLimit
         - const minuteIntervalSeconds = rateLimitMeta.minuteIntervalSeconds
         - const hourlyLimit = rateLimitMeta.hourlyLimit
+        - const dailyLimit = rateLimitMeta.dailyLimit
         - const hourlyUsed = hourlyStats && typeof hourlyStats.used === 'number' ? hourlyStats.used : 0
         - const hourlyRemaining = hourlyStats && typeof hourlyStats.remaining === 'number' ? hourlyStats.remaining : Math.max(hourlyLimit - hourlyUsed, 0)
         - const hourlyResetMs = hourlyStats && typeof hourlyStats.resetInMs === 'number' ? hourlyStats.resetInMs : 0
         - const hourlyResetSeconds = Math.max(Math.ceil(hourlyResetMs / 1000), 0)
         - const hourlyResetMinutes = Math.floor(hourlyResetSeconds / 60)
         - const hourlyResetSecs = hourlyResetSeconds % 60
+        - const dailyUsed = dailyStats && typeof dailyStats.used === 'number' ? dailyStats.used : 0
+        - const dailyRemaining = dailyStats && typeof dailyStats.remaining === 'number' ? dailyStats.remaining : Math.max(dailyLimit - dailyUsed, 0)
+        - const dailyResetMs = dailyStats && typeof dailyStats.resetInMs === 'number' ? dailyStats.resetInMs : 0
+        - const dailyResetSeconds = Math.max(Math.ceil(dailyResetMs / 1000), 0)
+        - const dailyResetHours = Math.floor(dailyResetSeconds / 3600)
+        - const dailyResetMinutes = Math.floor((dailyResetSeconds % 3600) / 60)
         .alert.alert-info(role="alert")
-          | SalesDrive: #{minuteLimit} запитів / #{minuteIntervalSeconds} с та #{hourlyLimit} запитів / годину.
+          | SalesDrive: #{minuteLimit} запитів / #{minuteIntervalSeconds} с, #{hourlyLimit} запитів / годину та #{dailyLimit} запитів / добу.
           br
-          | Використано #{hourlyUsed}, залишилось #{hourlyRemaining}. Оновлення квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
+          | Використано #{hourlyUsed}, залишилось #{hourlyRemaining}. Оновлення годинної квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
+          if typeof dailyLimit === 'number'
+            br
+            | За добу виконано #{dailyUsed}, залишилось #{dailyRemaining}. Оновлення добової квоти приблизно через #{dailyResetHours} год #{dailyResetMinutes} хв.
 
       form.form-inline.mb-4(action="/reports/combined", method="get")
         .form-group.mr-2

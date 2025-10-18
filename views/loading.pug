@@ -46,6 +46,15 @@ html(lang="uk")
               - const hourlyResetSecs = hourlyResetSeconds % 60
               p.text-muted.small.mb-1 CRM дозволяє #{queueInfo.hourlyLimit} запитів / годину; залишилось #{hourlyRemaining}.
               p.text-muted.small.mb-3 Оновлення квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
+            if typeof queueInfo.dailyLimit === 'number'
+              - const dailyRemainingRaw = typeof queueInfo.dailyRemaining === 'number' ? queueInfo.dailyRemaining : queueInfo.dailyLimit
+              - const dailyRemaining = Math.max(dailyRemainingRaw, 0)
+              - const dailyResetSeconds = typeof queueInfo.dailyResetSeconds === 'number' ? Math.max(queueInfo.dailyResetSeconds, 0) : 0
+              - const dailyResetMinutes = Math.floor(dailyResetSeconds / 60)
+              - const dailyResetHours = Math.floor(dailyResetMinutes / 60)
+              - const dailyResetMinutesRemainder = dailyResetMinutes % 60
+              p.text-muted.small.mb-1 Добова квота CRM: #{queueInfo.dailyLimit} запитів; залишилось #{dailyRemaining}.
+              p.text-muted.small.mb-3 Оновлення квоти приблизно через #{dailyResetHours} год #{dailyResetMinutesRemainder} хв.
           else if salesDriveLimit && intervalSeconds
             p.text-muted.small.mb-3
               | Поточна квота: #{salesDriveLimit} запитів за #{intervalSeconds} секунд.
@@ -53,6 +62,8 @@ html(lang="uk")
               p.text-muted.small.mb-3 Максимальна годинна квота CRM: #{hourlyLimit} запитів.
             else
               p.text-muted.small.mb-3 Максимальна годинна квота CRM: 100 запитів.
+            if typeof dailyLimit === 'number'
+              p.text-muted.small.mb-3 Добова квота CRM: #{dailyLimit} запитів.
           p.text-muted.small.mb-0 Сторінка оновиться автоматично після завершення обробки.
     if waitSeconds && waitSeconds > 0
       script.

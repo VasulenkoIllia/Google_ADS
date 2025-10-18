@@ -151,6 +151,7 @@ export async function renderSummaryReport(req, res) {
                 (progress.intervalMs ?? rateLimitMeta.minuteIntervalSeconds * 1000) / 1000
             ),
             hourlyLimit: rateLimitMeta.hourlyLimit,
+            dailyLimit: rateLimitMeta.dailyLimit,
             queueInfo: {
                 ...progress,
                 waitMs: waitMsCandidate,

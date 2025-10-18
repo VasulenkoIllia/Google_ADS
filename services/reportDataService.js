@@ -30,11 +30,13 @@ export const SALESDRIVE_ISTOCHNIKI = JSON.parse(process.env.SALESDRIVE_ISTOCHNIK
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const ZERO_EPSILON = 1e-6;
-const DEFAULT_SALESDRIVE_MAX_PER_MINUTE = 10;
+const DEFAULT_SALESDRIVE_MAX_PER_MINUTE = 20;
 const DEFAULT_SALESDRIVE_INTERVAL_MS = 60000;
 const DEFAULT_SALESDRIVE_QUEUE_SIZE = 120;
 const DEFAULT_SALESDRIVE_RETRY_ATTEMPTS = 3;
 const DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS = 5000;
+const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 200;
+const DEFAULT_SALESDRIVE_DAILY_LIMIT = 2000;
 export const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
 
 function parsePositiveInt(value, fallback) {
@@ -102,16 +104,26 @@ const SALES_DRIVE_RETRY_BASE_DELAY_MS = parsePositiveNumber(
     SALESDRIVE_RETRY_BASE_DELAY_MS,
     DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS
 );
-const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 100;
 const SALES_DRIVE_HOURLY_WINDOW_MS = 60 * 60 * 1000;
 export const SALES_DRIVE_HOURLY_LIMIT = parsePositiveInt(
     process.env.SALESDRIVE_HOURLY_LIMIT,
     DEFAULT_SALESDRIVE_HOURLY_LIMIT
 );
+const SALES_DRIVE_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+export const SALES_DRIVE_DAILY_LIMIT = parsePositiveInt(
+    process.env.SALESDRIVE_DAILY_LIMIT,
+    DEFAULT_SALESDRIVE_DAILY_LIMIT
+);
 
 function alignToHour(timestamp = Date.now()) {
     const aligned = new Date(timestamp);
     aligned.setMinutes(0, 0, 0);
+    return aligned.getTime();
+}
+
+function alignToDay(timestamp = Date.now()) {
+    const aligned = new Date(timestamp);
+    aligned.setHours(0, 0, 0, 0);
     return aligned.getTime();
 }
 
@@ -128,6 +140,7 @@ const salesDriveRateLimiter = new RateLimiter({
 
 let salesDriveRetryState = { triggered: false, maxDelayMs: 0 };
 let salesDriveHourlyWindow = { startedAt: alignToHour(), count: 0 };
+let salesDriveDailyWindow = { startedAt: alignToDay(), count: 0 };
 
 function markSalesDriveRetry(delayMs = 0) {
     salesDriveRetryState.triggered = true;
@@ -183,11 +196,43 @@ export function getHourlyStats(now = Date.now()) {
     };
 }
 
+function resetDailyWindowIfNeeded(now = Date.now()) {
+    const currentDayStart = alignToDay(now);
+    if (currentDayStart !== salesDriveDailyWindow.startedAt) {
+        salesDriveDailyWindow.startedAt = currentDayStart;
+        salesDriveDailyWindow.count = 0;
+    }
+}
+
+function noteDailyRequest() {
+    const now = Date.now();
+    resetDailyWindowIfNeeded(now);
+    salesDriveDailyWindow.count += 1;
+    return getDailyStats(now);
+}
+
+export function getDailyStats(now = Date.now()) {
+    resetDailyWindowIfNeeded(now);
+    const limit = SALES_DRIVE_DAILY_LIMIT;
+    const used = Math.max(0, Math.min(salesDriveDailyWindow.count, limit));
+    const remaining = Math.max(limit - used, 0);
+    const resetAt = salesDriveDailyWindow.startedAt + SALES_DRIVE_DAILY_WINDOW_MS;
+    const resetInMs = Math.max(resetAt - now, 0);
+    return {
+        limit,
+        used,
+        remaining,
+        resetAt,
+        resetInMs
+    };
+}
+
 function reportJobPushProgress(job, patch = {}) {
     if (!job || typeof job.updateProgress !== 'function') {
         return;
     }
     const hourlyStats = getHourlyStats();
+    const dailyStats = getDailyStats();
     job.updateProgress({
         ...patch,
         hourlyLimit: hourlyStats.limit,
@@ -195,7 +240,13 @@ function reportJobPushProgress(job, patch = {}) {
         hourlyRemaining: hourlyStats.remaining,
         hourlyResetMs: hourlyStats.resetInMs,
         hourlyResetSeconds: Math.ceil(hourlyStats.resetInMs / 1000),
-        hourlyResetAt: hourlyStats.resetAt
+        hourlyResetAt: hourlyStats.resetAt,
+        dailyLimit: dailyStats.limit,
+        dailyUsed: dailyStats.used,
+        dailyRemaining: dailyStats.remaining,
+        dailyResetMs: dailyStats.resetInMs,
+        dailyResetSeconds: Math.ceil(dailyStats.resetInMs / 1000),
+        dailyResetAt: dailyStats.resetAt
     });
 }
 
@@ -583,6 +634,7 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
 
     const executeRequest = async () => {
         const hourlyStats = noteHourlyRequest();
+        const dailyStats = noteDailyRequest();
         reportJobPushProgress(reportJob, {
             message: sourceIdent ? `Отримуємо дані для ${sourceIdent}` : 'Виконуємо запит до SalesDrive',
             waitMs: baselineEstimate.waitMs ?? 0,
@@ -598,7 +650,11 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
             hourlyLimit: hourlyStats.limit,
             hourlyRemaining: hourlyStats.remaining,
             hourlyResetMs: hourlyStats.resetInMs,
-            hourlyResetSeconds: Math.ceil(hourlyStats.resetInMs / 1000)
+            hourlyResetSeconds: Math.ceil(hourlyStats.resetInMs / 1000),
+            dailyLimit: dailyStats.limit,
+            dailyRemaining: dailyStats.remaining,
+            dailyResetMs: dailyStats.resetInMs,
+            dailyResetSeconds: Math.ceil(dailyStats.resetInMs / 1000)
         });
 
         const response = await axios.get(SALESDRIVE_URL, requestConfig);
@@ -1264,6 +1320,13 @@ async function buildReportData(
     }
 
     const hourlyStats = getHourlyStats();
+    const dailyStats = getDailyStats();
+
+    if (dailyStats.remaining === 0) {
+        rateLimitCooldown = true;
+        const resetSeconds = Math.ceil(dailyStats.resetInMs / 1000);
+        rateLimitCooldownSeconds = Math.max(rateLimitCooldownSeconds || 0, resetSeconds);
+    }
 
     console.log(`\n--- Data Preparation Complete ---`);
     return {
@@ -1277,7 +1340,8 @@ async function buildReportData(
         alerts,
         rateLimitCooldown,
         rateLimitCooldownSeconds,
-        hourlyStats
+        hourlyStats,
+        dailyStats
     };
 }
 
@@ -1325,7 +1389,8 @@ export function getRateLimitMeta() {
     return {
         minuteLimit: SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS,
         minuteIntervalSeconds: Math.ceil(SALES_DRIVE_RATE_LIMIT_INTERVAL / 1000),
-        hourlyLimit: SALES_DRIVE_HOURLY_LIMIT
+        hourlyLimit: SALES_DRIVE_HOURLY_LIMIT,
+        dailyLimit: SALES_DRIVE_DAILY_LIMIT
     };
 }
 
@@ -1358,18 +1423,25 @@ export function shouldProcessDirectly(selectedSourceIds = []) {
     const estimatedMinuteRequests = Math.max(sourcesToProcess.length, 1);
     const limiterState = getSalesDriveLimiterState();
     const hourlyStatsBefore = getHourlyStats();
+    const dailyStatsBefore = getDailyStats();
     const minuteLimit = SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS;
 
     const canProcessDirect = estimatedMinuteRequests <= minuteLimit
         && hourlyStatsBefore.remaining >= estimatedMinuteRequests
+        && dailyStatsBefore.remaining >= estimatedMinuteRequests
         && limiterState.pendingRequests === 0;
 
     return {
         canProcessDirect,
         estimatedMinuteRequests,
         limiterState,
-        hourlyStatsBefore
+        hourlyStatsBefore,
+        dailyStatsBefore
     };
+}
+
+export async function waitForSalesDriveIdle() {
+    await salesDriveRateLimiter.waitForAll();
 }
 
 export {
