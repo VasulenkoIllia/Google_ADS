@@ -10,6 +10,10 @@ html(lang="en")
       h1.my-4.text-danger Error
       .alert.alert-danger
         p= message
+        if source
+          p.text-muted.mb-2
+            strong Джерело:&nbsp;
+            span= source
         if error && error.stack
           pre
             code= error.stack

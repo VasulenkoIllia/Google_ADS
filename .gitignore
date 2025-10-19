@@ -9,9 +9,6 @@ logs
 *.log
 logs/**/*.log
 
-# Application data
-data/
-
 # OS generated files
 .DS_Store
 Thumbs.db

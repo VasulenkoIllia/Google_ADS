@@ -34,6 +34,7 @@ html(lang="uk")
     - overlayMeta.dailyResetSeconds = queueInfo && Number.isFinite(queueInfo.dailyResetSeconds) ? queueInfo.dailyResetSeconds : null
     - overlayMeta.sourceIdent = queueInfo && typeof queueInfo.sourceIdent === 'string' ? queueInfo.sourceIdent : null
     - overlayMeta.message = typeof message === 'string' ? message : null
+    - overlayMeta.reloadUrl = reloadUrl
     .position-relative(style="min-height: 100vh;")
       +reportLoadingOverlay(overlayMeta, { id: 'pageReportOverlay', autoShow: true, reloadUrl: reloadUrl })
       noscript

@@ -1,5 +1,6 @@
 import { getSalesdriveSources, buildOverlayMeta } from '../services/reportDataService.js';
 import { getMonthlyScheduleOverview } from '../services/monthlyScheduleService.js';
+import { loadSecurityConfig } from '../services/securityConfigService.js';
 
 const REPORT_LIST = [
     {
@@ -34,15 +35,50 @@ export async function renderHome(req, res, next) {
         const sources = getSalesdriveSources();
         const sourcesCount = Array.isArray(sources) ? sources.length : 0;
         const scheduleOverview = await getMonthlyScheduleOverview();
+        const securityConfig = await loadSecurityConfig();
+        const { success = '', error = '' } = req.query || {};
+        const scheduleConfig = scheduleOverview?.config || {};
+        const scheduleEnabled = Boolean(scheduleConfig.enabled);
+        const scheduleInfo = {
+            enabled: scheduleEnabled,
+            statusLabel: scheduleEnabled ? 'Увімкнено' : 'Вимкнено',
+            frequencyLabel: scheduleConfig.frequency === 'weekly' ? 'Щотижня' : 'Щодня',
+            time: scheduleConfig.time || '—',
+            rangeLabel: (() => {
+                const range = scheduleConfig.range || {};
+                if (range.type === 'all') {
+                    return 'Усі доступні місяці';
+                }
+                if (range.type === 'last') {
+                    return `Останні ${range.count || 1} міс.`;
+                }
+                return 'Лише поточний місяць';
+            })(),
+            nextRunLabel: scheduleOverview?.nextRunAt
+                ? new Date(scheduleOverview.nextRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' })
+                : 'Не заплановано'
+        };
+        const accessEnabled = Boolean(securityConfig.pinEnabled && securityConfig.pinSalt && securityConfig.pinHash);
+        const accessInfo = {
+            enabled: accessEnabled,
+            statusLabel: accessEnabled ? 'Увімкнено' : 'Вимкнено',
+            username: typeof securityConfig.username === 'string' && securityConfig.username.length > 0
+                ? securityConfig.username
+                : 'gouads'
+        };
         const overlayMeta = buildOverlayMeta({
             extraQueuedRequests: Math.max(sourcesCount - 1, 0),
             remainingSources: sourcesCount,
-            message: 'Готуємо дані…'
+            message: 'Готуємо інформаційну панель…'
         });
         return res.render('home', {
             reports: REPORT_LIST,
             sourcesCount,
-            scheduleOverview,
+            scheduleInfo,
+            accessInfo,
+            scheduleEnabled,
+            successMessage: typeof success === 'string' && success.length > 0 ? success : null,
+            errorMessage: typeof error === 'string' && error.length > 0 ? error : null,
             reportOverlayMeta: overlayMeta
         });
     } catch (error) {

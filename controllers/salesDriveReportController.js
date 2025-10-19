@@ -149,6 +149,7 @@ export async function renderSalesDriveReport(req, res) {
         if (job.status === 'error') {
             return res.status(500).render('error', {
                 message: job.error?.message || 'Не вдалося завантажити дані SalesDrive.',
+                source: 'salesDriveReportController: асинхронна черга',
                 error: job.error || {}
             });
         }
@@ -187,11 +188,13 @@ export async function renderSalesDriveReport(req, res) {
             const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
             return res.status(400).render('error', {
                 message: error.message,
+                source: 'salesDriveReportController: валідація дат',
                 error: includeStack ? error : {}
             });
         }
         return res.status(500).render('error', {
-            message: 'Internal Server Error',
+            message: 'Не вдалося побудувати звіт SalesDrive.',
+            source: 'salesDriveReportController: SalesDrive API',
             error
         });
     }

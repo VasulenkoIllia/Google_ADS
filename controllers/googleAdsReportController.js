@@ -85,11 +85,13 @@ export async function renderGoogleAdsReport(req, res) {
             const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
             return res.status(400).render('error', {
                 message: error.message,
+                source: 'googleAdsReportController: валідація дат',
                 error: includeStack ? error : {}
             });
         }
         return res.status(500).render('error', {
-            message: 'Internal Server Error',
+            message: 'Не вдалося побудувати звіт Google Ads.',
+            source: 'googleAdsReportController: Google Ads API',
             error
         });
     }

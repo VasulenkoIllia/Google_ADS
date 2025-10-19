@@ -40,6 +40,8 @@ const DEFAULT_SALESDRIVE_RETRY_ATTEMPTS = 3;
 const DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS = 5000;
 const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 200;
 const DEFAULT_SALESDRIVE_DAILY_LIMIT = 2000;
+const GOOGLE_ADS_TIMEOUT_MS = 30000;
+const GOOGLE_ADS_MAX_RETRY_ATTEMPTS = 3;
 export const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
 
 export function getSalesdriveSources() {
@@ -544,7 +546,25 @@ export async function getGoogleAdsData({ startDate, endDate }) {
             'Authorization': `Bearer ${token}`,
         };
 
-        const response = await axios.post(url, { query }, { headers });
+        const executeGoogleAdsRequest = async (attempt = 1) => {
+            try {
+                return await axios.post(url, { query }, { headers, timeout: GOOGLE_ADS_TIMEOUT_MS });
+            } catch (error) {
+                const status = error.response?.status;
+                const retryable = status === 429 || (status >= 500 && status < 600) || !status;
+                if (retryable && attempt < GOOGLE_ADS_MAX_RETRY_ATTEMPTS) {
+                    const backoffMs = Math.min(5000, 1000 * Math.pow(2, attempt - 1));
+                    console.warn(
+                        `[googleAds] Request failed on attempt ${attempt} (status ${status || error.code || 'unknown'}). Retrying in ${backoffMs} ms.`
+                    );
+                    await wait(backoffMs);
+                    return executeGoogleAdsRequest(attempt + 1);
+                }
+                throw error;
+            }
+        };
+
+        const response = await executeGoogleAdsRequest();
         const results = response.data.flatMap(batch => batch.results || []);
 
         const adsData = results.map(item => {

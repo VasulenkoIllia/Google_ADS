@@ -1,0 +1,57 @@
+.settings-section
+  .panel-card
+    .panel-header
+      h2 Джерела SalesDrive
+      span.status-tag.badge.badge-primary #{sources && sources.length ? sources.length : 0}
+    .panel-body.pt-0
+      if sources && sources.length
+        .table-responsive.mt-4
+          table.table.table-borderless.table-hover.align-middle.mb-0
+            thead
+              tr
+                th.text-uppercase.small.text-muted ID
+                th.text-uppercase.small.text-muted Ident
+                th.text-uppercase.small.text-muted Назва для відображення
+                th.text-right.text-uppercase.small.text-muted(style="width: 220px;") Дії
+            tbody
+              each source in sources
+                - const formId = `form-update-${source.id}`
+                tr
+                  td
+                    input.form-control.form-control-sm(type="number", name="id", value=source.id, readonly, form=formId)
+                  td
+                    input.form-control.form-control-sm(type="text", name="ident", value=source.ident, required, form=formId)
+                  td
+                    input.form-control.form-control-sm(type="text", name="nameView", value=source.nameView, form=formId)
+                  td.text-right
+                    form.d-inline(id=formId, method="post", action=`/reports/config/sources/${source.id}/update`, data-report-form)
+                      input(type="hidden", name="returnTo", value="/settings?tab=sources")
+                      button.btn.btn-sm.btn-primary.rounded-pill.mr-2(type="submit")
+                        i.bi.bi-save.mr-1
+                        | Зберегти
+                    form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');", data-report-form)
+                      input(type="hidden", name="returnTo", value="/settings?tab=sources")
+                      button.btn.btn-sm.btn-outline-danger.rounded-pill(type="submit")
+                        i.bi.bi-trash.mr-1
+                        | Видалити
+      else
+        .p-4.text-center.text-muted
+          span.d-block.display-4.mb-2 🗂️
+          span Немає налаштованих джерел. Створіть перше за допомогою форми нижче.
+  .panel-card
+    .panel-header
+      h2 Додати нове джерело
+    .panel-body
+      form(method="post", action="/reports/config/sources/add", data-report-form)
+        input(type="hidden", name="returnTo", value="/settings?tab=sources")
+        .form-row
+          .col-md-3.mb-3
+            label(for="new-id") ID
+            input#new-id.form-control(type="number", name="id", min="1", required)
+          .col-md-4.mb-3
+            label(for="new-ident") Ident
+            input#new-ident.form-control(type="text", name="ident", required)
+          .col-md-5.mb-3
+            label(for="new-nameView") Назва для відображення
+            input#new-nameView.form-control(type="text", name="nameView")
+        button.btn.btn-success(type="submit") Додати джерело

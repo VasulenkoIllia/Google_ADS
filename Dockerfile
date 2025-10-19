@@ -9,8 +9,8 @@ RUN npm ci --omit=dev
 COPY . .
 
 ENV NODE_ENV=production \
-    PORT=3000
+    PORT=3005
 
-EXPOSE 3000
+EXPOSE 3005
 
 CMD ["npm", "start"]

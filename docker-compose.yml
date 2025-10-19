@@ -5,9 +5,16 @@ services:
     build: .
     container_name: google-ads-reports
     ports:
-      - "3005:3000"
+      - "3005:3005"
     env_file:
       - .env
+    environment:
+      - PORT=3005
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3005/healthz > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

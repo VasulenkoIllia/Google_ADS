@@ -1,0 +1,242 @@
+{
+  "year": 2025,
+  "month": 9,
+  "startDate": "2025-09-01",
+  "endDate": "2025-09-30",
+  "daysInMonth": 30,
+  "elapsedDays": 30,
+  "generatedAt": "2025-10-18T17:19:22.651Z",
+  "sources": [
+    {
+      "id": 63,
+      "ident": "PL-151-LED",
+      "name": "PL-151-LED",
+      "metrics": {
+        "adSpend": 0,
+        "impressions": 5,
+        "clicks": 0,
+        "transactions": 25,
+        "sales": 23351,
+        "costOfGoods": 14027.97
+      }
+    },
+    {
+      "id": 1006,
+      "ident": "Headlamp-HL2-1006",
+      "name": "Headlamp-HL2-1006",
+      "metrics": {
+        "adSpend": 29.86,
+        "impressions": 538,
+        "clicks": 7,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 47,
+      "ident": "BL-C861",
+      "name": "BL-C861",
+      "metrics": {
+        "adSpend": 919.16,
+        "impressions": 9593,
+        "clicks": 229,
+        "transactions": 3,
+        "sales": 1583.96,
+        "costOfGoods": 919.6
+      }
+    },
+    {
+      "id": 45,
+      "ident": "sh-1101",
+      "name": "sh-1101",
+      "metrics": {
+        "adSpend": 1703.44,
+        "impressions": 17261,
+        "clicks": 509,
+        "transactions": 7,
+        "sales": 3160,
+        "costOfGoods": 1833.51
+      }
+    },
+    {
+      "id": 190,
+      "ident": "BL-1831-Т6",
+      "name": "BL-1831-Т6",
+      "metrics": {
+        "adSpend": 33.49,
+        "impressions": 275,
+        "clicks": 15,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 191,
+      "ident": "RB-206",
+      "name": "RB-206",
+      "metrics": {
+        "adSpend": 0,
+        "impressions": 0,
+        "clicks": 0,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 114,
+      "ident": "WD-419",
+      "name": "WD-419",
+      "metrics": {
+        "adSpend": 6312.18,
+        "impressions": 51318,
+        "clicks": 1572,
+        "transactions": 27,
+        "sales": 16808.82,
+        "costOfGoods": 8571.500000000002
+      }
+    },
+    {
+      "id": 163,
+      "ident": "X-Balog-8070",
+      "name": "X-Balog-8070",
+      "metrics": {
+        "adSpend": 100.39,
+        "impressions": 895,
+        "clicks": 24,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 189,
+      "ident": "1837-T6",
+      "name": "1837-T6",
+      "metrics": {
+        "adSpend": 17.56,
+        "impressions": 362,
+        "clicks": 8,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 168,
+      "ident": "HX-816",
+      "name": "HX-816",
+      "metrics": {
+        "adSpend": 1839.56,
+        "impressions": 22472,
+        "clicks": 451,
+        "transactions": 8,
+        "sales": 3195,
+        "costOfGoods": 1886.6200000000001
+      }
+    },
+    {
+      "id": 175,
+      "ident": "BL-2188-2",
+      "name": "BL-2188-2",
+      "metrics": {
+        "adSpend": 386.12,
+        "impressions": 4097,
+        "clicks": 94,
+        "transactions": 1,
+        "sales": 661.02,
+        "costOfGoods": 465.22
+      }
+    },
+    {
+      "id": 246,
+      "ident": "DL-1570",
+      "name": "DL-1570",
+      "metrics": {
+        "adSpend": 13.37,
+        "impressions": 303,
+        "clicks": 6,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 247,
+      "ident": "DL-0010",
+      "name": "DL-0010",
+      "metrics": {
+        "adSpend": 4.09,
+        "impressions": 193,
+        "clicks": 2,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 248,
+      "ident": "DL-0008",
+      "name": "DL-0008",
+      "metrics": {
+        "adSpend": 2.38,
+        "impressions": 161,
+        "clicks": 1,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 192,
+      "ident": "RB-B14",
+      "name": "RB-B14",
+      "metrics": {
+        "adSpend": 338.78,
+        "impressions": 5123,
+        "clicks": 151,
+        "transactions": 2,
+        "sales": 507.96,
+        "costOfGoods": 334.4
+      }
+    },
+    {
+      "id": 193,
+      "ident": "BL-2804-T6",
+      "name": "BL-2804-T6",
+      "metrics": {
+        "adSpend": 0,
+        "impressions": 19,
+        "clicks": 0,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    },
+    {
+      "id": 249,
+      "ident": "HC-618S",
+      "name": "HC-618S",
+      "metrics": {
+        "adSpend": 71.39,
+        "impressions": 960,
+        "clicks": 18,
+        "transactions": 0,
+        "sales": 0,
+        "costOfGoods": 0
+      }
+    }
+  ],
+  "totals": {
+    "metrics": {
+      "adSpend": 11771.77,
+      "impressions": 113575,
+      "clicks": 3087,
+      "transactions": 73,
+      "sales": 49267.759999999995,
+      "costOfGoods": 28038.820000000003
+    }
+  }
+}

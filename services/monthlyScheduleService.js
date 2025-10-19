@@ -247,6 +247,7 @@ async function runMonthlyScheduleJobInternal(trigger = 'auto') {
             lastRunError: summary.errors.length > 0 ? 'Деякі місяці не вдалося оновити.' : null
         };
         await saveMonthlyScheduleConfig(updatedConfig);
+        console.log('[monthlySchedule] Завершено запуск планувальника:', JSON.stringify(summary));
         return {
             status: updatedConfig.lastRunStatus,
             summary
@@ -275,6 +276,7 @@ async function scheduleNextRun() {
     const config = await loadMonthlyScheduleConfig();
     if (!config.enabled) {
         schedulerState.nextRunAt = null;
+        console.log('[monthlySchedule] Планувальник вимкнено, автоматичні запуски не плануються.');
         return;
     }
     const nextRun = computeNextRunDate(config, new Date());
@@ -284,6 +286,7 @@ async function scheduleNextRun() {
     }
     const delay = Math.max(nextRun.getTime() - Date.now(), 5 * 1000);
     schedulerState.nextRunAt = nextRun;
+    console.log(`[monthlySchedule] Наступний запуск заплановано на ${nextRun.toISOString()}.`);
     schedulerState.timer = setTimeout(async () => {
         schedulerState.timer = null;
         await runMonthlyScheduleJobInternal('auto');

@@ -169,6 +169,7 @@ export async function renderCombinedReport(req, res) {
         if (job.status === 'error') {
             return res.status(500).render('error', {
                 message: job.error?.message || 'Не вдалося сформувати об’єднаний звіт.',
+                source: 'combinedReportController: асинхронна черга',
                 error: job.error || {}
             });
         }
@@ -207,11 +208,13 @@ export async function renderCombinedReport(req, res) {
             const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
             return res.status(400).render('error', {
                 message: error.message,
+                source: 'combinedReportController: валідація дат',
                 error: includeStack ? error : {}
             });
         }
         return res.status(500).render('error', {
-            message: 'Internal Server Error',
+            message: 'Не вдалося побудувати об’єднаний звіт.',
+            source: 'combinedReportController: комбінована агрегація',
             error
         });
     }

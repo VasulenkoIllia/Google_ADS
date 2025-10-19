@@ -56,6 +56,7 @@ export async function renderMonthlyReport(req, res) {
         console.error('[monthlyReport] render failed:', error);
         return res.status(500).render('error', {
             message: 'Не вдалося побудувати місячний звіт.',
+            source: 'monthlyReportController: відображення звіту',
             error
         });
     }
@@ -101,6 +102,7 @@ export async function handleMonthlyRebuild(req, res) {
         if (job.status === 'error') {
             return res.status(500).render('error', {
                 message: job.error?.message || 'Не вдалося примусово сформувати звіт.',
+                source: 'monthlyReportController: примусове формування',
                 error: job.error || {}
             });
         }
@@ -134,15 +136,18 @@ export async function handleMonthlyRebuild(req, res) {
         console.error('[monthlyReport] rebuild failed:', error);
         return res.status(500).render('error', {
             message: 'Не вдалося примусово сформувати звіт.',
+            source: 'monthlyReportController: rebuild handler',
             error
         });
     }
 }
 
 export async function handleMonthlyPlanUpdate(req, res) {
+    let parsedContext = { year: null, month: null };
     try {
         const { year: rawYear, month: rawMonth } = req.body || {};
-        const { year, month } = parseYearMonth(rawYear, rawMonth);
+        parsedContext = parseYearMonth(rawYear, rawMonth);
+        const { year, month } = parsedContext;
         const sourcePlans = {};
         const sourcesPayload = req.body?.sources || {};
         Object.entries(sourcesPayload).forEach(([ident, values]) => {
@@ -179,8 +184,21 @@ export async function handleMonthlyPlanUpdate(req, res) {
         return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&success=${successQuery}#month-${year}-${monthKey}`);
     } catch (error) {
         console.error('[monthlyReport] plan update failed:', error);
-        const monthKey = String(month).padStart(2, '0');
+        let fallbackYear = parsedContext.year;
+        let fallbackMonth = parsedContext.month;
+        if (!Number.isFinite(fallbackYear) || !Number.isFinite(fallbackMonth)) {
+            try {
+                const parsed = parseYearMonth(req.body?.year, req.body?.month);
+                fallbackYear = parsed.year;
+                fallbackMonth = parsed.month;
+            } catch (parseError) {
+                console.error('[monthlyReport] fallback parse failed:', parseError);
+                fallbackYear = new Date().getUTCFullYear();
+                fallbackMonth = new Date().getUTCMonth() + 1;
+            }
+        }
+        const monthKey = String(fallbackMonth).padStart(2, '0');
         const message = encodeURIComponent(error.message || 'Не вдалося оновити плани для місяця.');
-        return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&error=${message}#month-${year}-${monthKey}`);
+        return res.redirect(`/reports/monthly?activeMonth=${fallbackYear}-${monthKey}&error=${message}#month-${fallbackYear}-${monthKey}`);
     }
 }

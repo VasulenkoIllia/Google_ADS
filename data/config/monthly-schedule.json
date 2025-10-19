@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "frequency": "daily",
+  "time": "01:00",
+  "weekday": "monday",
+  "range": {
+    "type": "current"
+  },
+  "updatedAt": "2025-10-19T10:27:57.479Z",
+  "lastRunAt": "2025-10-19T00:57:51.914Z",
+  "lastRunStatus": "success",
+  "lastRunSummary": {
+    "triggeredBy": "manual",
+    "startedAt": "2025-10-19T00:55:54.317Z",
+    "processed": [
+      "2025-10"
+    ],
+    "errors": []
+  },
+  "lastRunError": null
+}

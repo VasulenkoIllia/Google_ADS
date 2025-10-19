@@ -564,12 +564,13 @@ export async function updateMonthlyPlans(year, month, planPayload) {
 
     const defaultSales = Number(planPayload.default?.sales);
     const defaultProfit = Number(planPayload.default?.profit);
+    const normalizedDefault = {
+        sales: normalizePlanValue(defaultSales),
+        profit: normalizePlanValue(defaultProfit)
+    };
 
     setMonthPlan(yearPlans, monthKey, {
-        default: {
-            sales: 0,
-            profit: 0
-        },
+        default: normalizedDefault,
         sources: sanitizedSources
     });
 

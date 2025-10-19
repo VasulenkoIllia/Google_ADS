@@ -1,0 +1,15 @@
+{
+    "watch": [
+        "app.js",
+        "controllers",
+        "routes",
+        "services",
+        "middlewares",
+        "views",
+        "utils"
+    ],
+    "ignore": [
+        "data/**"
+    ],
+    "ext": "js,json,pug"
+}

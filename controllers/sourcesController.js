@@ -6,13 +6,22 @@ import {
 } from '../services/salesdriveSourcesService.js';
 import { buildOverlayMeta } from '../services/reportDataService.js';
 
-function buildRedirectUrl(message = '', type = 'success') {
+function buildRedirectUrl(message = '', type = 'success', base = '/reports/config/sources') {
     if (!message) {
-        return '/reports/config/sources';
+        return base;
     }
     const params = new URLSearchParams();
     params.set(type, message);
-    return `/reports/config/sources?${params.toString()}`;
+    const separator = base.includes('?') ? '&' : '?';
+    return `${base}${separator}${params.toString()}`;
+}
+
+function resolveReturnTo(req, fallback = '/reports/config/sources') {
+    const candidate = (req.body && req.body.returnTo) || (req.query && req.query.returnTo);
+    if (typeof candidate === 'string' && candidate.startsWith('/')) {
+        return candidate;
+    }
+    return fallback;
 }
 
 export async function renderSourcesConfig(req, res) {
@@ -32,6 +41,7 @@ export async function renderSourcesConfig(req, res) {
         console.error('[sourcesConfig] render failed:', error);
         return res.status(500).render('error', {
             message: 'Не вдалося завантажити список джерел.',
+            source: 'sourcesController: render',
             error
         });
     }
@@ -41,10 +51,12 @@ export async function handleSourceAdd(req, res) {
     try {
         const { id, ident, nameView } = req.body || {};
         await addSalesdriveSource({ id, ident, nameView });
-        return res.redirect(buildRedirectUrl('Джерело додано успішно.'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl('Джерело додано успішно.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] add failed:', error);
-        return res.redirect(buildRedirectUrl(error.message || 'Помилка додавання джерела.', 'error'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl(error.message || 'Помилка додавання джерела.', 'error', target));
     }
 }
 
@@ -53,10 +65,12 @@ export async function handleSourceUpdate(req, res) {
         const { id } = req.params || {};
         const { ident, nameView } = req.body || {};
         await updateSalesdriveSource(id, { ident, nameView });
-        return res.redirect(buildRedirectUrl('Зміни збережено.'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl('Зміни збережено.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] update failed:', error);
-        return res.redirect(buildRedirectUrl(error.message || 'Помилка оновлення джерела.', 'error'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl(error.message || 'Помилка оновлення джерела.', 'error', target));
     }
 }
 
@@ -64,9 +78,11 @@ export async function handleSourceDelete(req, res) {
     try {
         const { id } = req.params || {};
         await removeSalesdriveSource(id);
-        return res.redirect(buildRedirectUrl('Джерело видалено.'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl('Джерело видалено.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] remove failed:', error);
-        return res.redirect(buildRedirectUrl(error.message || 'Не вдалося видалити джерело.', 'error'));
+        const target = resolveReturnTo(req);
+        return res.redirect(buildRedirectUrl(error.message || 'Не вдалося видалити джерело.', 'error', target));
     }
 }

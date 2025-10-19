@@ -1,0 +1,77 @@
+.settings-section
+  - const scheduleConfig = scheduleOverview && scheduleOverview.config ? scheduleOverview.config : {}
+  - const scheduleNextRun = scheduleOverview && scheduleOverview.nextRunAt ? new Date(scheduleOverview.nextRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' }) : 'Не заплановано'
+  - const runStatus = scheduleConfig.lastRunStatus || '—'
+  - const lastRunAt = scheduleConfig.lastRunAt ? new Date(scheduleConfig.lastRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' }) : 'Ще не запускалось'
+  .panel-card
+    .panel-header
+      h2 Планувальник статичного звіту
+      span.status-tag.badge(class=scheduleConfig.enabled ? 'badge-success' : 'badge-secondary')= scheduleConfig.enabled ? 'Увімкнено' : 'Вимкнено'
+    .panel-body
+      form(method="post", action="/reports/monthly/schedule", data-report-form)
+        input(type="hidden", name="returnTo", value="/settings?tab=scheduler")
+        .custom-control.custom-switch.mb-4
+          input#schedule-enabled.custom-control-input(type="checkbox", name="enabled", checked=scheduleConfig.enabled ? true : false)
+          label.custom-control-label(for="schedule-enabled") Автоматичне формування увімкнене
+        .form-row.mb-3
+          .col-md-6.mb-3
+            label(for="schedule-time") Час запуску
+            input#schedule-time.form-control(type="time", name="time", required, value=scheduleConfig.time || '01:00')
+          .col-md-6.mb-3
+            label(for="schedule-weekday") День тижня
+            select#schedule-weekday.form-control(name="weekday", disabled=scheduleConfig.frequency !== 'weekly')
+              - const weekdayOptions = [{ value: 'monday', label: 'Понеділок' }, { value: 'tuesday', label: 'Вівторок' }, { value: 'wednesday', label: 'Середа' }, { value: 'thursday', label: 'Четвер' }, { value: 'friday', label: "П'ятниця" }, { value: 'saturday', label: 'Субота' }, { value: 'sunday', label: 'Неділя' }]
+              each option in weekdayOptions
+                option(value=option.value selected=scheduleConfig.weekday === option.value)= option.label
+        .form-group
+          label.font-weight-bold Інтервал запуску
+          .form-check
+            input#schedule-daily.form-check-input(type="radio", name="frequency", value="daily", checked=scheduleConfig.frequency === 'daily')
+            label.form-check-label(for="schedule-daily") Щодня
+          .form-check
+            input#schedule-weekly.form-check-input(type="radio", name="frequency", value="weekly", checked=scheduleConfig.frequency === 'weekly')
+            label.form-check-label(for="schedule-weekly") Щотижня
+        .form-group.mt-3
+          label.font-weight-bold Місяці для оновлення
+          .form-check
+            input#range-current.form-check-input(type="radio", name="rangeType", value="current", checked=scheduleConfig.range && scheduleConfig.range.type === 'current')
+            label.form-check-label(for="range-current") Лише поточний місяць
+          .form-check
+            input#range-last.form-check-input(type="radio", name="rangeType", value="last", checked=scheduleConfig.range && scheduleConfig.range.type === 'last')
+            label.form-check-label(for="range-last")
+              | Останні
+              input#range-count.form-control.form-control-sm.d-inline-block.ml-2(type="number", name="rangeCount", min="1", max="12", value=(scheduleConfig.range && scheduleConfig.range.type === 'last') ? scheduleConfig.range.count : 3, style="width: 80px;", disabled=!(scheduleConfig.range && scheduleConfig.range.type === 'last'))
+              |  місяців
+          .form-check
+            input#range-all.form-check-input(type="radio", name="rangeType", value="all", checked=scheduleConfig.range && scheduleConfig.range.type === 'all')
+            label.form-check-label(for="range-all") Усі доступні місяці
+        button.btn.btn-primary.rounded-pill.mt-4(type="submit")
+          i.bi.bi-check2-circle.mr-2
+          | Зберегти налаштування
+  .panel-card
+    .panel-header
+      h2 Статус планувальника
+    .panel-body
+      dl.row.mb-0
+        dt.col-sm-5 Наступний запуск
+        dd.col-sm-7= scheduleNextRun
+        dt.col-sm-5 Останній запуск
+        dd.col-sm-7= lastRunAt
+        dt.col-sm-5 Останній результат
+        dd.col-sm-7
+          if runStatus === 'success'
+            span.text-success Успішно
+          else if runStatus === 'partial'
+            span.text-warning З попередженнями
+          else if runStatus === 'error'
+            span.text-danger Помилка
+          else
+            span.text-muted= runStatus
+      form.mt-4(method="post", action="/reports/monthly/schedule/run", data-report-form)
+        input(type="hidden", name="returnTo", value="/settings?tab=scheduler")
+        button.btn.btn-outline-secondary.rounded-pill(type="submit" disabled=scheduleOverview && scheduleOverview.isRunning ? true : false)
+          if scheduleOverview && scheduleOverview.isRunning
+            span.spinner-border.spinner-border-sm.mr-2
+            | Виконується…
+          else
+            | Запустити формування зараз

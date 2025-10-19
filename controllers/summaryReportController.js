@@ -157,6 +157,7 @@ export async function renderSummaryReport(req, res) {
         if (job.status === 'error') {
             return res.status(500).render('error', {
                 message: job.error?.message || 'Не вдалося сформувати звіт.',
+                source: 'summaryReportController: асинхронна черга',
                 error: job.error || {}
             });
         }
@@ -195,11 +196,13 @@ export async function renderSummaryReport(req, res) {
             const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
             return res.status(400).render('error', {
                 message: error.message,
+                source: 'summaryReportController: валідація дат',
                 error: includeStack ? error : {}
             });
         }
         return res.status(500).render('error', {
-            message: 'Internal Server Error',
+            message: 'Внутрішня помилка під час побудови зведеного звіту.',
+            source: 'summaryReportController: основний обробник',
             error
         });
     }

@@ -1,0 +1,34 @@
+.settings-section
+  - const accessConfig = securityConfig || {}
+  - const accessEnabled = Boolean(accessConfig.pinEnabled)
+  - const accessHasExisting = Boolean(accessConfig.pinSalt && accessConfig.pinHash)
+.panel-card
+  .panel-header
+    h2 Доступ до сервісу
+    span.status-tag.badge(class=accessEnabled ? 'badge-success' : 'badge-secondary')= accessEnabled ? 'Увімкнено' : 'Вимкнено'
+  .panel-body
+      p.text-muted
+        | Керування логіном і паролем для доступу до звітів. Поточна сесія дійсна 1 годину.
+      form(method="post", action="/auth/pin/settings", data-report-form data-has-existing=accessHasExisting ? 'true' : 'false')
+        input(type="hidden", name="returnTo", value="/settings?tab=access")
+        .custom-control.custom-switch.mb-3
+          input#settingsAccessEnabled.custom-control-input(type="checkbox", name="enablePin", checked=accessEnabled ? true : false)
+          label.custom-control-label(for="settingsAccessEnabled") Увімкнути парольний захист
+        .form-row
+          .col-md-6.mb-3
+            label(for="settingsUsername") Ім'я користувача
+            input#settingsUsername.form-control(type="text", name="username", value=accessConfig.username || 'gouads', maxlength="32", required, autocomplete="username")
+          .col-md-6.mb-3
+            label Статус
+            p.form-control-plaintext= accessEnabled ? 'Захист активний' : 'Захист вимкнено'
+        .form-row
+          .col-md-6.mb-3
+            label(for="settingsNewPassword") Новий пароль
+            input#settingsNewPassword.form-control(type="password", name="newPin", minlength="4", maxlength="32", autocomplete="new-password", placeholder="Введіть новий пароль", disabled=!accessEnabled)
+          .col-md-6.mb-3
+            label(for="settingsConfirmPassword") Підтвердіть пароль
+            input#settingsConfirmPassword.form-control(type="password", name="confirmPin", minlength="4", maxlength="32", autocomplete="new-password", placeholder="Повторіть пароль", disabled=!accessEnabled)
+        small.form-text.text-muted Якщо залишити поля порожніми, збережеться попередній пароль.
+        button.btn.btn-outline-secondary.rounded-pill.mt-4(type="submit")
+          i.bi.bi-shield-check.mr-2
+          | Зберегти налаштування

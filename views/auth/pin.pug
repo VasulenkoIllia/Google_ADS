@@ -1,0 +1,48 @@
+include ../partials/reportLoadingOverlay.pug
+
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Введіть пароль
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body.bg-light
+    .container.py-5
+      .row.justify-content-center
+        .col-md-6.col-lg-4
+          .card.shadow-sm
+            .card-body
+              h1.h5.mb-3.text-primary Доступ до сервісу
+              p.text-muted.mb-4 Введіть ім'я користувача та пароль, щоб продовжити роботу зі звітами.
+              if errorMessage
+                .alert.alert-danger= errorMessage
+              form(method="post", action="/auth/pin/verify", data-report-form)
+                input(type="hidden", name="next", value=nextUrl || '/')
+                .form-group
+                  label(for="usernameInput") Ім'я користувача
+                  input#usernameInput.form-control(type="text", name="username", value=expectedUsername || '', required, maxlength="32", autocomplete="username")
+                  if expectedUsername
+                    small.form-text.text-muted Використовуйте ім'я користувача #{expectedUsername}.
+                .form-group
+                  label(for="pinInput") Пароль
+                  input#pinInput.form-control(type="password", name="pin", minlength="4", maxlength="32", required, autocomplete="current-password")
+                  small.form-text.text-muted Пароль може містити 4–32 символи.
+                button.btn.btn-primary.btn-block.mt-3(type="submit") Підтвердити
+    - const overlayMeta = { waitSeconds: null, message: 'Перевіряємо доступ…' }
+    - const pinOverlayMeta = { waitSeconds: null, message: 'Перевіряємо доступ…' }
+    +reportLoadingOverlay(pinOverlayMeta, { id: 'pinOverlay' })
+    script.
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.querySelector('form[data-report-form]');
+        var overlay = document.getElementById('pinOverlay');
+        if (!form || !overlay) {
+          return;
+        }
+        form.addEventListener('submit', function () {
+          overlay.classList.add('active');
+        });
+      });
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

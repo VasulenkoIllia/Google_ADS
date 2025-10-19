@@ -99,6 +99,22 @@ mixin reportLoadingOverlay(meta = {}, options = {})
           return;
         }
         var countdownStarted = false;
+        var countdownTimer = null;
+        var resetOverlayState = function () {
+          overlay.classList.remove('active');
+          if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+          }
+          countdownStarted = false;
+        };
+        window.addEventListener('pageshow', function (event) {
+          var navigationEntry = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
+          var isBackNavigation = (navigationEntry && navigationEntry.type === 'back_forward') || event.persisted === true;
+          if (isBackNavigation) {
+            resetOverlayState();
+          }
+        });
         var startCountdown = function () {
           if (countdownStarted) {
             return;
@@ -113,10 +129,11 @@ mixin reportLoadingOverlay(meta = {}, options = {})
           countdownStarted = true;
           var remaining = waitValue;
           countdownEl.textContent = remaining + ' с';
-          var timer = setInterval(function () {
+          countdownTimer = setInterval(function () {
             remaining -= 1;
             if (remaining <= 0) {
-              clearInterval(timer);
+              clearInterval(countdownTimer);
+              countdownTimer = null;
               if (reloadTarget) {
                 window.location.href = reloadTarget;
               } else {
