@@ -10,7 +10,9 @@ import {
     getOrCreateReportJob,
     buildReportData,
     DateRangeError,
-    getSalesdriveSources
+    getSalesdriveSources,
+    resolveSourcesForRequest,
+    buildOverlayMeta
 } from '../services/reportDataService.js';
 
 const REPORT_TYPE = 'combined';
@@ -56,6 +58,8 @@ export async function renderCombinedReport(req, res) {
         const { planSalesRaw, planProfitRaw } = extractPlanRawValues(req.query);
         const { planOverrides, planInputs, planDefaults } = resolvePlanConfig(planSalesRaw, planProfitRaw);
         const salesDriveSources = getSalesdriveSources();
+        const { sourcesToProcess } = resolveSourcesForRequest(selectedSourceIds);
+        const overlaySourceCount = Array.isArray(sourcesToProcess) ? sourcesToProcess.length : 0;
 
         const rateLimitMeta = getRateLimitMeta();
         const directDecision = shouldProcessDirectly(selectedSourceIds);
@@ -71,6 +75,18 @@ export async function renderCombinedReport(req, res) {
                 },
                 { reportJob: null }
             );
+
+            const overlayMeta = buildOverlayMeta({
+                extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                remainingSources: overlaySourceCount,
+                hourlyStats: directResult.hourlyStats,
+                dailyStats: directResult.dailyStats,
+                queueAhead: directDecision.limiterState?.pendingRequests,
+                message: 'Формуємо об’єднаний звіт…',
+                waitMs: Number.isFinite(directResult.rateLimitCooldownSeconds)
+                    ? directResult.rateLimitCooldownSeconds * 1000
+                    : undefined
+            });
 
             return res.render('reports/combined', {
                 startDate,
@@ -88,7 +104,8 @@ export async function renderCombinedReport(req, res) {
                 rateLimitCooldown: directResult.rateLimitCooldown,
                 rateLimitCooldownSeconds: directResult.rateLimitCooldownSeconds,
                 hourlyStats: directResult.hourlyStats,
-                dailyStats: directResult.dailyStats
+                dailyStats: directResult.dailyStats,
+                reportOverlayMeta: overlayMeta
             });
         }
 
@@ -116,6 +133,18 @@ export async function renderCombinedReport(req, res) {
         );
 
         if (job.status === 'ready' && job.result) {
+            const overlayMeta = buildOverlayMeta({
+                extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                remainingSources: overlaySourceCount,
+                hourlyStats: job.result.hourlyStats,
+                dailyStats: job.result.dailyStats,
+                queueAhead: directDecision.limiterState?.pendingRequests,
+                message: 'Формуємо об’єднаний звіт…',
+                waitMs: Number.isFinite(job.result.rateLimitCooldownSeconds)
+                    ? job.result.rateLimitCooldownSeconds * 1000
+                    : undefined
+            });
+
             return res.render('reports/combined', {
                 startDate,
                 endDate,
@@ -132,7 +161,8 @@ export async function renderCombinedReport(req, res) {
                 rateLimitCooldown: job.result.rateLimitCooldown,
                 rateLimitCooldownSeconds: job.result.rateLimitCooldownSeconds,
                 hourlyStats: job.result.hourlyStats,
-                dailyStats: job.result.dailyStats
+                dailyStats: job.result.dailyStats,
+                reportOverlayMeta: overlayMeta
             });
         }
 

@@ -1,3 +1,5 @@
+include ../partials/reportLoadingOverlay.pug
+
 doctype html
 html(lang="uk")
   head
@@ -21,7 +23,7 @@ html(lang="uk")
         | Період:
         strong #{startDate} – #{endDate}
 
-      form.form-inline.mb-4(action="/reports/google-ads", method="get")
+      form.form-inline.mb-4(action="/reports/google-ads", method="get", data-report-form)
         .form-group.mr-2
           label.sr-only(for="startDate") Початок
           input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
@@ -40,7 +42,7 @@ html(lang="uk")
             else
               option(value="", selected=false) Джерела не налаштовані
         button.btn.btn-primary(type="submit") Оновити
-        a.btn.btn-outline-secondary.ml-2(href="/reports/google-ads") Скинути
+        a.btn.btn-outline-secondary.ml-2(href="/reports/google-ads", data-report-link) Скинути
 
       if totals
         .alert.alert-info
@@ -69,6 +71,8 @@ html(lang="uk")
               tr
                 td(colspan="5").text-center Даних не знайдено
 
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

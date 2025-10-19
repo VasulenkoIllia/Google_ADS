@@ -315,7 +315,7 @@ async function loadMonthlyFacts(year, month) {
     return readJson(getMonthFilePath(year, month), null);
 }
 
-async function listMonthEntries() {
+export async function listMonthEntries() {
     const current = new Date();
     const currentYear = current.getUTCFullYear();
     const currentMonth = current.getUTCMonth() + 1;

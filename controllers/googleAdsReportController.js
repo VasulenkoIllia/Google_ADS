@@ -4,7 +4,8 @@ import {
     resolveSourcesForRequest,
     getGoogleAdsData,
     DateRangeError,
-    getSalesdriveSources
+    getSalesdriveSources,
+    buildOverlayMeta
 } from '../services/reportDataService.js';
 
 function mapGoogleAdsDataToRows(dataMap, sourcesToProcess, isFiltering) {
@@ -51,6 +52,11 @@ export async function renderGoogleAdsReport(req, res) {
         const googleAdsResult = await getGoogleAdsData({ startDate, endDate });
         const alerts = Array.isArray(googleAdsResult.errors) ? googleAdsResult.errors : [];
         const salesDriveSources = getSalesdriveSources();
+        const overlayMeta = buildOverlayMeta({
+            extraQueuedRequests: Math.max(sourcesToProcess.length - 1, 0),
+            remainingSources: sourcesToProcess.length,
+            message: 'Завантажуємо дані Google Ads…'
+        });
 
         const rows = mapGoogleAdsDataToRows(
             googleAdsResult.data,
@@ -70,7 +76,8 @@ export async function renderGoogleAdsReport(req, res) {
                 totalCostUah: totals.totalCostUah.toFixed(2),
                 totalImpressions: totals.totalImpressions.toLocaleString('uk-UA'),
                 totalClicks: totals.totalClicks.toLocaleString('uk-UA')
-            }
+            },
+            reportOverlayMeta: overlayMeta
         });
     } catch (error) {
         console.error('[googleAdsReport] Failed to render report:', error);

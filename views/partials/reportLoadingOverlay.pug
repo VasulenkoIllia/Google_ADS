@@ -1,0 +1,152 @@
+mixin reportLoadingOverlay(meta = {}, options = {})
+  - const overlayId = options && options.id ? options.id : 'reportLoadingOverlay';
+  - const waitSeconds = Number.isFinite(meta.waitSeconds) ? meta.waitSeconds : null;
+  - const queueAhead = Number.isFinite(meta.queueAhead) ? meta.queueAhead : null;
+  - const estimatedTotal = Number.isFinite(meta.estimatedTotalRequests) ? meta.estimatedTotalRequests : (queueAhead !== null ? queueAhead : null);
+  - const remainingSources = Number.isFinite(meta.remainingSources) ? meta.remainingSources : null;
+  - const rateLimitMeta = meta.rateLimitMeta || {};
+  - const minuteLimit = Number.isFinite(rateLimitMeta.minuteLimit) ? rateLimitMeta.minuteLimit : null;
+  - const intervalSeconds = Number.isFinite(rateLimitMeta.minuteIntervalSeconds) ? rateLimitMeta.minuteIntervalSeconds : null;
+  - const hourlyLimit = Number.isFinite(rateLimitMeta.hourlyLimit) ? rateLimitMeta.hourlyLimit : null;
+  - const dailyLimit = Number.isFinite(rateLimitMeta.dailyLimit) ? rateLimitMeta.dailyLimit : null;
+  - const hourlyRemaining = Number.isFinite(meta.hourlyRemaining) ? meta.hourlyRemaining : null;
+  - const hourlyResetSeconds = Number.isFinite(meta.hourlyResetSeconds) ? meta.hourlyResetSeconds : null;
+  - const dailyRemaining = Number.isFinite(meta.dailyRemaining) ? meta.dailyRemaining : null;
+  - const dailyResetSeconds = Number.isFinite(meta.dailyResetSeconds) ? meta.dailyResetSeconds : null;
+  - const overlayClasses = ['report-loading-overlay'];
+  - const autoShow = !!(options && options.autoShow);
+  - const overlayReloadUrl = options && options.reloadUrl ? options.reloadUrl : (meta.reloadUrl || '');
+  - const sourceIdent = typeof meta.sourceIdent === 'string' && meta.sourceIdent.trim().length ? meta.sourceIdent.trim() : null;
+  - const overlayMessage = typeof meta.message === 'string' && meta.message.trim().length ? meta.message : 'CRM обробляє запити. Зачекайте, будь ласка.';
+  - if (autoShow) {
+  -   overlayClasses.push('active');
+  - }
+
+  style.
+    .report-loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(248, 249, 250, 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1050;
+      padding: 1.5rem;
+    }
+    .report-loading-overlay.active {
+      display: flex;
+    }
+    .report-loading-card {
+      max-width: 380px;
+      width: 100%;
+    }
+  .report-loading-overlay(
+    id=overlayId
+    class=overlayClasses.join(' ')
+    data-wait=waitSeconds !== null ? waitSeconds : ''
+    data-reload=overlayReloadUrl || ''
+    data-auto-show=autoShow ? 'true' : 'false'
+  )
+    .card.shadow.report-loading-card
+      .card-body
+        div.spinner-border.text-primary.mb-3(role="status")
+          span.sr-only Завантаження…
+        h2.h5.mb-2 Готуємо звіт
+        p.text-muted.mb-3= overlayMessage
+        ul.list-unstyled.text-left.small.mb-0
+          li
+            strong Орієнтовний час:&nbsp;
+            if waitSeconds !== null
+              span(data-overlay-countdown=waitSeconds)= `${waitSeconds} с`
+            else
+              span(data-overlay-countdown) — 
+          li
+            strong Запитів у черзі:&nbsp;
+            span= estimatedTotal !== null ? estimatedTotal : '—'
+            if remainingSources !== null
+              span &nbsp;•&nbsp;Джерел: #{remainingSources}
+          if sourceIdent
+            li
+              strong Поточне джерело:&nbsp;
+              span= sourceIdent
+          if minuteLimit !== null && intervalSeconds !== null
+            li Пропускна здатність CRM: #{minuteLimit} запитів / #{intervalSeconds} с.
+          if hourlyLimit !== null
+            li
+              span Годинна квота: #{hourlyLimit}
+              span &nbsp;•&nbsp;Залишилось: #{hourlyRemaining !== null ? hourlyRemaining : '—'}
+              if hourlyResetSeconds !== null
+                - const hrMinutes = Math.floor(hourlyResetSeconds / 60);
+                - const hrSeconds = hourlyResetSeconds % 60;
+                span &nbsp;•&nbsp;Оновлення через #{hrMinutes} хв #{hrSeconds} с
+          if dailyLimit !== null
+            li
+              span Добова квота: #{dailyLimit}
+              span &nbsp;•&nbsp;Залишилось: #{dailyRemaining !== null ? dailyRemaining : '—'}
+              if dailyResetSeconds !== null
+                - const dayHours = Math.floor(dailyResetSeconds / 3600);
+                - const dayMinutes = Math.floor((dailyResetSeconds % 3600) / 60);
+                span &nbsp;•&nbsp;Оновлення через #{dayHours} год #{dayMinutes} хв
+  script.
+    (function() {
+      if (window.__reportOverlayInit) {
+        return;
+      }
+      window.__reportOverlayInit = true;
+      document.addEventListener('DOMContentLoaded', function () {
+        var overlay = document.getElementById('#{overlayId}');
+        if (!overlay) {
+          return;
+        }
+        var countdownStarted = false;
+        var startCountdown = function () {
+          if (countdownStarted) {
+            return;
+          }
+          var waitAttr = overlay.getAttribute('data-wait');
+          var reloadTarget = overlay.getAttribute('data-reload');
+          var countdownEl = overlay.querySelector('[data-overlay-countdown]');
+          var waitValue = parseInt(waitAttr, 10);
+          if (!countdownEl || !Number.isFinite(waitValue) || waitValue <= 0) {
+            return;
+          }
+          countdownStarted = true;
+          var remaining = waitValue;
+          countdownEl.textContent = remaining + ' с';
+          var timer = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+              clearInterval(timer);
+              if (reloadTarget) {
+                window.location.href = reloadTarget;
+              } else {
+                window.location.reload();
+              }
+              return;
+            }
+            countdownEl.textContent = remaining + ' с';
+          }, 1000);
+        };
+        var showOverlay = function () {
+          overlay.classList.add('active');
+          startCountdown();
+        };
+        document.querySelectorAll('[data-report-link]').forEach(function (linkEl) {
+          linkEl.addEventListener('click', function (event) {
+            if (!event.defaultPrevented) {
+              showOverlay();
+            }
+          });
+        });
+        document.querySelectorAll('form[data-report-form]').forEach(function (formEl) {
+          formEl.addEventListener('submit', function (event) {
+            if (!event.defaultPrevented) {
+              showOverlay();
+            }
+          });
+        });
+        if (overlay.getAttribute('data-auto-show') === 'true') {
+          showOverlay();
+        }
+      });
+    })();

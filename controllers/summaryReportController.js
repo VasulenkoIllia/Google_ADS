@@ -10,7 +10,9 @@ import {
     getOrCreateReportJob,
     buildReportData,
     DateRangeError,
-    getSalesdriveSources
+    getSalesdriveSources,
+    resolveSourcesForRequest,
+    buildOverlayMeta
 } from '../services/reportDataService.js';
 
 const REPORT_TYPE = 'summary';
@@ -56,6 +58,8 @@ export async function renderSummaryReport(req, res) {
         const { planSalesRaw, planProfitRaw } = extractPlanRawValues(req.query);
         const { planOverrides, planInputs, planDefaults } = resolvePlanConfig(planSalesRaw, planProfitRaw);
         const salesDriveSources = getSalesdriveSources();
+        const { sourcesToProcess } = resolveSourcesForRequest(selectedSourceIds);
+        const overlaySourceCount = Array.isArray(sourcesToProcess) ? sourcesToProcess.length : 0;
 
         const rateLimitMeta = getRateLimitMeta();
         const directDecision = shouldProcessDirectly(selectedSourceIds);
@@ -72,6 +76,18 @@ export async function renderSummaryReport(req, res) {
                 { reportJob: null }
             );
 
+            const overlayMeta = buildOverlayMeta({
+                extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                remainingSources: overlaySourceCount,
+                hourlyStats: directResult.hourlyStats,
+                dailyStats: directResult.dailyStats,
+                queueAhead: directDecision.limiterState?.pendingRequests,
+                message: 'Готуємо зведений звіт…',
+                waitMs: Number.isFinite(directResult.rateLimitCooldownSeconds)
+                    ? directResult.rateLimitCooldownSeconds * 1000
+                    : undefined
+            });
+
             return res.render('reports/summary', {
                 startDate,
                 endDate,
@@ -82,7 +98,8 @@ export async function renderSummaryReport(req, res) {
                 planInputs,
                 planDefaults,
                 rateLimitMeta,
-                ...directResult
+                ...directResult,
+                reportOverlayMeta: overlayMeta
             });
         }
 
@@ -110,6 +127,18 @@ export async function renderSummaryReport(req, res) {
         );
 
         if (job.status === 'ready' && job.result) {
+            const overlayMeta = buildOverlayMeta({
+                extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                remainingSources: overlaySourceCount,
+                hourlyStats: job.result.hourlyStats,
+                dailyStats: job.result.dailyStats,
+                queueAhead: directDecision.limiterState?.pendingRequests,
+                message: 'Готуємо зведений звіт…',
+                waitMs: Number.isFinite(job.result.rateLimitCooldownSeconds)
+                    ? job.result.rateLimitCooldownSeconds * 1000
+                    : undefined
+            });
+
             return res.render('reports/summary', {
                 startDate,
                 endDate,
@@ -120,7 +149,8 @@ export async function renderSummaryReport(req, res) {
                 planInputs,
                 planDefaults,
                 rateLimitMeta,
-                ...job.result
+                ...job.result,
+                reportOverlayMeta: overlayMeta
             });
         }
 

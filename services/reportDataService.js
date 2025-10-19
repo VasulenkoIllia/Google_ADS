@@ -1459,6 +1459,80 @@ export async function waitForSalesDriveIdle() {
     await salesDriveRateLimiter.waitForAll();
 }
 
+export function buildOverlayMeta(overrides = {}) {
+    const {
+        extraQueuedRequests = 0,
+        waitMs,
+        queueAhead,
+        estimatedTotalRequests,
+        remainingSources,
+        hourlyStats,
+        dailyStats,
+        rateLimitMeta
+    } = overrides || {};
+
+    const effectiveRateLimitMeta = rateLimitMeta || getRateLimitMeta();
+    const limiterState = getSalesDriveLimiterState();
+    const estimate = evaluateRateLimit(
+        Number.isFinite(extraQueuedRequests) && extraQueuedRequests >= 0 ? extraQueuedRequests : 0
+    ) || {};
+
+    const calculatedWaitMs = Number.isFinite(waitMs)
+        ? waitMs
+        : (Number.isFinite(estimate.waitMs) ? estimate.waitMs : null);
+    const waitSeconds = Number.isFinite(calculatedWaitMs)
+        ? Math.max(Math.ceil(calculatedWaitMs / 1000), 0)
+        : null;
+
+    const effectiveHourlyStats = hourlyStats || getHourlyStats();
+    const effectiveDailyStats = dailyStats || getDailyStats();
+
+    const resolvedQueueAhead = Number.isFinite(queueAhead)
+        ? queueAhead
+        : (Number.isFinite(estimate.queueAhead)
+            ? estimate.queueAhead
+            : (Number.isFinite(limiterState.pendingRequests) ? limiterState.pendingRequests : null));
+
+    const resolvedEstimatedTotal = Number.isFinite(estimatedTotalRequests)
+        ? estimatedTotalRequests
+        : (Number.isFinite(estimate.estimatedTotalRequests)
+            ? estimate.estimatedTotalRequests
+            : (resolvedQueueAhead !== null ? resolvedQueueAhead + 1 : null));
+
+    const hourlyRemaining = Number.isFinite(overrides.hourlyRemaining)
+        ? overrides.hourlyRemaining
+        : (Number.isFinite(effectiveHourlyStats?.remaining) ? effectiveHourlyStats.remaining : null);
+    const hourlyResetSeconds = Number.isFinite(overrides.hourlyResetSeconds)
+        ? overrides.hourlyResetSeconds
+        : (Number.isFinite(effectiveHourlyStats?.resetInMs)
+            ? Math.max(Math.ceil(effectiveHourlyStats.resetInMs / 1000), 0)
+            : null);
+
+    const dailyRemaining = Number.isFinite(overrides.dailyRemaining)
+        ? overrides.dailyRemaining
+        : (Number.isFinite(effectiveDailyStats?.remaining) ? effectiveDailyStats.remaining : null);
+    const dailyResetSeconds = Number.isFinite(overrides.dailyResetSeconds)
+        ? overrides.dailyResetSeconds
+        : (Number.isFinite(effectiveDailyStats?.resetInMs)
+            ? Math.max(Math.ceil(effectiveDailyStats.resetInMs / 1000), 0)
+            : null);
+
+    return {
+        rateLimitMeta: effectiveRateLimitMeta,
+        waitSeconds,
+        queueAhead: resolvedQueueAhead,
+        estimatedTotalRequests: resolvedEstimatedTotal,
+        remainingSources: Number.isFinite(remainingSources) ? remainingSources : null,
+        hourlyRemaining,
+        hourlyResetSeconds,
+        dailyRemaining,
+        dailyResetSeconds,
+        message: typeof overrides.message === 'string' ? overrides.message : null,
+        sourceIdent: typeof overrides.sourceIdent === 'string' ? overrides.sourceIdent : null,
+        reloadUrl: typeof overrides.reloadUrl === 'string' ? overrides.reloadUrl : null
+    };
+}
+
 export {
     buildReportData
 };

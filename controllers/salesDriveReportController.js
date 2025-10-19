@@ -9,7 +9,9 @@ import {
     getOrCreateReportJob,
     buildReportData,
     DateRangeError,
-    getSalesdriveSources
+    getSalesdriveSources,
+    resolveSourcesForRequest,
+    buildOverlayMeta
 } from '../services/reportDataService.js';
 
 const REPORT_TYPE = 'salesdrive';
@@ -44,6 +46,8 @@ export async function renderSalesDriveReport(req, res) {
 
         const rateLimitMeta = getRateLimitMeta();
         const salesDriveSources = getSalesdriveSources();
+        const { sourcesToProcess } = resolveSourcesForRequest(selectedSourceIds);
+        const overlaySourceCount = Array.isArray(sourcesToProcess) ? sourcesToProcess.length : 0;
         const directDecision = shouldProcessDirectly(selectedSourceIds);
 
         if (directDecision.canProcessDirect) {
@@ -73,7 +77,18 @@ export async function renderSalesDriveReport(req, res) {
                 rateLimitCooldown: directResult.rateLimitCooldown,
                 rateLimitCooldownSeconds: directResult.rateLimitCooldownSeconds,
                 hourlyStats: directResult.hourlyStats,
-                dailyStats: directResult.dailyStats
+                dailyStats: directResult.dailyStats,
+                reportOverlayMeta: buildOverlayMeta({
+                    extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                    remainingSources: overlaySourceCount,
+                    hourlyStats: directResult.hourlyStats,
+                    dailyStats: directResult.dailyStats,
+                    queueAhead: directDecision.limiterState?.pendingRequests,
+                    message: 'Завантажуємо замовлення SalesDrive…',
+                    waitMs: Number.isFinite(directResult.rateLimitCooldownSeconds)
+                        ? directResult.rateLimitCooldownSeconds * 1000
+                        : undefined
+                })
             });
         }
 
@@ -116,7 +131,18 @@ export async function renderSalesDriveReport(req, res) {
                 rateLimitCooldown: job.result.rateLimitCooldown,
                 rateLimitCooldownSeconds: job.result.rateLimitCooldownSeconds,
                 hourlyStats: job.result.hourlyStats,
-                dailyStats: job.result.dailyStats
+                dailyStats: job.result.dailyStats,
+                reportOverlayMeta: buildOverlayMeta({
+                    extraQueuedRequests: Math.max(overlaySourceCount - 1, 0),
+                    remainingSources: overlaySourceCount,
+                    hourlyStats: job.result.hourlyStats,
+                    dailyStats: job.result.dailyStats,
+                    queueAhead: directDecision.limiterState?.pendingRequests,
+                    message: 'Завантажуємо замовлення SalesDrive…',
+                    waitMs: Number.isFinite(job.result.rateLimitCooldownSeconds)
+                        ? job.result.rateLimitCooldownSeconds * 1000
+                        : undefined
+                })
             });
         }
 

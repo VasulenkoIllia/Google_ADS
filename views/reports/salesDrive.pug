@@ -1,3 +1,5 @@
+include ../partials/reportLoadingOverlay.pug
+
 doctype html
 html(lang="uk")
   head
@@ -46,7 +48,7 @@ html(lang="uk")
             br
             | За добу виконано #{dailyUsed}, залишилось #{dailyRemaining}. Оновлення добової квоти приблизно через #{dailyResetHours} год #{dailyResetMinutes} хв.
 
-      form.form-inline.mb-4(action="/reports/salesdrive", method="get")
+      form.form-inline.mb-4(action="/reports/salesdrive", method="get", data-report-form)
         .form-group.mr-2
           label.sr-only(for="startDate") Початок
           input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
@@ -65,7 +67,7 @@ html(lang="uk")
             else
               option(value="", selected=false) Джерела не налаштовані
         button.btn.btn-primary(type="submit") Оновити
-        a.btn.btn-outline-secondary.ml-2(href="/reports/salesdrive") Скинути
+        a.btn.btn-outline-secondary.ml-2(href="/reports/salesdrive", data-report-link) Скинути
         if salesDriveLimit
           input(type="hidden", name="limit", value=salesDriveLimit)
 
@@ -153,6 +155,8 @@ html(lang="uk")
               tr
                 td(colspan="7").text-center Даних не знайдено
 
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

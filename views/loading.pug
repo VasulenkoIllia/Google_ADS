@@ -1,3 +1,5 @@
+include partials/reportLoadingOverlay.pug
+
 html(lang="uk")
   head
     meta(charset="UTF-8")
@@ -10,89 +12,35 @@ html(lang="uk")
     title Формування звіту
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body.bg-light
-    .d-flex.justify-content-center.align-items-center(style="min-height: 100vh;")
-      .card.shadow-sm(style="max-width: 420px;")
-        .card-body.text-center
-          h1.h4.mb-3 Дані ще збираються
-          if message
-            p.text-muted.mb-2= message
-          else
-            p.text-muted.mb-2 CRM наклала обмеження на частоту запитів. Ми продовжимо автоматично.
-          if waitSeconds && waitSeconds > 0
-            p.lead.mb-3
-              | Орієнтовний час очікування:&nbsp;
-              if reloadUrl && reloadUrl.length
-                strong#etaCounter(data-seconds=waitSeconds data-reload=reloadUrl)= waitSeconds + ' с'
-              else
-                strong#etaCounter(data-seconds=waitSeconds)= waitSeconds + ' с'
-          if queueInfo
-            - const fallbackMaxPerInterval = typeof salesDriveLimit === 'number' && salesDriveLimit > 0 ? salesDriveLimit : 10
-            - const fallbackIntervalSeconds = typeof intervalSeconds === 'number' && intervalSeconds > 0 ? intervalSeconds : 60
-            - const maxPerInterval = typeof queueInfo.maxPerInterval === 'number' && queueInfo.maxPerInterval > 0 ? queueInfo.maxPerInterval : fallbackMaxPerInterval
-            - const intervalSecs = typeof queueInfo.intervalSeconds === 'number' && queueInfo.intervalSeconds > 0 ? queueInfo.intervalSeconds : fallbackIntervalSeconds
-            - const queueAheadCount = typeof queueInfo.queueAhead === 'number' ? queueInfo.queueAhead : 0
-            - const estimatedTotal = Math.max(typeof queueInfo.estimatedTotalRequests === 'number' ? queueInfo.estimatedTotalRequests : queueAheadCount, 1)
-            if queueInfo.sourceIdent
-              p.text-muted.small.mb-1 Поточне джерело: #{queueInfo.sourceIdent}
-            p.text-muted.small.mb-1
-              | У черзі приблизно&nbsp;
-              strong= estimatedTotal
-              | &nbsp;запитів
-              if typeof queueInfo.remainingSources === 'number' && queueInfo.remainingSources >= 0
-                | , із них #{queueInfo.remainingSources} джерел.
-            if typeof queueInfo.pendingPagesForSource === 'number' && queueInfo.pendingPagesForSource > 0
-              p.text-muted.small.mb-1 Залишилось завантажити ще #{queueInfo.pendingPagesForSource} сторінок для поточного джерела.
-            p.text-muted.small.mb-3
-              | Пропускна здатність CRM: #{maxPerInterval} запитів / #{intervalSecs} с.
-            if typeof queueInfo.hourlyLimit === 'number'
-              - const hourlyRemainingRaw = typeof queueInfo.hourlyRemaining === 'number' ? queueInfo.hourlyRemaining : queueInfo.hourlyLimit
-              - const hourlyRemaining = Math.max(hourlyRemainingRaw, 0)
-              - const hourlyResetSeconds = typeof queueInfo.hourlyResetSeconds === 'number' ? Math.max(queueInfo.hourlyResetSeconds, 0) : 0
-              - const hourlyResetMinutes = Math.floor(hourlyResetSeconds / 60)
-              - const hourlyResetSecs = hourlyResetSeconds % 60
-              p.text-muted.small.mb-1 CRM дозволяє #{queueInfo.hourlyLimit} запитів / годину; залишилось #{hourlyRemaining}.
-              p.text-muted.small.mb-3 Оновлення квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
-            if typeof queueInfo.dailyLimit === 'number'
-              - const dailyRemainingRaw = typeof queueInfo.dailyRemaining === 'number' ? queueInfo.dailyRemaining : queueInfo.dailyLimit
-              - const dailyRemaining = Math.max(dailyRemainingRaw, 0)
-              - const dailyResetSeconds = typeof queueInfo.dailyResetSeconds === 'number' ? Math.max(queueInfo.dailyResetSeconds, 0) : 0
-              - const dailyResetMinutes = Math.floor(dailyResetSeconds / 60)
-              - const dailyResetHours = Math.floor(dailyResetMinutes / 60)
-              - const dailyResetMinutesRemainder = dailyResetMinutes % 60
-              p.text-muted.small.mb-1 Добова квота CRM: #{queueInfo.dailyLimit} запитів; залишилось #{dailyRemaining}.
-              p.text-muted.small.mb-3 Оновлення квоти приблизно через #{dailyResetHours} год #{dailyResetMinutesRemainder} хв.
-          else if salesDriveLimit && intervalSeconds
-            p.text-muted.small.mb-3
-              | Поточна квота: #{salesDriveLimit} запитів за #{intervalSeconds} секунд.
-            if typeof hourlyLimit === 'number'
-              p.text-muted.small.mb-3 Максимальна годинна квота CRM: #{hourlyLimit} запитів.
+    - const resolvedMinuteLimit = Number.isFinite(salesDriveLimit) ? salesDriveLimit : (queueInfo && Number.isFinite(queueInfo.maxPerInterval) ? queueInfo.maxPerInterval : null)
+    - const resolvedIntervalSeconds = Number.isFinite(intervalSeconds) ? intervalSeconds : (queueInfo && Number.isFinite(queueInfo.intervalSeconds) ? queueInfo.intervalSeconds : null)
+    - const resolvedHourlyLimit = Number.isFinite(hourlyLimit) ? hourlyLimit : (queueInfo && Number.isFinite(queueInfo.hourlyLimit) ? queueInfo.hourlyLimit : null)
+    - const resolvedDailyLimit = Number.isFinite(dailyLimit) ? dailyLimit : (queueInfo && Number.isFinite(queueInfo.dailyLimit) ? queueInfo.dailyLimit : null)
+    - const overlayMeta = {}
+    - overlayMeta.waitSeconds = Number.isFinite(waitSeconds) ? waitSeconds : null
+    - overlayMeta.queueAhead = queueInfo && Number.isFinite(queueInfo.queueAhead) ? queueInfo.queueAhead : null
+    - overlayMeta.estimatedTotalRequests = queueInfo && Number.isFinite(queueInfo.estimatedTotalRequests) ? queueInfo.estimatedTotalRequests : null
+    - overlayMeta.remainingSources = queueInfo && Number.isFinite(queueInfo.remainingSources) ? queueInfo.remainingSources : null
+    -
+      overlayMeta.rateLimitMeta = {
+        minuteLimit: resolvedMinuteLimit,
+        minuteIntervalSeconds: resolvedIntervalSeconds,
+        hourlyLimit: resolvedHourlyLimit,
+        dailyLimit: resolvedDailyLimit
+      };
+    - overlayMeta.hourlyRemaining = queueInfo && Number.isFinite(queueInfo.hourlyRemaining) ? queueInfo.hourlyRemaining : null
+    - overlayMeta.hourlyResetSeconds = queueInfo && Number.isFinite(queueInfo.hourlyResetSeconds) ? queueInfo.hourlyResetSeconds : null
+    - overlayMeta.dailyRemaining = queueInfo && Number.isFinite(queueInfo.dailyRemaining) ? queueInfo.dailyRemaining : null
+    - overlayMeta.dailyResetSeconds = queueInfo && Number.isFinite(queueInfo.dailyResetSeconds) ? queueInfo.dailyResetSeconds : null
+    - overlayMeta.sourceIdent = queueInfo && typeof queueInfo.sourceIdent === 'string' ? queueInfo.sourceIdent : null
+    - overlayMeta.message = typeof message === 'string' ? message : null
+    .position-relative(style="min-height: 100vh;")
+      +reportLoadingOverlay(overlayMeta, { id: 'pageReportOverlay', autoShow: true, reloadUrl: reloadUrl })
+      noscript
+        .container.pt-5
+          .alert.alert-info
+            | CRM формує дані. Увімкніть JavaScript для автоматичного оновлення або перейдіть за посиланням:&nbsp;
+            if reloadUrl && reloadUrl.length
+              a(href=reloadUrl) оновити сторінку
             else
-              p.text-muted.small.mb-3 Максимальна годинна квота CRM: 100 запитів.
-            if typeof dailyLimit === 'number'
-              p.text-muted.small.mb-3 Добова квота CRM: #{dailyLimit} запитів.
-          p.text-muted.small.mb-0 Сторінка оновиться автоматично після завершення обробки.
-    if waitSeconds && waitSeconds > 0
-      script.
-        (function() {
-          var el = document.getElementById('etaCounter');
-          var seconds = parseInt(el?.dataset.seconds || '0', 10);
-          var reloadTarget = el?.dataset.reload || null;
-          if (!el || !seconds || seconds <= 0) {
-            return;
-          }
-          var remaining = seconds;
-          el.textContent = remaining + ' с';
-          var timer = setInterval(function() {
-            remaining -= 1;
-            if (remaining <= 0) {
-              clearInterval(timer);
-              if (reloadTarget && reloadTarget.length) {
-                window.location.href = reloadTarget;
-              } else {
-                window.location.reload();
-              }
-              return;
-            }
-            el.textContent = remaining + ' с';
-          }, 1000);
-        })();
+              span повторіть запит пізніше.

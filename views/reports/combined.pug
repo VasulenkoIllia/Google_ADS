@@ -1,3 +1,5 @@
+include ../partials/reportLoadingOverlay.pug
+
 doctype html
 mixin summaryCards(summary)
   - const headlineCards = []
@@ -85,7 +87,7 @@ html(lang="uk")
             br
             | За добу виконано #{dailyUsed}, залишилось #{dailyRemaining}. Оновлення добової квоти приблизно через #{dailyResetHours} год #{dailyResetMinutes} хв.
 
-      form.form-inline.mb-4(action="/reports/combined", method="get")
+      form.form-inline.mb-4(action="/reports/combined", method="get", data-report-form)
         .form-group.mr-2
           label.sr-only(for="startDate") Початок
           input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
@@ -112,7 +114,7 @@ html(lang="uk")
           - const planProfitPlaceholder = planDefaults && typeof planDefaults.profit === 'number' ? planDefaults.profit.toFixed(2) : ''
           input#planProfit.form-control(type="number", min="0", step="0.01", name="planProfit", value=planInputs && planInputs.profit !== undefined ? planInputs.profit : '', placeholder=planProfitPlaceholder, title=`Поточний план прибутку (місяць): ${planProfitPlaceholder || 'невизначено'}`)
         button.btn.btn-primary(type="submit") Оновити
-        a.btn.btn-outline-secondary.ml-2(href="/reports/combined") Скинути
+        a.btn.btn-outline-secondary.ml-2(href="/reports/combined", data-report-link) Скинути
         if salesDriveLimit
           input(type="hidden", name="limit", value=salesDriveLimit)
 
@@ -165,6 +167,8 @@ html(lang="uk")
               tr
                 td(colspan="11").text-center Даних не знайдено
 
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

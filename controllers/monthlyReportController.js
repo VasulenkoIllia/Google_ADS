@@ -8,7 +8,8 @@ import {
     buildReportJobKey,
     getOrCreateReportJob,
     getRateLimitMeta,
-    MIN_PLACEHOLDER_WAIT_SECONDS
+    MIN_PLACEHOLDER_WAIT_SECONDS,
+    buildOverlayMeta
 } from '../services/reportDataService.js';
 
 function parseYearMonth(inputYear, inputMonth) {
@@ -28,6 +29,15 @@ export async function renderMonthlyReport(req, res) {
     try {
         await ensureDataDirectories();
         const report = await composeMonthlyReportData();
+        const latestMonth = Array.isArray(report.months) && report.months.length > 0
+            ? report.months[report.months.length - 1]
+            : null;
+        const sourcesCount = Array.isArray(latestMonth?.sources) ? latestMonth.sources.length : 0;
+        const overlayMeta = buildOverlayMeta({
+            extraQueuedRequests: Math.max(sourcesCount - 1, 0),
+            remainingSources: sourcesCount,
+            message: 'Готуємо статичний місячний звіт…'
+        });
         const activeMonthKey = typeof req.query?.activeMonth === 'string' ? req.query.activeMonth : null;
         const successMessage = typeof req.query?.success === 'string' && req.query.success.length > 0
             ? req.query.success
@@ -39,7 +49,8 @@ export async function renderMonthlyReport(req, res) {
             months: report.months,
             activeMonthKey,
             successMessage,
-            errorMessage
+            errorMessage,
+            reportOverlayMeta: overlayMeta
         });
     } catch (error) {
         console.error('[monthlyReport] render failed:', error);

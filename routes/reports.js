@@ -9,6 +9,11 @@ import {
     handleMonthlyPlanUpdate
 } from '../controllers/monthlyReportController.js';
 import {
+    renderMonthlyScheduleConfig,
+    handleMonthlyScheduleUpdate,
+    handleMonthlyScheduleRunNow
+} from '../controllers/monthlyScheduleController.js';
+import {
     renderSourcesConfig,
     handleSourceAdd,
     handleSourceUpdate,
@@ -18,6 +23,9 @@ import {
 const router = express.Router();
 
 router.get('/monthly', renderMonthlyReport);
+router.get('/monthly/schedule', renderMonthlyScheduleConfig);
+router.post('/monthly/schedule', handleMonthlyScheduleUpdate);
+router.post('/monthly/schedule/run', handleMonthlyScheduleRunNow);
 router.get('/monthly/rebuild', handleMonthlyRebuild);
 router.post('/monthly/rebuild', handleMonthlyRebuild);
 router.post('/monthly/plans', handleMonthlyPlanUpdate);

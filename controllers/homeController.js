@@ -1,4 +1,5 @@
-import { getSalesdriveSources } from '../services/reportDataService.js';
+import { getSalesdriveSources, buildOverlayMeta } from '../services/reportDataService.js';
+import { getMonthlyScheduleOverview } from '../services/monthlyScheduleService.js';
 
 const REPORT_LIST = [
     {
@@ -28,10 +29,23 @@ const REPORT_LIST = [
     }
 ];
 
-export function renderHome(req, res) {
-    const sources = getSalesdriveSources();
-    return res.render('home', {
-        reports: REPORT_LIST,
-        sourcesCount: Array.isArray(sources) ? sources.length : 0
-    });
+export async function renderHome(req, res, next) {
+    try {
+        const sources = getSalesdriveSources();
+        const sourcesCount = Array.isArray(sources) ? sources.length : 0;
+        const scheduleOverview = await getMonthlyScheduleOverview();
+        const overlayMeta = buildOverlayMeta({
+            extraQueuedRequests: Math.max(sourcesCount - 1, 0),
+            remainingSources: sourcesCount,
+            message: 'Готуємо дані…'
+        });
+        return res.render('home', {
+            reports: REPORT_LIST,
+            sourcesCount,
+            scheduleOverview,
+            reportOverlayMeta: overlayMeta
+        });
+    } catch (error) {
+        next(error);
+    }
 }

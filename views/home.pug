@@ -1,3 +1,5 @@
+include partials/reportLoadingOverlay.pug
+
 doctype html
 html(lang="uk")
   head
@@ -9,6 +11,20 @@ html(lang="uk")
     .container.py-5
       h1.mb-3.text-primary Аналітичні звіти
       p.text-muted.mb-4 Оберіть звіт, щоб налаштувати фільтри та сформувати вибірку даних.
+      - const scheduleConfig = scheduleOverview && scheduleOverview.config ? scheduleOverview.config : null
+      - const scheduleNextRunLabel = scheduleOverview && scheduleOverview.nextRunAt ? new Date(scheduleOverview.nextRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' }) : 'Не заплановано'
+      - const scheduleFrequencyLabel = scheduleConfig && scheduleConfig.frequency === 'weekly' ? 'Щотижня' : 'Щодня'
+      - const scheduleRangeType = scheduleConfig && scheduleConfig.range ? scheduleConfig.range.type : null
+      - const scheduleRangeCount = scheduleConfig && scheduleConfig.range ? scheduleConfig.range.count : null
+      - let scheduleRangeLabel = '—';
+      - if (scheduleRangeType === 'all') {
+      -   scheduleRangeLabel = 'Усі доступні місяці';
+      - } else if (scheduleRangeType === 'last') {
+      -   scheduleRangeLabel = `Останні ${(scheduleRangeCount || 1)} міс.`;
+      - } else if (scheduleRangeType === 'current') {
+      -   scheduleRangeLabel = 'Лише поточний місяць';
+      - }
+      - const scheduleStatusLabel = scheduleConfig && scheduleConfig.enabled ? 'Увімкнено' : 'Вимкнено'
       .row
         each report in reports
           .col-xl-3.col-lg-4.col-md-6.mb-4
@@ -16,18 +32,33 @@ html(lang="uk")
               .card-body.d-flex.flex-column
                 h5.card-title= report.title
                 p.card-text.flex-grow-1= report.description
-                a.btn.btn-primary.mt-3(href=`/reports/${report.id}`) Перейти до звіту
+                a.btn.btn-primary.mt-3(data-report-link href=`/reports/${report.id}`) Перейти до звіту
         .col-xl-3.col-lg-4.col-md-6.mb-4
           .card.border-info.h-100
             .card-body.d-flex.flex-column
               h5.card-title Керування джерелами
               p.card-text.flex-grow-1 Створюйте, редагуйте та видаляйте джерела SalesDrive для подальшого відображення у звітах.
-              a.btn.btn-outline-info.mt-3(href="/reports/config/sources") Керувати джерелами
+              a.btn.btn-outline-info.mt-3(data-report-link href="/reports/config/sources") Керувати джерелами
+        .col-xl-3.col-lg-4.col-md-6.mb-4
+          .card.border-warning.h-100
+            .card-body.d-flex.flex-column
+              h5.card-title Планувальник статичного звіту
+              p.card-text.flex-grow-1
+                | Статус: #{scheduleStatusLabel}
+                br
+                | #{scheduleFrequencyLabel} о #{scheduleConfig ? scheduleConfig.time : '—'}.
+                br
+                | #{scheduleRangeLabel}
+                br
+                | Наступний запуск: #{scheduleNextRunLabel}
+              a.btn.btn-outline-warning.mt-3(data-report-link href="/reports/monthly/schedule") Налаштувати розклад
       if typeof sourcesCount === 'number'
         p.text-muted.small.mt-4
           | У конфігурації доступно #{sourcesCount} джерел продажів.
           |  
           a(href="/reports/config/sources") Керувати списком
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

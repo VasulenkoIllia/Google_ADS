@@ -1,0 +1,137 @@
+include ../partials/reportLoadingOverlay.pug
+
+- const WEEKDAY_OPTIONS = [{ value: 'monday', label: 'Понеділок' }, { value: 'tuesday', label: 'Вівторок' }, { value: 'wednesday', label: 'Середа' }, { value: 'thursday', label: 'Четвер' }, { value: 'friday', label: "П'ятниця" }, { value: 'saturday', label: 'Субота' }, { value: 'sunday', label: 'Неділя' }];
+
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Налаштування автоматичного формування звітів
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+  body.bg-light
+    .container.py-4
+      .d-flex.justify-content-between.align-items-center.mb-4
+        div
+          h1.mb-1.text-primary Налаштування автоматичного формування
+          p.text-muted.mb-0 Статичний місячний звіт
+        a.btn.btn-outline-secondary(href="/", data-report-link) До вибору звітів
+
+      if successMessage
+        .alert.alert-success= successMessage
+      if errorMessage
+        .alert.alert-danger= errorMessage
+
+      .row
+        .col-lg-7
+          .card.mb-4
+            .card-header.bg-white
+              h2.h5.mb-0 Конфігурація планувальника
+            .card-body
+              form(method="post", action="/reports/monthly/schedule", data-report-form)
+                .custom-control.custom-switch.mb-3
+                  input#enabled.custom-control-input(type="checkbox", name="enabled", checked=config.enabled ? true : false)
+                  label.custom-control-label(for="enabled") Автоматичне формування увімкнено
+
+                .form-group
+                  label.font-weight-bold Інтервал запуску
+                  .form-check
+                    input#frequency-daily.form-check-input(type="radio", name="frequency", value="daily", checked=config.frequency === 'daily')
+                    label.form-check-label(for="frequency-daily") Щодня
+                  .form-check
+                    input#frequency-weekly.form-check-input(type="radio", name="frequency", value="weekly", checked=config.frequency === 'weekly')
+                    label.form-check-label(for="frequency-weekly") Щотижня
+
+                .form-row
+                  .col-md-6.mb-3
+                    label(for="time") Час запуску
+                    input#time.form-control(type="time", name="time", required, value=config.time || '01:00')
+                  .col-md-6.mb-3(id="weekday-wrapper")
+                    label(for="weekday") День тижня
+                    select#weekday.form-control(name="weekday", disabled=config.frequency !== 'weekly')
+                      each option in WEEKDAY_OPTIONS
+                        option(value=option.value selected=config.weekday === option.value)= option.label
+
+                .form-group.mt-3
+                  label.font-weight-bold Місяці для оновлення
+                  .form-check
+                    input#range-current.form-check-input(type="radio", name="rangeType", value="current", checked=config.range.type === 'current')
+                    label.form-check-label(for="range-current") Лише поточний місяць
+                  .form-check
+                    input#range-last.form-check-input(type="radio", name="rangeType", value="last", checked=config.range.type === 'last')
+                    label.form-check-label(for="range-last") Останні
+                      span.ml-1
+                        input#rangeCount.form-control.form-control-sm.d-inline-block(type="number", name="rangeCount", min="1", max="12", value=config.range.type === 'last' ? config.range.count : 3, style="width: 80px;", disabled=config.range.type !== 'last')
+                        |  місяців
+                  .form-check
+                    input#range-all.form-check-input(type="radio", name="rangeType", value="all", checked=config.range.type === 'all')
+                    label.form-check-label(for="range-all") Усі доступні місяці
+
+                button.btn.btn-primary.mt-3(type="submit") Зберегти налаштування
+
+        .col-lg-5
+          .card.mb-4
+            .card-header.bg-white
+              h2.h5.mb-0 Статус планувальника
+            .card-body
+              dl.row.mb-0
+                dt.col-sm-5 Наступний запуск
+                dd.col-sm-7= nextRunAt
+                dt.col-sm-5 Останній запуск
+                dd.col-sm-7= lastRunAt
+                dt.col-sm-5 Поточний стан
+                dd.col-sm-7= isRunning ? 'Виконується…' : 'Очікує графіка'
+                if lastRunStatus
+                  dt.col-sm-5 Результат
+                  dd.col-sm-7
+                    if lastRunStatus === 'success'
+                      span.text-success Успішно
+                    else if lastRunStatus === 'partial'
+                      span.text-warning З попередженнями
+                    else if lastRunStatus === 'error'
+                      span.text-danger Помилка
+                    else
+                      span.text-muted= lastRunStatus
+                if lastRunSummary && Array.isArray(lastRunSummary.processed)
+                  dt.col-sm-5 Оновлено місяців
+                  dd.col-sm-7= lastRunSummary.processed.length
+                if lastRunError
+                  dt.col-sm-5 Деталі
+                  dd.col-sm-7.text-danger= lastRunError
+
+          .card
+            .card-header.bg-white
+              h2.h5.mb-0 Запустити зараз
+            .card-body
+              p.text-muted.mb-3 Використовуються поточні налаштування. Оновлення може тривати кілька хвилин.
+              form(method="post", action="/reports/monthly/schedule/run", data-report-form)
+                button.btn.btn-outline-primary(type="submit" disabled=isRunning) Запустити формування
+
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
+    script.
+      (function() {
+        function toggleWeeklyControls() {
+          var freq = document.querySelector('input[name="frequency"]:checked');
+          var weekly = freq && freq.value === 'weekly';
+          var weekdaySelect = document.getElementById('weekday');
+          var rangeCount = document.getElementById('rangeCount');
+          if (weekdaySelect) {
+            weekdaySelect.disabled = !weekly;
+          }
+          var lastRadio = document.getElementById('range-last');
+          if (rangeCount && lastRadio) {
+            rangeCount.disabled = !lastRadio.checked;
+          }
+        }
+        document.querySelectorAll('input[name="frequency"]').forEach(function(radio) {
+          radio.addEventListener('change', toggleWeeklyControls);
+        });
+        document.querySelectorAll('input[name="rangeType"]').forEach(function(radio) {
+          radio.addEventListener('change', toggleWeeklyControls);
+        });
+        toggleWeeklyControls();
+      })();
+    script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

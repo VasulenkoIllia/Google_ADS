@@ -4,6 +4,7 @@ import {
     updateSalesdriveSource,
     removeSalesdriveSource
 } from '../services/salesdriveSourcesService.js';
+import { buildOverlayMeta } from '../services/reportDataService.js';
 
 function buildRedirectUrl(message = '', type = 'success') {
     if (!message) {
@@ -18,10 +19,14 @@ export async function renderSourcesConfig(req, res) {
     try {
         const sources = await loadSalesdriveSources();
         const { success = '', error = '' } = req.query || {};
+        const overlayMeta = buildOverlayMeta({
+            remainingSources: Array.isArray(sources) ? sources.length : null
+        });
         return res.render('config/sources', {
             sources,
             successMessage: typeof success === 'string' && success.length > 0 ? success : null,
-            errorMessage: typeof error === 'string' && error.length > 0 ? error : null
+            errorMessage: typeof error === 'string' && error.length > 0 ? error : null,
+            reportOverlayMeta: overlayMeta
         });
     } catch (error) {
         console.error('[sourcesConfig] render failed:', error);

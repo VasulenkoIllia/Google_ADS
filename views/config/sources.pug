@@ -1,3 +1,5 @@
+include ../partials/reportLoadingOverlay.pug
+
 doctype html
 html(lang="uk")
   head
@@ -40,9 +42,9 @@ html(lang="uk")
                       td
                         input.form-control(type="text", name="nameView", value=source.nameView, form=formId)
                       td.text-right
-                        form.d-inline(id=formId, method="post", action=`/reports/config/sources/${source.id}/update`)
+                        form.d-inline(id=formId, method="post", action=`/reports/config/sources/${source.id}/update`, data-report-form)
                           button.btn.btn-sm.btn-primary.mr-2(type="submit") Зберегти
-                        form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');")
+                        form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');", data-report-form)
                           button.btn.btn-sm.btn-outline-danger(type="submit") Видалити
           else
             .p-3
@@ -52,7 +54,7 @@ html(lang="uk")
         .card-header.bg-white
           h2.h5.mb-0 Додати нове джерело
         .card-body
-          form(method="post", action="/reports/config/sources/add")
+          form(method="post", action="/reports/config/sources/add", data-report-form)
             .form-row
               .col-md-3.mb-3
                 label(for="new-id") ID
@@ -64,3 +66,5 @@ html(lang="uk")
                 label(for="new-nameView") Назва для відображення
                 input#new-nameView.form-control(type="text", name="nameView")
             button.btn.btn-success(type="submit") Додати джерело
+    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
+    +reportLoadingOverlay(overlayMeta)
