@@ -34,6 +34,5 @@ docker-compose.override.yml
 *.swo
 
 # Dependencies
-package-lock.json
 pnpm-lock.yaml
 yarn.lock
