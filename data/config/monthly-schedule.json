@@ -6,12 +6,12 @@
   "range": {
     "type": "current"
   },
-  "updatedAt": "2025-10-19T10:27:57.479Z",
-  "lastRunAt": "2025-10-19T00:57:51.914Z",
+  "updatedAt": "2025-10-21T01:00:08.329Z",
+  "lastRunAt": "2025-10-21T01:00:08.329Z",
   "lastRunStatus": "success",
   "lastRunSummary": {
-    "triggeredBy": "manual",
-    "startedAt": "2025-10-19T00:55:54.317Z",
+    "triggeredBy": "auto",
+    "startedAt": "2025-10-21T01:00:00.008Z",
     "processed": [
       "2025-10"
     ],
