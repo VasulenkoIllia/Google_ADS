@@ -1,7 +1,7 @@
 .settings-section
   .panel-card
     .panel-header
-      h2 Джерела SalesDrive
+      h2 Источники SalesDrive
       span.status-tag.badge.badge-primary #{sources && sources.length ? sources.length : 0}
     .panel-body.pt-0
       if sources && sources.length
@@ -11,8 +11,8 @@
               tr
                 th.text-uppercase.small.text-muted ID
                 th.text-uppercase.small.text-muted Ident
-                th.text-uppercase.small.text-muted Назва для відображення
-                th.text-right.text-uppercase.small.text-muted(style="width: 220px;") Дії
+                th.text-uppercase.small.text-muted Отображаемое название
+                th.text-right.text-uppercase.small.text-muted(style="width: 220px;") Действия
             tbody
               each source in sources
                 - const formId = `form-update-${source.id}`
@@ -28,19 +28,19 @@
                       input(type="hidden", name="returnTo", value="/settings?tab=sources")
                       button.btn.btn-sm.btn-primary.rounded-pill.mr-2(type="submit")
                         i.bi.bi-save.mr-1
-                        | Зберегти
-                    form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');", data-report-form)
+                        | Сохранить
+                    form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Удалить этот источник?');", data-report-form)
                       input(type="hidden", name="returnTo", value="/settings?tab=sources")
                       button.btn.btn-sm.btn-outline-danger.rounded-pill(type="submit")
                         i.bi.bi-trash.mr-1
-                        | Видалити
+                        | Удалить
       else
         .p-4.text-center.text-muted
           span.d-block.display-4.mb-2 🗂️
-          span Немає налаштованих джерел. Створіть перше за допомогою форми нижче.
+          span Источники ещё не настроены. Добавьте первый через форму ниже.
   .panel-card
     .panel-header
-      h2 Додати нове джерело
+      h2 Добавить новый источник
     .panel-body
       form(method="post", action="/reports/config/sources/add", data-report-form)
         input(type="hidden", name="returnTo", value="/settings?tab=sources")
@@ -52,6 +52,6 @@
             label(for="new-ident") Ident
             input#new-ident.form-control(type="text", name="ident", required)
           .col-md-5.mb-3
-            label(for="new-nameView") Назва для відображення
+            label(for="new-nameView") Отображаемое название
             input#new-nameView.form-control(type="text", name="nameView")
-        button.btn.btn-success(type="submit") Додати джерело
+        button.btn.btn-success(type="submit") Добавить источник

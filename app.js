@@ -8,13 +8,13 @@ import { loadSalesdriveSources } from './services/salesdriveSourcesService.js';
 import { initializeMonthlyScheduler } from './services/monthlyScheduleService.js';
 import { pinAccessMiddleware } from './middlewares/pinAccessMiddleware.js';
 
-// Завантажуємо змінні з .env файлу в process.env
+// Загружаем переменные из .env в process.env
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Налаштування шаблонізатора Pug
+// Настройка шаблонизатора Pug
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.set('query parser', 'extended');
@@ -38,9 +38,9 @@ app.use('/reports', reportsRouter);
 
 Promise.all([ensureDataDirectories(), loadSalesdriveSources(), initializeMonthlyScheduler()])
   .catch(error => {
-    console.error('[monthlyReport] Не вдалося підготувати каталоги даних:', error);
+    console.error('[monthlyReport] Не удалось подготовить каталоги данных:', error);
   });
 
 app.listen(port, () => {
-  console.log(`Сервер запущено на http://localhost:${port}`);
+  console.log(`Сервер запущен на http://localhost:${port}`);
 });

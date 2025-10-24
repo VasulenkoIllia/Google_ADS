@@ -82,7 +82,7 @@ export async function renderSummaryReport(req, res) {
                 hourlyStats: directResult.hourlyStats,
                 dailyStats: directResult.dailyStats,
                 queueAhead: directDecision.limiterState?.pendingRequests,
-                message: 'Готуємо зведений звіт…',
+                message: 'Готовим сводный отчёт…',
                 waitMs: Number.isFinite(directResult.rateLimitCooldownSeconds)
                     ? directResult.rateLimitCooldownSeconds * 1000
                     : undefined
@@ -133,7 +133,7 @@ export async function renderSummaryReport(req, res) {
                 hourlyStats: job.result.hourlyStats,
                 dailyStats: job.result.dailyStats,
                 queueAhead: directDecision.limiterState?.pendingRequests,
-                message: 'Готуємо зведений звіт…',
+                message: 'Готовим сводный отчёт…',
                 waitMs: Number.isFinite(job.result.rateLimitCooldownSeconds)
                     ? job.result.rateLimitCooldownSeconds * 1000
                     : undefined
@@ -156,8 +156,8 @@ export async function renderSummaryReport(req, res) {
 
         if (job.status === 'error') {
             return res.status(500).render('error', {
-                message: job.error?.message || 'Не вдалося сформувати звіт.',
-                source: 'summaryReportController: асинхронна черга',
+                message: job.error?.message || 'Не удалось сформировать отчёт.',
+                source: 'summaryReportController: асинхронная очередь',
                 error: job.error || {}
             });
         }
@@ -176,7 +176,7 @@ export async function renderSummaryReport(req, res) {
         return res.status(202).render('loading', {
             waitSeconds,
             reloadUrl,
-            message: progress.message || 'Формуємо звіт…',
+            message: progress.message || 'Формируем отчёт…',
             alerts: Array.isArray(progress.alerts) ? progress.alerts : [],
             salesDriveLimit: progress.maxPerInterval ?? rateLimitMeta.minuteLimit,
             intervalSeconds: Math.ceil(
@@ -196,13 +196,13 @@ export async function renderSummaryReport(req, res) {
             const includeStack = (process.env.NODE_ENV || '').toLowerCase() !== 'production';
             return res.status(400).render('error', {
                 message: error.message,
-                source: 'summaryReportController: валідація дат',
+                source: 'summaryReportController: проверка дат',
                 error: includeStack ? error : {}
             });
         }
         return res.status(500).render('error', {
-            message: 'Внутрішня помилка під час побудови зведеного звіту.',
-            source: 'summaryReportController: основний обробник',
+            message: 'Внутренняя ошибка при формировании сводного отчёта.',
+            source: 'summaryReportController: основной обработчик',
             error
         });
     }

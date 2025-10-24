@@ -90,7 +90,7 @@ export function pinAccessMiddleware(req, res, next) {
             if (accepted === 'json') {
                 return res.status(401).json({
                     error: 'PASSWORD_REQUIRED',
-                    message: 'Потрібен пароль для доступу.'
+                    message: 'Для доступа требуется пароль.'
                 });
             }
             const nextUrl = encodeURIComponent(req.originalUrl || req.url || '/');

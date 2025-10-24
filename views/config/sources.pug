@@ -1,17 +1,17 @@
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Джерела SalesDrive
+    title Источники SalesDrive
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body
     .container.py-4
       .d-flex.justify-content-between.align-items-center.mb-4
-        h1.mb-0.text-primary Джерела SalesDrive
-        a.btn.btn-outline-secondary(href="/") До вибору звітів
+        h1.mb-0.text-primary Источники SalesDrive
+        a.btn.btn-outline-secondary(href="/") К выбору отчётов
 
       if successMessage
         .alert.alert-success(role="alert")= successMessage
@@ -20,7 +20,7 @@ html(lang="uk")
 
       .card.mb-4
         .card-header.bg-white
-          h2.h5.mb-0 Існуючі джерела
+          h2.h5.mb-0 Текущие источники
         .card-body.p-0
           if sources && sources.length
             .table-responsive
@@ -29,8 +29,8 @@ html(lang="uk")
                   tr
                     th(scope="col") ID
                     th(scope="col") Ident
-                    th(scope="col") Назва для відображення
-                    th(scope="col" style="width: 200px;") Дії
+                    th(scope="col") Отображаемое название
+                    th(scope="col" style="width: 200px;") Действия
                 tbody
                   each source in sources
                     - const formId = `form-update-${source.id}`
@@ -43,16 +43,16 @@ html(lang="uk")
                         input.form-control(type="text", name="nameView", value=source.nameView, form=formId)
                       td.text-right
                         form.d-inline(id=formId, method="post", action=`/reports/config/sources/${source.id}/update`, data-report-form)
-                          button.btn.btn-sm.btn-primary.mr-2(type="submit") Зберегти
-                        form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Видалити це джерело?');", data-report-form)
-                          button.btn.btn-sm.btn-outline-danger(type="submit") Видалити
+                          button.btn.btn-sm.btn-primary.mr-2(type="submit") Сохранить
+                        form.d-inline(method="post", action=`/reports/config/sources/${source.id}/delete`, onsubmit="return confirm('Удалить этот источник?');", data-report-form)
+                          button.btn.btn-sm.btn-outline-danger(type="submit") Удалить
           else
             .p-3
-              .alert.alert-info.mb-0 Джерела ще не налаштовані.
+              .alert.alert-info.mb-0 Источники ещё не настроены.
 
       .card
         .card-header.bg-white
-          h2.h5.mb-0 Додати нове джерело
+          h2.h5.mb-0 Добавить новый источник
         .card-body
           form(method="post", action="/reports/config/sources/add", data-report-form)
             .form-row
@@ -63,8 +63,8 @@ html(lang="uk")
                 label(for="new-ident") Ident
                 input#new-ident.form-control(type="text", name="ident", required)
               .col-md-5.mb-3
-                label(for="new-nameView") Назва для відображення
+                label(for="new-nameView") Отображаемое название
                 input#new-nameView.form-control(type="text", name="nameView")
-            button.btn.btn-success(type="submit") Додати джерело
+            button.btn.btn-success(type="submit") Добавить источник
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)

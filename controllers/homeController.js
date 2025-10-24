@@ -5,28 +5,13 @@ import { loadSecurityConfig } from '../services/securityConfigService.js';
 const REPORT_LIST = [
     {
         id: 'summary',
-        title: 'Зведений звіт',
-        description: 'Комбінований огляд показників Google Ads та SalesDrive з деталізацією за джерелами.'
-    },
-    {
-        id: 'google-ads',
-        title: 'Звіт Google Ads',
-        description: 'Статистика витрат, кліків та показів для рекламних товарів Google Ads.'
-    },
-    {
-        id: 'salesdrive',
-        title: 'Звіт SalesDrive CRM',
-        description: 'Перегляд замовлень та фінансових показників з SalesDrive за обраний період.'
-    },
-    {
-        id: 'combined',
-        title: 'Об’єднаний звіт',
-        description: 'Співставлення замовлень SalesDrive з витратами Google Ads для аналізу ефективності.'
+        title: 'Сводный отчёт',
+        description: 'Динамический обзор показателей SalesDrive и Google Ads с ключевыми KPI за выбранный период.'
     },
     {
         id: 'monthly',
-        title: 'Статичний місячний звіт',
-        description: 'Автоматично сформовані підсумки по всіх джерелах із можливістю коригування планових показників.'
+        title: 'Статический месячный отчёт',
+        description: 'Сохранённые итоги по источникам с возможностью вручную обновлять планы и фактические показатели.'
     }
 ];
 
@@ -41,27 +26,27 @@ export async function renderHome(req, res, next) {
         const scheduleEnabled = Boolean(scheduleConfig.enabled);
         const scheduleInfo = {
             enabled: scheduleEnabled,
-            statusLabel: scheduleEnabled ? 'Увімкнено' : 'Вимкнено',
-            frequencyLabel: scheduleConfig.frequency === 'weekly' ? 'Щотижня' : 'Щодня',
+            statusLabel: scheduleEnabled ? 'Включено' : 'Выключено',
+            frequencyLabel: scheduleConfig.frequency === 'weekly' ? 'Раз в неделю' : 'Ежедневно',
             time: scheduleConfig.time || '—',
             rangeLabel: (() => {
                 const range = scheduleConfig.range || {};
                 if (range.type === 'all') {
-                    return 'Усі доступні місяці';
+                    return 'Все доступные месяцы';
                 }
                 if (range.type === 'last') {
-                    return `Останні ${range.count || 1} міс.`;
+                    return `Последние ${range.count || 1} мес.`;
                 }
-                return 'Лише поточний місяць';
+                return 'Только текущий месяц';
             })(),
             nextRunLabel: scheduleOverview?.nextRunAt
-                ? new Date(scheduleOverview.nextRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' })
-                : 'Не заплановано'
+                ? new Date(scheduleOverview.nextRunAt).toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })
+                : 'Не запланировано'
         };
         const accessEnabled = Boolean(securityConfig.pinEnabled && securityConfig.pinSalt && securityConfig.pinHash);
         const accessInfo = {
             enabled: accessEnabled,
-            statusLabel: accessEnabled ? 'Увімкнено' : 'Вимкнено',
+            statusLabel: accessEnabled ? 'Включено' : 'Выключено',
             username: typeof securityConfig.username === 'string' && securityConfig.username.length > 0
                 ? securityConfig.username
                 : 'gouads'
@@ -69,7 +54,7 @@ export async function renderHome(req, res, next) {
         const overlayMeta = buildOverlayMeta({
             extraQueuedRequests: Math.max(sourcesCount - 1, 0),
             remainingSources: sourcesCount,
-            message: 'Готуємо інформаційну панель…'
+            message: 'Готовим панель данных…'
         });
         return res.render('home', {
             reports: REPORT_LIST,

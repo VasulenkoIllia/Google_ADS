@@ -3,30 +3,22 @@ include ../partials/reportLoadingOverlay.pug
 doctype html
 mixin summaryCards(summary)
   - const headlineCards = []
-  - headlineCards.push({ label: 'Продажі (грн)', value: summary.sales, accent: 'text-primary' })
-  - headlineCards.push({ label: 'Прибуток (грн)', value: summary.profit, accent: 'text-danger' })
+  - headlineCards.push({ label: 'Продажи (грн)', value: summary.sales, accent: 'text-primary' })
+  - headlineCards.push({ label: 'Прибыль (грн)', value: summary.profit, accent: 'text-danger' })
   - headlineCards.push({ label: 'Маржа (грн)', value: summary.margin })
-  - headlineCards.push({ label: 'Витрати на рекламу (грн)', value: summary.adSpend })
+  - headlineCards.push({ label: 'Расходы на рекламу (грн)', value: summary.adSpend })
   - const performanceCards = []
-  - performanceCards.push({ label: 'Impressions', value: summary.impressions })
-  - performanceCards.push({ label: 'Кліки', value: summary.clicks })
+  - performanceCards.push({ label: 'Показы', value: summary.impressions })
+  - performanceCards.push({ label: 'Клики', value: summary.clicks })
   - performanceCards.push({ label: 'CTR', value: `${summary.ctr}%` })
   - performanceCards.push({ label: 'CPA', value: summary.cpa })
-  - performanceCards.push({ label: 'Конверсія кліки→транзакції', value: `${summary.clickToTransConversion}%` })
-  - performanceCards.push({ label: 'Транзакції', value: summary.transactions })
+  - performanceCards.push({ label: 'Конверсия клики→транзакции', value: `${summary.clickToTransConversion}%` })
+  - performanceCards.push({ label: 'Транзакции', value: summary.transactions })
   - performanceCards.push({ label: 'ROI', value: `${summary.roi}%` })
-  - performanceCards.push({ label: '% прибутку від обороту', value: `${summary.profitToSalesRatio}%`, style: summary.profitToSalesRatioStyle })
-  - const planCards = []
-  - planCards.push({ label: 'План продаж (період)', value: summary.planSales })
-  - planCards.push({ label: 'Факт vs план (період)', value: `${summary.salesFactDeviation}%` })
-  - planCards.push({ label: 'План продаж (місяць)', value: summary.planSalesMonthly })
-  - planCards.push({ label: 'План прибутку (період)', value: summary.planProfit })
-  - planCards.push({ label: 'Факт прибутку vs план', value: `${summary.profitFactDeviation}%` })
-  - planCards.push({ label: 'План прибутку (місяць)', value: summary.planProfitMonthly })
-  - planCards.push({ label: 'Середній чек', value: summary.aov })
-  - planCards.push({ label: 'Днів у періоді', value: summary.daysInPeriod })
+  - performanceCards.push({ label: '% прибыли от оборота', value: `${summary.profitToSalesRatio}%`, style: summary.profitToSalesRatioStyle })
+  - const groups = [headlineCards, performanceCards]
 
-  each group, groupIndex in [headlineCards, performanceCards, planCards]
+  each group, groupIndex in groups
     .row(class=groupIndex === 0 ? '' : 'mt-2')
       each metric in group
         .col-xl-3.col-lg-4.col-sm-6.mt-3
@@ -40,11 +32,11 @@ mixin summaryCards(summary)
               else
                 h4.mb-0= metric.value
 
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Зведений звіт
+    title Сводный отчёт
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body
     if alerts && alerts.length
@@ -56,10 +48,10 @@ html(lang="uk")
               span(aria-hidden="true") &times;
     .container-fluid
       .d-flex.justify-content-between.align-items-center.mt-4
-        h1.mb-0.text-primary Зведений звіт
-        a.btn.btn-outline-secondary(href="/") До вибору звітів
+        h1.mb-0.text-primary Сводный отчёт
+        a.btn.btn-outline-secondary(href="/") К выбору отчётов
       p.text-muted.mt-2.mb-4
-        | Період:
+        | Период:
         strong #{startDate} – #{endDate}
       if rateLimitMeta
         - const minuteLimit = rateLimitMeta.minuteLimit
@@ -79,22 +71,23 @@ html(lang="uk")
         - const dailyResetHours = Math.floor(dailyResetSeconds / 3600)
         - const dailyResetMinutes = Math.floor((dailyResetSeconds % 3600) / 60)
         .alert.alert-info(role="alert")
-          | SalesDrive: #{minuteLimit} запитів / #{minuteIntervalSeconds} с, #{hourlyLimit} запитів / годину та #{dailyLimit} запитів / добу.
+          | SalesDrive: #{minuteLimit} запросов / #{minuteIntervalSeconds} с, #{hourlyLimit} в час и #{dailyLimit} в сутки.
           br
-          | Використано #{hourlyUsed}, залишилось #{hourlyRemaining}. Оновлення годинної квоти через #{hourlyResetMinutes} хв #{hourlyResetSecs} с.
+          | Использовано #{hourlyUsed}, осталось #{hourlyRemaining}. Обновление часового лимита через #{hourlyResetMinutes} мин #{hourlyResetSecs} с.
           if typeof dailyLimit === 'number'
             br
-            | За добу виконано #{dailyUsed}, залишилось #{dailyRemaining}. Оновлення добової квоти приблизно через #{dailyResetHours} год #{dailyResetMinutes} хв.
+            | За сутки выполнено #{dailyUsed}, осталось #{dailyRemaining}. Обновление суточного лимита примерно через #{dailyResetHours} ч #{dailyResetMinutes} мин.
 
       form.form-inline.mb-4(action="/reports/summary", method="get", data-report-form)
         .form-group.mr-2
-          label.sr-only(for="startDate") Початок
-          input#startDate.form-control(type="date", name="startDate", value=startDate, max=endDate)
+          label.sr-only(for="startDate") Начало
+          input#startDate.form-control(type="date", name="startDate", value=startDate)
         .form-group.mr-2
-          label.sr-only(for="endDate") Кінець
-          input#endDate.form-control(type="date", name="endDate", value=endDate, min=startDate)
-        .form-group.mr-2
-          label.sr-only(for="source") Джерело продажу
+          label.sr-only(for="endDate") Конец
+          input#endDate.form-control(type="date", name="endDate", value=endDate)
+        .form-group.mr-2.d-flex.flex-column
+          label.sr-only(for="source") Источник продаж
+          button#selectAllSources.btn.btn-sm.btn-outline-secondary.mb-2(type="button") Выбрать все источники
           select#source.form-control(name="source", multiple, size="6")
             if salesDriveIstocniki
               each source in salesDriveIstocniki
@@ -103,28 +96,20 @@ html(lang="uk")
                 - const displayName = nameViewSafe || source.name || source.ident
                 option(value=source.id, selected=isSelected)= `${source.ident} (${displayName || source.id})`
             else
-              option(value="", selected=false) Джерела не налаштовані
-        .form-group.mr-2
-          label.sr-only(for="planSales") План продаж
-          - const planSalesPlaceholder = planDefaults && typeof planDefaults.sales === 'number' ? planDefaults.sales.toFixed(2) : ''
-          input#planSales.form-control(type="number", min="0", step="0.01", name="planSales", value=planInputs && planInputs.sales !== undefined ? planInputs.sales : '', placeholder=planSalesPlaceholder, title=`Поточний план продаж (місяць): ${planSalesPlaceholder || 'невизначено'}`)
-        .form-group.mr-2
-          label.sr-only(for="planProfit") План прибутку
-          - const planProfitPlaceholder = planDefaults && typeof planDefaults.profit === 'number' ? planDefaults.profit.toFixed(2) : ''
-          input#planProfit.form-control(type="number", min="0", step="0.01", name="planProfit", value=planInputs && planInputs.profit !== undefined ? planInputs.profit : '', placeholder=planProfitPlaceholder, title=`Поточний план прибутку (місяць): ${planProfitPlaceholder || 'невизначено'}`)
-        button.btn.btn-primary(type="submit") Оновити
-        a.btn.btn-outline-secondary.ml-2(href="/reports/summary", data-report-link) Скинути
+              option(value="", selected=false) Источники не настроены
+        button.btn.btn-primary(type="submit") Обновить
+        a.btn.btn-outline-secondary.ml-2(href="/reports/summary", data-report-link) Сбросить
         if salesDriveLimit
           input(type="hidden", name="limit", value=salesDriveLimit)
 
       if rateLimitCooldown
         .alert.alert-warning
-          | CRM тимчасово обмежила частоту запитів. Орієнтовний час очікування: #{rateLimitCooldownSeconds || '—'} с.
+          | CRM временно ограничила частоту запросов. Ориентировочное ожидание: #{rateLimitCooldownSeconds || '—'} с.
 
       if summaryReport
         if sourceSummaries && sourceSummaries.length
           if sourceSummaries.length > 1
-            h3.mt-4.text-secondary Деталізація за джерелами
+            h3.mt-4.text-secondary Детализация по источникам
             .accordion(id="sourceSummaryAccordion")
               each sourceSummary, idx in sourceSummaries
                 - const collapseId = `source-summary-${idx}`
@@ -141,36 +126,27 @@ html(lang="uk")
             - const onlySource = sourceSummaries[0]
             - const onlySourceLabelView = typeof onlySource.nameView === 'string' ? onlySource.nameView.trim() : ''
             - const onlySourceLabel = onlySourceLabelView || onlySource.name || onlySource.ident
-            h3.mt-4.text-secondary= `Джерело: ${onlySourceLabel}`
+            h3.mt-4.text-secondary= `Источник: ${onlySourceLabel}`
             +summaryCards(onlySource.summary)
         if sourceSummaries && sourceSummaries.length > 1
           hr.my-4(style="border-top: 3px solid #dc3545;")
-        h3.mt-4.text-danger Загальна інформація по вибраних джерелах
+        h3.mt-4.text-danger Общая информация по выбранным источникам
         +summaryCards(summaryReport)
-        .card.mt-4.border-info
-          .card-header.bg-info.text-white План на місяць
-          .card-body.py-3
-            p.mb-2
-              strong Продаж:
-              |  #{summaryReport.planSalesMonthly} грн
-            p.mb-0
-              strong Прибуток:
-              |  #{summaryReport.planProfitMonthly} грн
       else
-        .alert.alert-warning Не знайдено даних для заданого періоду.
+        .alert.alert-warning Не найдено данных за выбранный период.
 
-      h3.mt-5.text-secondary Замовлення SalesDrive
+      h3.mt-5.text-secondary Заказы SalesDrive
       .table-responsive.mt-3
         table.table.table-striped.table-bordered
           thead.thead-dark
             tr
-              th Order ID
-              th Customer
-              th Order Time
-              th Products
-              th Status
-              th Total Cost
-              th Source Ident
+              th Номер заказа
+              th Клиент
+              th Время заказа
+              th Товары
+              th Статус
+              th Сумма
+              th Источник
           tbody
             if salesDriveData && salesDriveData.length
               each item in salesDriveData
@@ -184,10 +160,23 @@ html(lang="uk")
                   td= item.istocnikProdaziIdent
             else
               tr
-                td(colspan="7").text-center Даних не знайдено
+                td(colspan="7").text-center Данные отсутствуют
 
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+    script.
+      document.addEventListener('DOMContentLoaded', function () {
+        var selectAllButton = document.getElementById('selectAllSources');
+        var sourceSelect = document.getElementById('source');
+        if (!selectAllButton || !sourceSelect) {
+          return;
+        }
+        selectAllButton.addEventListener('click', function () {
+          Array.from(sourceSelect.options).forEach(function (option) {
+            option.selected = true;
+          });
+        });
+      });

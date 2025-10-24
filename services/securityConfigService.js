@@ -87,7 +87,7 @@ export function isValidPassword(rawPassword) {
 
 export async function setPin(password, username = null) {
     if (!isValidPassword(password)) {
-        throw new Error('Пароль має містити від 4 до 32 символів.');
+        throw new Error('Пароль должен содержать от 4 до 32 символов.');
     }
     const salt = generateSalt();
     const pinHash = hashSecret(password.trim(), salt);
@@ -124,7 +124,7 @@ export async function updatePinSettings({ enabled, newPin, username }) {
             return setPin(newPin, nextUsername);
         }
         if (!config.pinHash || !config.pinSalt) {
-            throw new Error('Введіть новий пароль, щоб увімкнути захист.');
+            throw new Error('Введите новый пароль, чтобы включить защиту.');
         }
         const updated = await writeSecurityConfig({
             ...config,

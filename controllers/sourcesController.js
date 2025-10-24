@@ -40,7 +40,7 @@ export async function renderSourcesConfig(req, res) {
     } catch (error) {
         console.error('[sourcesConfig] render failed:', error);
         return res.status(500).render('error', {
-            message: 'Не вдалося завантажити список джерел.',
+            message: 'Не удалось загрузить список источников.',
             source: 'sourcesController: render',
             error
         });
@@ -52,11 +52,11 @@ export async function handleSourceAdd(req, res) {
         const { id, ident, nameView } = req.body || {};
         await addSalesdriveSource({ id, ident, nameView });
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl('Джерело додано успішно.', 'success', target));
+        return res.redirect(buildRedirectUrl('Источник успешно добавлен.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] add failed:', error);
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl(error.message || 'Помилка додавання джерела.', 'error', target));
+        return res.redirect(buildRedirectUrl(error.message || 'Ошибка при добавлении источника.', 'error', target));
     }
 }
 
@@ -66,11 +66,11 @@ export async function handleSourceUpdate(req, res) {
         const { ident, nameView } = req.body || {};
         await updateSalesdriveSource(id, { ident, nameView });
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl('Зміни збережено.', 'success', target));
+        return res.redirect(buildRedirectUrl('Изменения сохранены.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] update failed:', error);
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl(error.message || 'Помилка оновлення джерела.', 'error', target));
+        return res.redirect(buildRedirectUrl(error.message || 'Ошибка обновления источника.', 'error', target));
     }
 }
 
@@ -79,10 +79,10 @@ export async function handleSourceDelete(req, res) {
         const { id } = req.params || {};
         await removeSalesdriveSource(id);
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl('Джерело видалено.', 'success', target));
+        return res.redirect(buildRedirectUrl('Источник удалён.', 'success', target));
     } catch (error) {
         console.error('[sourcesConfig] remove failed:', error);
         const target = resolveReturnTo(req);
-        return res.redirect(buildRedirectUrl(error.message || 'Не вдалося видалити джерело.', 'error', target));
+        return res.redirect(buildRedirectUrl(error.message || 'Не удалось удалить источник.', 'error', target));
     }
 }

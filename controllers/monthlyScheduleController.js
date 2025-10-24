@@ -9,12 +9,12 @@ import { buildOverlayMeta } from '../services/reportDataService.js';
 function buildScheduleViewModel(config, nextRunAt, isRunning) {
     const nextRun = nextRunAt ? new Date(nextRunAt) : null;
     const nextRunLabel = nextRun
-        ? nextRun.toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' })
-        : 'Не заплановано';
+        ? nextRun.toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })
+        : 'Не запланировано';
     const lastRun = config.lastRunAt ? new Date(config.lastRunAt) : null;
     const lastRunLabel = lastRun
-        ? lastRun.toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' })
-        : 'Ще не запускалось';
+        ? lastRun.toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' })
+        : 'Ещё не запускалось';
 
     return {
         config,
@@ -41,13 +41,13 @@ export async function renderMonthlyScheduleConfig(req, res) {
                 waitMs: null,
                 queueAhead: null,
                 estimatedTotalRequests: null,
-                message: 'Готуємо налаштування…'
+                message: 'Готовим настройки…'
             })
         });
     } catch (error) {
         console.error('[monthlySchedule] render failed:', error);
         return res.status(500).render('error', {
-            message: 'Не вдалося відобразити налаштування планувальника.',
+            message: 'Не удалось отобразить настройки планировщика.',
             source: 'monthlyScheduleController: render',
             error
         });
@@ -58,7 +58,7 @@ export async function handleMonthlyScheduleUpdate(req, res) {
     try {
         const payload = buildSchedulePayloadFromForm(req.body || {});
         await updateMonthlyScheduleConfig(payload);
-        const success = encodeURIComponent('Налаштування збережено.');
+        const success = encodeURIComponent('Настройки сохранены.');
         const returnTo = typeof req.body?.returnTo === 'string' && req.body.returnTo.startsWith('/')
             ? req.body.returnTo
             : '/reports/monthly/schedule';
@@ -66,7 +66,7 @@ export async function handleMonthlyScheduleUpdate(req, res) {
         return res.redirect(`${returnTo}${separator}success=${success}`);
     } catch (error) {
         console.error('[monthlySchedule] update failed:', error);
-        const message = encodeURIComponent(error.message || 'Не вдалося зберегти налаштування.');
+        const message = encodeURIComponent(error.message || 'Не удалось сохранить настройки.');
         const returnTo = typeof req.body?.returnTo === 'string' && req.body.returnTo.startsWith('/')
             ? req.body.returnTo
             : '/reports/monthly/schedule';
@@ -83,22 +83,22 @@ export async function handleMonthlyScheduleRunNow(req, res) {
             : '/reports/monthly/schedule';
         const separator = returnTo.includes('?') ? '&' : '?';
         if (result.status === 'busy') {
-            const info = encodeURIComponent('Планувальник вже виконує оновлення.');
+            const info = encodeURIComponent('Планировщик уже выполняет обновление.');
             return res.redirect(`${returnTo}${separator}error=${info}`);
         }
         if (result.status === 'error') {
-            const message = encodeURIComponent(result.error?.message || 'Помилка під час формування місячних звітів.');
+            const message = encodeURIComponent(result.error?.message || 'Ошибка при формировании месячных отчётов.');
             return res.redirect(`${returnTo}${separator}error=${message}`);
         }
         const processedCount = Array.isArray(result.summary?.processed) ? result.summary.processed.length : 0;
         const hasWarnings = Array.isArray(result.summary?.errors) && result.summary.errors.length > 0;
         const success = encodeURIComponent(
-            `Запуск завершено (${processedCount} місяців оновлено${hasWarnings ? ', є попередження' : ''}).`
+            `Запуск завершён (${processedCount} месяцев обновлено${hasWarnings ? ', есть предупреждения' : ''}).`
         );
         return res.redirect(`${returnTo}${separator}success=${success}`);
     } catch (error) {
         console.error('[monthlySchedule] runNow failed:', error);
-        const message = encodeURIComponent(error.message || 'Не вдалося запустити оновлення.');
+        const message = encodeURIComponent(error.message || 'Не удалось запустить обновление.');
         const returnTo = typeof req.body?.returnTo === 'string' && req.body.returnTo.startsWith('/')
             ? req.body.returnTo
             : '/reports/monthly/schedule';

@@ -33,14 +33,14 @@ export async function handlePinVerify(req, res) {
         const nextUrl = resolveRedirectTarget(nextParam);
         const isValid = await verifyCredentials(username, pin);
         if (!isValid) {
-            const message = encodeURIComponent('Невірні дані для входу.');
+            const message = encodeURIComponent('Неверные данные для входа.');
             return res.redirect(`/auth/pin?error=${message}&next=${encodeURIComponent(nextUrl)}`);
         }
         issuePinSession(res);
         return res.redirect(nextUrl);
     } catch (error) {
         console.error('[security] Password verification failed:', error);
-        const message = encodeURIComponent('Не вдалося перевірити пароль.');
+        const message = encodeURIComponent('Не удалось проверить пароль.');
         return res.redirect(`/auth/pin?error=${message}`);
     }
 }
@@ -65,10 +65,10 @@ export async function handlePinSettingsUpdate(req, res) {
                 shouldIssueSession = true;
             } else {
                 if (rawNewPin !== rawConfirmPin) {
-                    throw new Error('Пароль і підтвердження не співпадають.');
+                    throw new Error('Пароль и подтверждение не совпадают.');
                 }
                 if (!isValidPassword(rawNewPin)) {
-                    throw new Error('Пароль має містити від 4 до 32 символів.');
+                    throw new Error('Пароль должен содержать от 4 до 32 символов.');
                 }
                 await updatePinSettings({ enabled: true, newPin: rawNewPin, username: rawUsername });
                 shouldIssueSession = true;
@@ -80,7 +80,7 @@ export async function handlePinSettingsUpdate(req, res) {
         if (shouldIssueSession) {
             issuePinSession(res);
         }
-        const success = encodeURIComponent('Налаштування доступу збережено.');
+        const success = encodeURIComponent('Настройки доступа сохранены.');
         const returnTo = typeof req.body?.returnTo === 'string' && req.body.returnTo.startsWith('/')
             ? req.body.returnTo
             : '/';
@@ -88,7 +88,7 @@ export async function handlePinSettingsUpdate(req, res) {
         return res.redirect(`${returnTo}${separator}success=${success}`);
     } catch (error) {
         console.error('[security] update settings failed:', error);
-        const message = encodeURIComponent(error.message || 'Не вдалося зберегти налаштування доступу.');
+        const message = encodeURIComponent(error.message || 'Не удалось сохранить настройки доступа.');
         const returnTo = typeof req.body?.returnTo === 'string' && req.body.returnTo.startsWith('/')
             ? req.body.returnTo
             : '/';

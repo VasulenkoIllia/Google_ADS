@@ -1,18 +1,18 @@
 doctype html
-html(lang="en")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Error
+    title Ошибка
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body
     .container
-      h1.my-4.text-danger Error
+      h1.my-4.text-danger Ошибка
       .alert.alert-danger
         p= message
         if source
           p.text-muted.mb-2
-            strong Джерело:&nbsp;
+            strong Источник:&nbsp;
             span= source
         if error && error.stack
           pre

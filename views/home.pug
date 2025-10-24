@@ -1,11 +1,11 @@
 include partials/reportLoadingOverlay.pug
 
 doctype html
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Аналітика Google Ads & SalesDrive
+    title Аналитика Google Ads и SalesDrive
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
     style.
@@ -149,11 +149,11 @@ html(lang="uk")
       header.home-header
         .toolbar
           .brand
-            h1 Google Ads & SalesDrive Hub
-            p Керуйте джерелами, звітами та доступами без зайвих кроків.
-          a.settings-fab(href="/settings" data-report-link aria-label="Відкрити налаштування")
+            h1 Центр Google Ads и SalesDrive
+            p Управляйте источниками, отчётами и доступом без лишних действий.
+          a.settings-fab(href="/settings" data-report-link aria-label="Открыть настройки")
             i.bi.bi-gear-fill
-            span Налаштування
+            span Настройки
       if successMessage
         .alert.alert-success.shadow-sm.rounded-pill.px-4.py-2.mb-4= successMessage
       if errorMessage
@@ -167,14 +167,14 @@ html(lang="uk")
                   .icon-badge.bg-primary.text-white
                     i.bi.bi-collection-play-fill
                   div
-                    h5.mb-1.text-dark Джерела SalesDrive
-                    small.text-muted Системне керування
+                    h5.mb-1.text-dark Источники SalesDrive
+                    small.text-muted Централизованное управление
                 h2.h4.text-dark.mb-1= sourcesCount
-                p.text-muted.mb-3 Переглядайте й оновлюйте перелік каналів продажів у розділі налаштувань.
+                p.text-muted.mb-3 Просматривайте и обновляйте список каналов продаж в разделе настроек.
                 ul.list-inline.mb-0
                   li.list-inline-item
                     i.bi.bi-check-circle.text-success.mr-1
-                    | Синхронізовано
+                    | Синхронизировано
           .col-lg-4.col-md-6.mb-4
             .card.metric-card
               .card-body
@@ -182,15 +182,15 @@ html(lang="uk")
                   .icon-badge.bg-warning.text-white
                     i.bi.bi-calendar-week
                   div
-                    h5.mb-1.text-dark Планувальник звіту
-                    small.text-muted Автоматичне оновлення
+                    h5.mb-1.text-dark Планировщик отчётов
+                    small.text-muted Автоматическое обновление
                 span.badge.badge-pill(class=scheduleInfo.enabled ? 'badge-success' : 'badge-secondary')= scheduleInfo.statusLabel
-                p.text-muted.mt-2.mb-2 #{scheduleInfo.frequencyLabel} о #{scheduleInfo.time}
-                small.d-block.text-muted.mb-1 Наступний запуск: #{scheduleInfo.nextRunLabel}
-                small.d-block.text-muted Діапазон: #{scheduleInfo.rangeLabel}
+                p.text-muted.mt-2.mb-2 #{scheduleInfo.frequencyLabel} в #{scheduleInfo.time}
+                small.d-block.text-muted.mb-1 Следующий запуск: #{scheduleInfo.nextRunLabel}
+                small.d-block.text-muted Диапазон: #{scheduleInfo.rangeLabel}
                 a.btn.btn-outline-primary.btn-sm.rounded-pill.mt-3(href="/settings?tab=scheduler" data-report-link)
                   i.bi.bi-sliders.mr-2
-                  | Керувати розкладом
+                  | Настроить расписание
           .col-lg-4.col-md-6.mb-4
             .card.metric-card
               .card-body
@@ -198,35 +198,35 @@ html(lang="uk")
                   .icon-badge.bg-success.text-white
                     i.bi.bi-shield-lock-fill
                   div
-                    h5.mb-1.text-dark Захист доступу
-                    small.text-muted Контрольовані кабінети
+                    h5.mb-1.text-dark Защита доступа
+                    small.text-muted Контролируемый кабинет
                 span.badge.badge-pill(class=accessInfo.enabled ? 'badge-success' : 'badge-secondary')= accessInfo.statusLabel
-                p.text-muted.mt-2.mb-2= `Користувач: ${accessInfo.username}`
-                small.d-block.text-muted Сесія завершується через 60 хвилин після входу.
+                p.text-muted.mt-2.mb-2= `Пользователь: ${accessInfo.username}`
+                small.d-block.text-muted Сессия завершится через 60 минут после входа.
                 a.btn.btn-outline-success.btn-sm.rounded-pill.mt-3(href="/settings?tab=access" data-report-link)
                   i.bi.bi-person-lock.mr-2
-                  | Керувати доступом
+                  | Настроить доступ
       section.reports-section.mt-5
         .d-flex.justify-content-between.align-items-center.mb-3
-          h3.mb-0 Оберіть звіт
-          small.text-muted Побудова виконується з урахуванням лімітів SalesDrive.
+          h3.mb-0 Выберите отчёт
+          small.text-muted Построение учитывает лимиты SalesDrive.
         .row
           each report in reports
-            .col-lg-4.col-md-6.mb-4
+            .col-lg-6.col-md-6.mb-4
               .card.report-card
                 .card-body.d-flex.flex-column
                   h5.card-title.font-weight-semibold.text-dark= report.title
                   p.text-muted.flex-grow-1= report.description
                   a.btn.btn-primary.mt-3.align-self-start(data-report-link href=`/reports/${report.id}`)
                     i.bi.bi-arrow-right-circle.mr-2
-                    | Відкрити
+                    | Открыть
       section.status-bar.mt-5
         .d-flex.flex-column.flex-md-row.align-items-md-center.justify-content-between
           div
-            strong Планувальник статичних звітів:&nbsp;
+            strong Планировщик статических отчётов:&nbsp;
             span= scheduleInfo.statusLabel
           div.mt-3.mt-md-0
-            small Останні дії синхронізуються автоматично. Змінюйте конфігурацію через іконку шестерні.
+            small Последние действия синхронизируются автоматически. Настраивайте параметры через значок шестерёнки.
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")

@@ -1,6 +1,6 @@
 include partials/reportLoadingOverlay.pug
 
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
@@ -9,7 +9,7 @@ html(lang="uk")
         meta(http-equiv="refresh", content=`${waitSeconds};url=${reloadUrl}`)
       else
         meta(http-equiv="refresh", content=waitSeconds)
-    title Формування звіту
+    title Формирование отчёта
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body.bg-light
     - const resolvedMinuteLimit = Number.isFinite(salesDriveLimit) ? salesDriveLimit : (queueInfo && Number.isFinite(queueInfo.maxPerInterval) ? queueInfo.maxPerInterval : null)
@@ -40,8 +40,8 @@ html(lang="uk")
       noscript
         .container.pt-5
           .alert.alert-info
-            | CRM формує дані. Увімкніть JavaScript для автоматичного оновлення або перейдіть за посиланням:&nbsp;
+            | CRM формирует данные. Включите JavaScript для автообновления или перейдите по ссылке:&nbsp;
             if reloadUrl && reloadUrl.length
-              a(href=reloadUrl) оновити сторінку
+              a(href=reloadUrl) обновить страницу
             else
-              span повторіть запит пізніше.
+              span повторите запрос позже.

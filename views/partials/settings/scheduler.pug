@@ -1,70 +1,70 @@
 .settings-section
   - const scheduleConfig = scheduleOverview && scheduleOverview.config ? scheduleOverview.config : {}
-  - const scheduleNextRun = scheduleOverview && scheduleOverview.nextRunAt ? new Date(scheduleOverview.nextRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' }) : 'Не заплановано'
+  - const scheduleNextRun = scheduleOverview && scheduleOverview.nextRunAt ? new Date(scheduleOverview.nextRunAt).toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : 'Не запланировано'
   - const runStatus = scheduleConfig.lastRunStatus || '—'
-  - const lastRunAt = scheduleConfig.lastRunAt ? new Date(scheduleConfig.lastRunAt).toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' }) : 'Ще не запускалось'
+  - const lastRunAt = scheduleConfig.lastRunAt ? new Date(scheduleConfig.lastRunAt).toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : 'Ещё не запускалось'
   .panel-card
     .panel-header
-      h2 Планувальник статичного звіту
-      span.status-tag.badge(class=scheduleConfig.enabled ? 'badge-success' : 'badge-secondary')= scheduleConfig.enabled ? 'Увімкнено' : 'Вимкнено'
+      h2 Планировщик статического отчёта
+      span.status-tag.badge(class=scheduleConfig.enabled ? 'badge-success' : 'badge-secondary')= scheduleConfig.enabled ? 'Включено' : 'Выключено'
     .panel-body
       form(method="post", action="/reports/monthly/schedule", data-report-form)
         input(type="hidden", name="returnTo", value="/settings?tab=scheduler")
         .custom-control.custom-switch.mb-4
           input#schedule-enabled.custom-control-input(type="checkbox", name="enabled", checked=scheduleConfig.enabled ? true : false)
-          label.custom-control-label(for="schedule-enabled") Автоматичне формування увімкнене
+          label.custom-control-label(for="schedule-enabled") Автоматическое формирование включено
         .form-row.mb-3
           .col-md-6.mb-3
-            label(for="schedule-time") Час запуску
+            label(for="schedule-time") Время запуска
             input#schedule-time.form-control(type="time", name="time", required, value=scheduleConfig.time || '01:00')
           .col-md-6.mb-3
-            label(for="schedule-weekday") День тижня
+            label(for="schedule-weekday") День недели
             select#schedule-weekday.form-control(name="weekday", disabled=scheduleConfig.frequency !== 'weekly')
-              - const weekdayOptions = [{ value: 'monday', label: 'Понеділок' }, { value: 'tuesday', label: 'Вівторок' }, { value: 'wednesday', label: 'Середа' }, { value: 'thursday', label: 'Четвер' }, { value: 'friday', label: "П'ятниця" }, { value: 'saturday', label: 'Субота' }, { value: 'sunday', label: 'Неділя' }]
+              - const weekdayOptions = [{ value: 'monday', label: 'Понедельник' }, { value: 'tuesday', label: 'Вторник' }, { value: 'wednesday', label: 'Среда' }, { value: 'thursday', label: 'Четверг' }, { value: 'friday', label: 'Пятница' }, { value: 'saturday', label: 'Суббота' }, { value: 'sunday', label: 'Воскресенье' }]
               each option in weekdayOptions
                 option(value=option.value selected=scheduleConfig.weekday === option.value)= option.label
         .form-group
-          label.font-weight-bold Інтервал запуску
+          label.font-weight-bold Интервал запуска
           .form-check
             input#schedule-daily.form-check-input(type="radio", name="frequency", value="daily", checked=scheduleConfig.frequency === 'daily')
-            label.form-check-label(for="schedule-daily") Щодня
+            label.form-check-label(for="schedule-daily") Ежедневно
           .form-check
             input#schedule-weekly.form-check-input(type="radio", name="frequency", value="weekly", checked=scheduleConfig.frequency === 'weekly')
-            label.form-check-label(for="schedule-weekly") Щотижня
+            label.form-check-label(for="schedule-weekly") Еженедельно
         .form-group.mt-3
-          label.font-weight-bold Місяці для оновлення
+          label.font-weight-bold Месяцы для обновления
           .form-check
             input#range-current.form-check-input(type="radio", name="rangeType", value="current", checked=scheduleConfig.range && scheduleConfig.range.type === 'current')
-            label.form-check-label(for="range-current") Лише поточний місяць
+            label.form-check-label(for="range-current") Только текущий месяц
           .form-check
             input#range-last.form-check-input(type="radio", name="rangeType", value="last", checked=scheduleConfig.range && scheduleConfig.range.type === 'last')
             label.form-check-label(for="range-last")
-              | Останні
+              | Последние
               input#range-count.form-control.form-control-sm.d-inline-block.ml-2(type="number", name="rangeCount", min="1", max="12", value=(scheduleConfig.range && scheduleConfig.range.type === 'last') ? scheduleConfig.range.count : 3, style="width: 80px;", disabled=!(scheduleConfig.range && scheduleConfig.range.type === 'last'))
-              |  місяців
+              |  мес.
           .form-check
             input#range-all.form-check-input(type="radio", name="rangeType", value="all", checked=scheduleConfig.range && scheduleConfig.range.type === 'all')
-            label.form-check-label(for="range-all") Усі доступні місяці
+            label.form-check-label(for="range-all") Все доступные месяцы
         button.btn.btn-primary.rounded-pill.mt-4(type="submit")
           i.bi.bi-check2-circle.mr-2
-          | Зберегти налаштування
+          | Сохранить настройки
   .panel-card
     .panel-header
-      h2 Статус планувальника
+      h2 Статус планировщика
     .panel-body
       dl.row.mb-0
-        dt.col-sm-5 Наступний запуск
+        dt.col-sm-5 Следующий запуск
         dd.col-sm-7= scheduleNextRun
-        dt.col-sm-5 Останній запуск
+        dt.col-sm-5 Последний запуск
         dd.col-sm-7= lastRunAt
-        dt.col-sm-5 Останній результат
+        dt.col-sm-5 Последний результат
         dd.col-sm-7
           if runStatus === 'success'
-            span.text-success Успішно
+            span.text-success Успешно
           else if runStatus === 'partial'
-            span.text-warning З попередженнями
+            span.text-warning С предупреждениями
           else if runStatus === 'error'
-            span.text-danger Помилка
+            span.text-danger Ошибка
           else
             span.text-muted= runStatus
       form.mt-4(method="post", action="/reports/monthly/schedule/run", data-report-form)
@@ -72,6 +72,6 @@
         button.btn.btn-outline-secondary.rounded-pill(type="submit" disabled=scheduleOverview && scheduleOverview.isRunning ? true : false)
           if scheduleOverview && scheduleOverview.isRunning
             span.spinner-border.spinner-border-sm.mr-2
-            | Виконується…
+            | Выполняется…
           else
-            | Запустити формування зараз
+            | Запустить формирование сейчас

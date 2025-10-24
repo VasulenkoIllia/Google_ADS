@@ -13,7 +13,7 @@ export async function renderSettings(req, res, next) {
 
         const { success = '', error = '', tab = 'sources' } = req.query || {};
         const overlayMeta = buildOverlayMeta({
-            message: 'Готуємо налаштування…'
+            message: 'Готовим настройки…'
         });
 
         return res.render('settings/index', {

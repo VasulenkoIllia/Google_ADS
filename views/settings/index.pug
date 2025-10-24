@@ -1,11 +1,11 @@
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Налаштування сервісу
+    title Настройки сервиса
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
     style.
@@ -180,26 +180,26 @@ html(lang="uk")
       .settings-toolbar
         a.btn-back(href="/" data-report-link)
           i.bi.bi-arrow-left-short.mr-2
-          | Назад до головної
+          | Назад на главную
         if successMessage
           .alert.alert-success.mb-0.rounded-pill.px-4.py-2.shadow-sm= successMessage
         else if errorMessage
           .alert.alert-danger.mb-0.rounded-pill.px-4.py-2.shadow-sm= errorMessage
       .settings-hero
-        h1 Налаштування робочого простору
-        p Відповідальний центр управління: джерела SalesDrive, планувальник статичного звіту та контроль доступу тепер під рукою.
+        h1 Настройки рабочего пространства
+        p Централизованный центр управления: источники SalesDrive, планировщик статического отчёта и контроль доступа всегда под рукой.
       .settings-shell
         nav.settings-nav
-          h2 Панелі
+          h2 Разделы
           a(class=activeTab === 'sources' ? 'active' : '', href='?tab=sources')
             i.bi.bi-collection-play-fill
-            span Керування джерелами
+            span Управление источниками
           a(class=activeTab === 'scheduler' ? 'active' : '', href='?tab=scheduler')
             i.bi.bi-calendar3-event
-            span Планувальник статичного звіту
+            span Планировщик статического отчёта
           a(class=activeTab === 'access' ? 'active' : '', href='?tab=access')
             i.bi.bi-shield-lock
-            span Доступ за паролем
+            span Доступ по паролю
         .settings-panel
           if activeTab === 'scheduler'
             include ../partials/settings/scheduler.pug

@@ -329,7 +329,7 @@ function createReportJob(key, workFactory) {
             job.result = result;
             job.status = 'ready';
             job.waitMs = 0;
-            reportJobPushProgress(job, { waitMs: 0, queueAhead: 0, message: 'Звіт сформовано' });
+            reportJobPushProgress(job, { waitMs: 0, queueAhead: 0, message: 'Отчёт сформирован' });
             job.cleanupTimer = setTimeout(() => {
                 if (reportJobs.get(key) === job) {
                     reportJobs.delete(key);
@@ -339,7 +339,7 @@ function createReportJob(key, workFactory) {
         } catch (err) {
             job.error = err;
             job.status = 'error';
-            reportJobPushProgress(job, { message: err?.message || 'Помилка формування звіту', waitMs: null });
+            reportJobPushProgress(job, { message: err?.message || 'Ошибка формирования отчёта', waitMs: null });
             job.cleanupTimer = setTimeout(() => {
                 if (reportJobs.get(key) === job) {
                     reportJobs.delete(key);
@@ -382,16 +382,36 @@ function coerceQueryParam(value) {
     return value;
 }
 
-export function resolveDateRange(requestedStart, requestedEnd) {
-    if (!DEFAULT_DATE_START_DAY || !DEFAULT_DATE_END_DAY) {
-        throw new Error('GLOBAL_DATE_START_DAY and GLOBAL_DATE_END_DAY must be set in the environment.');
-    }
+function formatDateYMD(date) {
+    return date.toISOString().slice(0, 10);
+}
 
+function getCurrentWeekRange() {
+    const today = new Date();
+    const start = new Date(today);
+    const day = start.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + diffToMonday);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(0, 0, 0, 0);
+    return {
+        start: formatDateYMD(start),
+        end: formatDateYMD(end)
+    };
+}
+
+export function resolveDateRange(requestedStart, requestedEnd) {
     const normalizedStart = coerceQueryParam(requestedStart);
     const normalizedEnd = coerceQueryParam(requestedEnd);
 
-    const startDate = normalizedStart && normalizedStart.trim() ? normalizedStart.trim() : DEFAULT_DATE_START_DAY;
-    const endDate = normalizedEnd && normalizedEnd.trim() ? normalizedEnd.trim() : DEFAULT_DATE_END_DAY;
+    const currentWeek = getCurrentWeekRange();
+    const startFallback = currentWeek.start;
+    const endFallback = currentWeek.end;
+
+    const startDate = normalizedStart && normalizedStart.trim() ? normalizedStart.trim() : startFallback;
+    const endDate = normalizedEnd && normalizedEnd.trim() ? normalizedEnd.trim() : endFallback;
 
     if (!DATE_REGEX.test(startDate)) {
         throw new DateRangeError('startDate must be provided in YYYY-MM-DD format.');
@@ -601,9 +621,9 @@ export async function getGoogleAdsData({ startDate, endDate }) {
             return acc;
         }, {});
 
-        // Convert BigInt to string for JSON serialization
+        // Convert totals to integer-friendly values for JSON serialization
         Object.keys(aggregatedAds).forEach(key => {
-            aggregatedAds[key].costUah = aggregatedAds[key].costUah.toFixed(2);
+            aggregatedAds[key].costUah = Math.trunc(aggregatedAds[key].costUah);
             aggregatedAds[key].impressions = aggregatedAds[key].impressions.toString();
             aggregatedAds[key].clicks = aggregatedAds[key].clicks.toString();
         });
@@ -613,8 +633,8 @@ export async function getGoogleAdsData({ startDate, endDate }) {
         const contextualError = err.response?.data?.error?.message
             || err.response?.data?.message
             || err.message
-            || 'Unknown Google Ads API error';
-        const message = `Помилка Google Ads: ${contextualError}`;
+            || 'Неизвестная ошибка Google Ads API';
+        const message = `Ошибка Google Ads: ${contextualError}`;
         console.error('\n❌ An error occurred in Google Ads:', err.response ? JSON.stringify(err.response.data, null, 2) : err.message);
         return { data: {}, errors: [message] };
     }
@@ -663,7 +683,7 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
         const hourlyStats = noteHourlyRequest();
         const dailyStats = noteDailyRequest();
         reportJobPushProgress(reportJob, {
-            message: sourceIdent ? `Отримуємо дані для ${sourceIdent}` : 'Виконуємо запит до SalesDrive',
+            message: sourceIdent ? `Получаем данные для ${sourceIdent}` : 'Выполняем запрос к SalesDrive',
             waitMs: baselineEstimate.waitMs ?? 0,
             queueAhead: baselineEstimate.queueAhead ?? salesDriveRateLimiter.pendingRequests ?? 0,
             extraQueuedRequests: sanitizedQueuedRequests,
@@ -736,7 +756,7 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
                 sourceId,
                 reason,
                 status,
-                message: `Очікуємо повторний запит через ${Math.ceil(boundedDelay / 1000)} с`
+                message: `Повторная отправка через ${Math.ceil(boundedDelay / 1000)} с`
             });
             await wait(boundedDelay);
             return rateLimitedSalesDriveRequest(params, context, nextAttempt);
@@ -758,12 +778,12 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
                     sourceId,
                     reason,
                     status,
-                    message: `SalesDrive наклав обмеження, очікуємо ${Math.ceil(waitMsCandidate / 1000)} с`
+                message: `SalesDrive ограничил частоту, ждём ${Math.ceil(waitMsCandidate / 1000)} с`
                 });
                 await wait(waitMsCandidate);
                 return rateLimitedSalesDriveRequest(params, context, nextAttempt);
             }
-            console.warn(`SalesDrive повернув статус ${status}; досягнуто межі повторів (${SALES_DRIVE_MAX_RETRY_ATTEMPTS}).`);
+            console.warn(`SalesDrive вернул статус ${status}; достигнут предел повторов (${SALES_DRIVE_MAX_RETRY_ATTEMPTS}).`);
         }
 
         throw error;
@@ -898,11 +918,31 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
             sourceId,
             status: error.response?.status || 'error'
         });
-        return { orders: [], totals: {}, count: 0, errors: [apiMessage || 'Невідома помилка SalesDrive'] };
+        return { orders: [], totals: {}, count: 0, errors: [apiMessage || 'Неизвестная ошибка SalesDrive'] };
     }
 }
 
 // --- DATA COMBINING FUNCTION ---
+
+function formatIntegerString(value) {
+    if (!Number.isFinite(value)) {
+        return '0';
+    }
+    return Math.trunc(value).toLocaleString('ru-RU');
+}
+
+function formatPercentString(value) {
+    if (value === Infinity) {
+        return '∞';
+    }
+    if (value === -Infinity) {
+        return '-∞';
+    }
+    if (!Number.isFinite(value)) {
+        return '0';
+    }
+    return Math.trunc(value).toLocaleString('ru-RU');
+}
 
 function calculateSummaryReport(googleAdsTotals, salesDriveTotals, { startDate, endDate, planOverrides = {} }) {
     // --- Primary Metrics ---
@@ -915,19 +955,6 @@ function calculateSummaryReport(googleAdsTotals, salesDriveTotals, { startDate, 
 
     // --- Calculated Metrics ---
     const safeDivide = (numerator, denominator) => (denominator > 0 ? numerator / denominator : 0);
-    const toCurrencyString = (value) => (Number.isFinite(value) ? value.toFixed(2) : '0.00');
-    const toPercentString = (value) => {
-        if (Number.isFinite(value)) {
-            return value.toFixed(2);
-        }
-        if (value === Infinity) {
-            return '∞';
-        }
-        if (value === -Infinity) {
-            return '-∞';
-        }
-        return '0.00';
-    };
 
     const cpc = safeDivide(adSpend, clicks);
     const ctr = safeDivide(clicks, impressions) * 100;
@@ -936,7 +963,7 @@ function calculateSummaryReport(googleAdsTotals, salesDriveTotals, { startDate, 
     const margin = sales - costOfGoods;
     const profit = margin - adSpend;
     const aov = safeDivide(sales, transactions);
-    const roi = adSpend > 0 ? safeDivide(margin, adSpend) * 100 : (margin > 0 ? Infinity : 0);
+    const roi = adSpend > 0 ? safeDivide(margin, adSpend) : (margin > 0 ? Infinity : 0);
     const avgProfitPerTransaction = safeDivide(profit, transactions);
     const adSpendToSalesRatio = safeDivide(adSpend, sales) * 100;
     const cogsToSalesRatio = safeDivide(costOfGoods, sales) * 100;
@@ -984,44 +1011,44 @@ function calculateSummaryReport(googleAdsTotals, salesDriveTotals, { startDate, 
 
 
     return {
-        adSpend: toCurrencyString(adSpend),
-        cpc: toCurrencyString(cpc),
-        impressions,
-        ctr: toPercentString(ctr),
-        clicks,
-        clickToTransConversion: toPercentString(clickToTransConversion),
-        transactions,
-        cpa: toCurrencyString(cpa),
-        sales: toCurrencyString(sales),
-        costOfGoods: toCurrencyString(costOfGoods),
-        margin: toCurrencyString(margin),
-        profit: toCurrencyString(profit),
-        aov: toCurrencyString(aov),
-        roi: toPercentString(roi),
-        avgProfitPerTransaction: toCurrencyString(avgProfitPerTransaction),
-        adSpendToSalesRatio: toPercentString(adSpendToSalesRatio),
-        cogsToSalesRatio: toPercentString(cogsToSalesRatio),
-        profitToSalesRatio: toPercentString(profitToSalesRatio),
+        adSpend: formatIntegerString(adSpend),
+        cpc: formatIntegerString(cpc),
+        impressions: formatIntegerString(impressions),
+        ctr: formatPercentString(ctr),
+        clicks: formatIntegerString(clicks),
+        clickToTransConversion: formatPercentString(clickToTransConversion),
+        transactions: formatIntegerString(transactions),
+        cpa: formatIntegerString(cpa),
+        sales: formatIntegerString(sales),
+        costOfGoods: formatIntegerString(costOfGoods),
+        margin: formatIntegerString(margin),
+        profit: formatIntegerString(profit),
+        aov: formatIntegerString(aov),
+        roi: formatPercentString(roi),
+        avgProfitPerTransaction: formatIntegerString(avgProfitPerTransaction),
+        adSpendToSalesRatio: formatPercentString(adSpendToSalesRatio),
+        cogsToSalesRatio: formatPercentString(cogsToSalesRatio),
+        profitToSalesRatio: formatPercentString(profitToSalesRatio),
         profitToSalesRatioColor: profitToSalesColor,
         profitToSalesRatioStyle: profitToSalesStyle,
-        planSales: toCurrencyString(planSalesForPeriod),
-        planSalesMonthly: toCurrencyString(planSalesMonthly),
-        planSalesPerDay: toCurrencyString(planSalesPerDay),
-        projectedSales: toCurrencyString(projectedSales),
-        salesPlanDeviation: toPercentString(salesPlanDeviation),
-        planCumulativeSales: toCurrencyString(planCumulativeSales),
-        salesFactCumulative: toCurrencyString(sales),
-        salesFactDeviation: toPercentString(salesFactDeviation),
-        salesCumulativePlanDeviation: toPercentString(salesCumulativePlanDeviation),
-        planProfit: toCurrencyString(planProfitForPeriod),
-        planProfitMonthly: toCurrencyString(planProfitMonthly),
-        planProfitPerDay: toCurrencyString(planProfitPerDay),
-        projectedProfit: toCurrencyString(projectedProfit),
-        profitPlanDeviation: toPercentString(profitPlanDeviation),
-        planCumulativeProfit: toCurrencyString(planCumulativeProfit),
-        profitFactCumulative: toCurrencyString(profit),
-        profitFactDeviation: toPercentString(profitFactDeviation),
-        profitCumulativePlanDeviation: toPercentString(profitCumulativePlanDeviation),
+        planSales: formatIntegerString(planSalesForPeriod),
+        planSalesMonthly: formatIntegerString(planSalesMonthly),
+        planSalesPerDay: formatIntegerString(planSalesPerDay),
+        projectedSales: formatIntegerString(projectedSales),
+        salesPlanDeviation: formatPercentString(salesPlanDeviation),
+        planCumulativeSales: formatIntegerString(planCumulativeSales),
+        salesFactCumulative: formatIntegerString(sales),
+        salesFactDeviation: formatPercentString(salesFactDeviation),
+        salesCumulativePlanDeviation: formatPercentString(salesCumulativePlanDeviation),
+        planProfit: formatIntegerString(planProfitForPeriod),
+        planProfitMonthly: formatIntegerString(planProfitMonthly),
+        planProfitPerDay: formatIntegerString(planProfitPerDay),
+        projectedProfit: formatIntegerString(projectedProfit),
+        profitPlanDeviation: formatPercentString(profitPlanDeviation),
+        planCumulativeProfit: formatIntegerString(planCumulativeProfit),
+        profitFactCumulative: formatIntegerString(profit),
+        profitFactDeviation: formatPercentString(profitFactDeviation),
+        profitCumulativePlanDeviation: formatPercentString(profitCumulativePlanDeviation),
         elapsedDaysInMonth: normalizedElapsedDays,
         daysInMonth,
         daysInPeriod,
@@ -1084,7 +1111,7 @@ async function buildReportData(
         ? initialEstimate.queueAhead
         : salesDriveRateLimiter.pendingRequests ?? 0;
     reportJobPushProgress(reportJob, {
-        message: `Починаємо формування звіту (${sourcesToProcess.length} джерел)`,
+        message: `Начинаем формирование отчёта (${sourcesToProcess.length} источников)`,
         sourceIdent: null,
         sourceId: null,
         remainingSources: sourcesToProcess.length,
@@ -1110,7 +1137,7 @@ async function buildReportData(
             reason: `source:${source.ident}`
         };
         reportJobPushProgress(reportJob, {
-            message: `Збираємо дані для ${source.ident}`,
+            message: `Собираем данные для ${source.ident}`,
             sourceIdent: source.ident,
             sourceId: source.id,
             remainingSources: sourcesToProcess.length - sourceIndex,
@@ -1125,7 +1152,7 @@ async function buildReportData(
         console.log(`Found ${orders.length} orders in SalesDrive.`);
         if (Array.isArray(sourceErrors) && sourceErrors.length > 0) {
             sourceErrors.forEach(errMessage => {
-                const friendlyMessage = `Помилка SalesDrive (${source.ident}): ${errMessage}`;
+                const friendlyMessage = `Ошибка SalesDrive (${source.ident}): ${errMessage}`;
                 alerts.push(friendlyMessage);
                 if (typeof friendlyMessage === 'string' && friendlyMessage.toLowerCase().includes('limit')) {
                     rateLimitCooldown = true;
@@ -1140,7 +1167,7 @@ async function buildReportData(
         let manualTransactionCount = 0;
 
         reportJobPushProgress(reportJob, {
-            message: `Обробляємо замовлення для ${source.ident}`,
+            message: `Обрабатываем заказы для ${source.ident}`,
             sourceIdent: source.ident,
             sourceId: source.id,
             remainingSources: sourcesToProcess.length - sourceIndex,
@@ -1220,7 +1247,7 @@ async function buildReportData(
         };
 
         reportJobPushProgress(reportJob, {
-            message: `Завершено джерело ${source.ident}`,
+            message: `Источник ${source.ident} обработан`,
             sourceIdent: source.ident,
             sourceId: source.id,
             remainingSources: Math.max(remainingSourcesAfterCurrent, 0),
@@ -1230,7 +1257,7 @@ async function buildReportData(
     }
 
     reportJobPushProgress(reportJob, {
-        message: 'Фіналізуємо звіт',
+        message: 'Финализируем отчёт',
         sourceIdent: null,
         sourceId: null,
         remainingSources: 0,
@@ -1268,26 +1295,33 @@ async function buildReportData(
         return {
             istocnikProdaziIdent: ident,
             sourceNameView: sourceNameMap.get(ident) || ident,
-            ...ads
+            title: ads.title,
+            costUah: formatIntegerString(cost),
+            impressions: formatIntegerString(impressions),
+            clicks: formatIntegerString(clicks)
         };
     });
 
     // 2. Prepare SalesDrive data for its own tab
-    const salesDriveData = allOrders.map(order => ({
-        id: order.id,
-        fName: order.primaryContact?.fName || "",
-        lName: order.primaryContact?.lName || "",
-        orderTime: order.orderTime || "",
-        products: order.products?.[0]?.text || "N/A",
-        statusName: order.statusName || "N/A",
-        totalCost: order.totalCost || 0,
-        istocnikProdaziIdent: order.istocnikProdaziIdent,
-        sourceNameView: sourceNameMap.get(order.istocnikProdaziIdent) || order.istocnikProdaziIdent,
-    }));
+    const salesDriveData = allOrders.map(order => {
+        const rawTotalCost = parseNumeric(order.totalCost);
+        return {
+            id: order.id,
+            fName: order.primaryContact?.fName || "",
+            lName: order.primaryContact?.lName || "",
+            orderTime: order.orderTime || "",
+            products: order.products?.[0]?.text || "N/A",
+            statusName: order.statusName || "N/A",
+            totalCost: rawTotalCost !== null ? formatIntegerString(rawTotalCost) : '0',
+            istocnikProdaziIdent: order.istocnikProdaziIdent,
+            sourceNameView: sourceNameMap.get(order.istocnikProdaziIdent) || order.istocnikProdaziIdent,
+        };
+    });
 
     // 3. Prepare Combined data for the third tab
     const combinedData = allOrders.map(order => {
         const googleAdsData = googleAdsDataMap[order.istocnikProdaziIdent] || null;
+        const rawTotalCost = parseNumeric(order.totalCost);
         return {
             id: order.id,
             fName: order.primaryContact?.fName || "",
@@ -1296,7 +1330,7 @@ async function buildReportData(
             istocnikProdaziIdent: order.istocnikProdaziIdent,
             products: order.products?.[0]?.text || "N/A",
             statusName: order.statusName || "N/A",
-            totalCost: order.totalCost || 0,
+            totalCost: rawTotalCost !== null ? formatIntegerString(rawTotalCost) : '0',
             sourceNameView: sourceNameMap.get(order.istocnikProdaziIdent) || order.istocnikProdaziIdent,
             googleAdsData: googleAdsData
         };
@@ -1388,24 +1422,42 @@ function parsePlanInputValue(value) {
     return Number.isFinite(parsed) ? parsed : null;
 }
 
+function truncatePlanValue(value, fallback = 0) {
+    if (!Number.isFinite(value)) {
+        return Math.trunc(fallback);
+    }
+    return Math.trunc(value);
+}
+
+function formatPlanInput(rawValue) {
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+        return '';
+    }
+    const parsed = parseFloat(rawValue);
+    if (!Number.isFinite(parsed)) {
+        return String(rawValue);
+    }
+    return Math.trunc(parsed).toString();
+}
+
 export function resolvePlanConfig(planSalesRaw, planProfitRaw) {
-    const fallbackPlanSales = parseFloat(PLAN_SALES_MONTH || '0') || 0;
-    const fallbackPlanProfit = parseFloat(PLAN_PROFIT_MONTH || '0') || 0;
+    const fallbackPlanSales = truncatePlanValue(parseFloat(PLAN_SALES_MONTH || '0') || 0);
+    const fallbackPlanProfit = truncatePlanValue(parseFloat(PLAN_PROFIT_MONTH || '0') || 0);
 
     const planOverrides = {};
     const parsedSales = parsePlanInputValue(planSalesRaw);
     const parsedProfit = parsePlanInputValue(planProfitRaw);
 
     if (parsedSales !== null) {
-        planOverrides.sales = parsedSales;
+        planOverrides.sales = truncatePlanValue(parsedSales);
     }
     if (parsedProfit !== null) {
-        planOverrides.profit = parsedProfit;
+        planOverrides.profit = truncatePlanValue(parsedProfit);
     }
 
     const planInputs = {
-        sales: planSalesRaw !== undefined ? planSalesRaw : '',
-        profit: planProfitRaw !== undefined ? planProfitRaw : ''
+        sales: planSalesRaw !== undefined ? formatPlanInput(planSalesRaw) : '',
+        profit: planProfitRaw !== undefined ? formatPlanInput(planProfitRaw) : ''
     };
 
     const planDefaults = {

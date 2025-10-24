@@ -95,13 +95,13 @@ export async function addSalesdriveSource(payload) {
     const current = await loadSalesdriveSources();
     const normalized = normalizeSource(payload);
     if (normalized.id <= 0 || normalized.ident === '') {
-        throw new Error('ID та ident джерела мають бути заповнені.');
+        throw new Error('Необходимо заполнить ID и ident источника.');
     }
     if (current.some(source => source.id === normalized.id)) {
-        throw new Error(`Джерело з id ${normalized.id} вже існує.`);
+        throw new Error(`Источник с id ${normalized.id} уже существует.`);
     }
     if (current.some(source => source.ident.toLowerCase() === normalized.ident.toLowerCase())) {
-        throw new Error(`Джерело з ident ${normalized.ident} вже існує.`);
+        throw new Error(`Источник с ident ${normalized.ident} уже существует.`);
     }
     current.push(normalized);
     return saveSalesdriveSources(current);
@@ -112,14 +112,14 @@ export async function updateSalesdriveSource(id, payload) {
     const targetId = Number.parseInt(id, 10);
     const index = current.findIndex(source => source.id === targetId);
     if (index === -1) {
-        throw new Error(`Джерело з id ${id} не знайдено.`);
+        throw new Error(`Источник с id ${id} не найден.`);
     }
     const updated = normalizeSource({ ...current[index], ...payload, id: targetId });
     if (updated.ident === '') {
-        throw new Error('Ident не може бути порожнім.');
+        throw new Error('Ident не может быть пустым.');
     }
     if (current.some((source, idx) => idx !== index && source.ident.toLowerCase() === updated.ident.toLowerCase())) {
-        throw new Error(`Джерело з ident ${updated.ident} вже існує.`);
+        throw new Error(`Источник с ident ${updated.ident} уже существует.`);
     }
     current[index] = updated;
     return saveSalesdriveSources(current);
@@ -130,7 +130,7 @@ export async function removeSalesdriveSource(id) {
     const targetId = Number.parseInt(id, 10);
     const next = current.filter(source => source.id !== targetId);
     if (next.length === current.length) {
-        throw new Error(`Джерело з id ${id} не знайдено.`);
+        throw new Error(`Источник с id ${id} не найден.`);
     }
     return saveSalesdriveSources(next);
 }

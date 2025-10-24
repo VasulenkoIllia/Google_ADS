@@ -17,7 +17,7 @@ mixin reportLoadingOverlay(meta = {}, options = {})
   - const autoShow = !!(options && options.autoShow);
   - const overlayReloadUrl = options && options.reloadUrl ? options.reloadUrl : (meta.reloadUrl || '');
   - const sourceIdent = typeof meta.sourceIdent === 'string' && meta.sourceIdent.trim().length ? meta.sourceIdent.trim() : null;
-  - const overlayMessage = typeof meta.message === 'string' && meta.message.trim().length ? meta.message : 'CRM обробляє запити. Зачекайте, будь ласка.';
+  - const overlayMessage = typeof meta.message === 'string' && meta.message.trim().length ? meta.message : 'CRM обрабатывает запросы. Пожалуйста, подождите.';
   - if (autoShow) {
   -   overlayClasses.push('active');
   - }
@@ -50,43 +50,43 @@ mixin reportLoadingOverlay(meta = {}, options = {})
     .card.shadow.report-loading-card
       .card-body
         div.spinner-border.text-primary.mb-3(role="status")
-          span.sr-only Завантаження…
-        h2.h5.mb-2 Готуємо звіт
+          span.sr-only Загрузка…
+        h2.h5.mb-2 Готовим отчёт
         p.text-muted.mb-3= overlayMessage
         ul.list-unstyled.text-left.small.mb-0
           li
-            strong Орієнтовний час:&nbsp;
+            strong Ориентировочное время:&nbsp;
             if waitSeconds !== null
               span(data-overlay-countdown=waitSeconds)= `${waitSeconds} с`
             else
               span(data-overlay-countdown) — 
           li
-            strong Запитів у черзі:&nbsp;
+            strong Запросов в очереди:&nbsp;
             span= estimatedTotal !== null ? estimatedTotal : '—'
             if remainingSources !== null
-              span &nbsp;•&nbsp;Джерел: #{remainingSources}
+              span &nbsp;•&nbsp;Источников: #{remainingSources}
           if sourceIdent
             li
-              strong Поточне джерело:&nbsp;
+              strong Текущий источник:&nbsp;
               span= sourceIdent
           if minuteLimit !== null && intervalSeconds !== null
-            li Пропускна здатність CRM: #{minuteLimit} запитів / #{intervalSeconds} с.
+            li Пропускная способность CRM: #{minuteLimit} запросов / #{intervalSeconds} с.
           if hourlyLimit !== null
             li
-              span Годинна квота: #{hourlyLimit}
-              span &nbsp;•&nbsp;Залишилось: #{hourlyRemaining !== null ? hourlyRemaining : '—'}
+              span Часовой лимит: #{hourlyLimit}
+              span &nbsp;•&nbsp;Осталось: #{hourlyRemaining !== null ? hourlyRemaining : '—'}
               if hourlyResetSeconds !== null
                 - const hrMinutes = Math.floor(hourlyResetSeconds / 60);
                 - const hrSeconds = hourlyResetSeconds % 60;
-                span &nbsp;•&nbsp;Оновлення через #{hrMinutes} хв #{hrSeconds} с
+                span &nbsp;•&nbsp;Обновление через #{hrMinutes} мин #{hrSeconds} с
           if dailyLimit !== null
             li
-              span Добова квота: #{dailyLimit}
-              span &nbsp;•&nbsp;Залишилось: #{dailyRemaining !== null ? dailyRemaining : '—'}
+              span Суточный лимит: #{dailyLimit}
+              span &nbsp;•&nbsp;Осталось: #{dailyRemaining !== null ? dailyRemaining : '—'}
               if dailyResetSeconds !== null
                 - const dayHours = Math.floor(dailyResetSeconds / 3600);
                 - const dayMinutes = Math.floor((dailyResetSeconds % 3600) / 60);
-                span &nbsp;•&nbsp;Оновлення через #{dayHours} год #{dayMinutes} хв
+                span &nbsp;•&nbsp;Обновление через #{dayHours} ч #{dayMinutes} мин
   script.
     (function() {
       if (window.__reportOverlayInit) {

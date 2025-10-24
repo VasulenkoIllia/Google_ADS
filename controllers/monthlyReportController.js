@@ -36,7 +36,7 @@ export async function renderMonthlyReport(req, res) {
         const overlayMeta = buildOverlayMeta({
             extraQueuedRequests: Math.max(sourcesCount - 1, 0),
             remainingSources: sourcesCount,
-            message: 'Готуємо статичний місячний звіт…'
+            message: 'Готовим статический месячный отчёт…'
         });
         const activeMonthKey = typeof req.query?.activeMonth === 'string' ? req.query.activeMonth : null;
         const successMessage = typeof req.query?.success === 'string' && req.query.success.length > 0
@@ -55,8 +55,8 @@ export async function renderMonthlyReport(req, res) {
     } catch (error) {
         console.error('[monthlyReport] render failed:', error);
         return res.status(500).render('error', {
-            message: 'Не вдалося побудувати місячний звіт.',
-            source: 'monthlyReportController: відображення звіту',
+            message: 'Не удалось построить месячный отчёт.',
+            source: 'monthlyReportController: отображение отчёта',
             error
         });
     }
@@ -89,20 +89,20 @@ export async function handleMonthlyRebuild(req, res) {
 
         const job = getOrCreateReportJob(reportKey, (jobRef) => {
             if (typeof jobRef.updateProgress === 'function') {
-                jobRef.updateProgress({ message: `Формуємо звіт за ${monthKey}.${year}` });
+                jobRef.updateProgress({ message: `Формируем отчёт за ${monthKey}.${year}` });
             }
             return rebuildMonthlyFacts(year, month, { asOf: runDate, reportJob: jobRef });
         });
 
         if (job.status === 'ready') {
-            const successQuery = encodeURIComponent(`Звіт за ${monthKey}.${year} оновлено`);
+            const successQuery = encodeURIComponent(`Отчёт за ${monthKey}.${year} обновлён`);
             return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&success=${successQuery}#month-${year}-${monthKey}`);
         }
 
         if (job.status === 'error') {
             return res.status(500).render('error', {
-                message: job.error?.message || 'Не вдалося примусово сформувати звіт.',
-                source: 'monthlyReportController: примусове формування',
+                message: job.error?.message || 'Не удалось пересобрать отчёт.',
+                source: 'monthlyReportController: принудительное формирование',
                 error: job.error || {}
             });
         }
@@ -120,7 +120,7 @@ export async function handleMonthlyRebuild(req, res) {
         return res.status(202).render('loading', {
             waitSeconds,
             reloadUrl: `/reports/monthly/rebuild?year=${year}&month=${month}`,
-            message: progress.message || `Формуємо звіт за ${monthKey}.${year}…`,
+            message: progress.message || `Формируем отчёт за ${monthKey}.${year}…`,
             alerts: Array.isArray(progress.alerts) ? progress.alerts : [],
             salesDriveLimit: rateLimitMeta.minuteLimit,
             intervalSeconds: rateLimitMeta.minuteIntervalSeconds,
@@ -135,7 +135,7 @@ export async function handleMonthlyRebuild(req, res) {
     } catch (error) {
         console.error('[monthlyReport] rebuild failed:', error);
         return res.status(500).render('error', {
-            message: 'Не вдалося примусово сформувати звіт.',
+            message: 'Не удалось пересобрать отчёт.',
             source: 'monthlyReportController: rebuild handler',
             error
         });
@@ -180,7 +180,7 @@ export async function handleMonthlyPlanUpdate(req, res) {
         });
 
         const monthKey = String(month).padStart(2, '0');
-        const successQuery = encodeURIComponent('Плани оновлено');
+        const successQuery = encodeURIComponent('Планы сохранены');
         return res.redirect(`/reports/monthly?activeMonth=${year}-${monthKey}&success=${successQuery}#month-${year}-${monthKey}`);
     } catch (error) {
         console.error('[monthlyReport] plan update failed:', error);
@@ -198,7 +198,7 @@ export async function handleMonthlyPlanUpdate(req, res) {
             }
         }
         const monthKey = String(fallbackMonth).padStart(2, '0');
-        const message = encodeURIComponent(error.message || 'Не вдалося оновити плани для місяця.');
+        const message = encodeURIComponent(error.message || 'Не удалось обновить планы для месяца.');
         return res.redirect(`/reports/monthly?activeMonth=${fallbackYear}-${monthKey}&error=${message}#month-${fallbackYear}-${monthKey}`);
     }
 }

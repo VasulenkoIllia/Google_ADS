@@ -2,10 +2,10 @@
   "year": 2025,
   "month": 10,
   "startDate": "2025-10-01",
-  "endDate": "2025-10-21",
+  "endDate": "2025-10-24",
   "daysInMonth": 31,
-  "elapsedDays": 21,
-  "generatedAt": "2025-10-21T01:00:08.328Z",
+  "elapsedDays": 24,
+  "generatedAt": "2025-10-24T07:36:52.346Z",
   "sources": [
     {
       "id": 45,
@@ -13,12 +13,12 @@
       "name": "sh-1101",
       "nameView": "sh-1101",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 10,
-        "sales": 3950,
-        "costOfGoods": 2282.5
+        "adSpend": 3033,
+        "impressions": 23571,
+        "clicks": 919,
+        "transactions": 14,
+        "sales": 5530,
+        "costOfGoods": 3208.7
       }
     },
     {
@@ -27,12 +27,12 @@
       "name": "BL-C861",
       "nameView": "BL-C861",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 4,
-        "sales": 2353.96,
-        "costOfGoods": 1369.5
+        "adSpend": 2360,
+        "impressions": 28791,
+        "clicks": 588,
+        "transactions": 5,
+        "sales": 2752.96,
+        "costOfGoods": 1601.88
       }
     },
     {
@@ -41,9 +41,9 @@
       "name": "PL-151-LED ТЕСТ",
       "nameView": "PL-151-LED ТЕСТ",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 1743,
+        "impressions": 22632,
+        "clicks": 431,
         "transactions": 30,
         "sales": 17589.98,
         "costOfGoods": 9161.54
@@ -55,12 +55,12 @@
       "name": "WD-419",
       "nameView": "WD-419",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 23,
-        "sales": 14203.68,
-        "costOfGoods": 7216.859999999999
+        "adSpend": 7886,
+        "impressions": 63549,
+        "clicks": 2015,
+        "transactions": 28,
+        "sales": 16748.58,
+        "costOfGoods": 8472.66
       }
     },
     {
@@ -69,12 +69,12 @@
       "name": "X-Balog-8070",
       "nameView": "X-Balog-8070",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 1,
-        "sales": 599,
-        "costOfGoods": 311.25
+        "adSpend": 96,
+        "impressions": 987,
+        "clicks": 24,
+        "transactions": 3,
+        "sales": 1820.96,
+        "costOfGoods": 933.75
       }
     },
     {
@@ -83,12 +83,12 @@
       "name": "HX-816",
       "nameView": "HX-816",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 7,
-        "sales": 1853,
-        "costOfGoods": 1162
+        "adSpend": 3230,
+        "impressions": 44497,
+        "clicks": 794,
+        "transactions": 9,
+        "sales": 2521,
+        "costOfGoods": 1604.05
       }
     },
     {
@@ -97,12 +97,12 @@
       "name": "BL-2188-2",
       "nameView": "BL-2188-2",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 1,
-        "sales": 406.98,
-        "costOfGoods": 177.21
+        "adSpend": 358,
+        "impressions": 3625,
+        "clicks": 93,
+        "transactions": 3,
+        "sales": 1204.98,
+        "costOfGoods": 791.0300000000001
       }
     },
     {
@@ -111,9 +111,9 @@
       "name": "1837-T6",
       "nameView": "1837-T6",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 80,
+        "impressions": 892,
+        "clicks": 37,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -125,9 +125,9 @@
       "name": "BL-1831-Т6",
       "nameView": "BL-1831-Т6",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 79,
+        "impressions": 1198,
+        "clicks": 35,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -153,9 +153,9 @@
       "name": "RB-B14",
       "nameView": "RB-B14",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 301,
+        "impressions": 4120,
+        "clicks": 137,
         "transactions": 4,
         "sales": 1200.96,
         "costOfGoods": 809.25
@@ -167,9 +167,9 @@
       "name": "BL-2804-T6",
       "nameView": "BL-2804-T6",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 1,
+        "impressions": 43,
+        "clicks": 1,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -181,9 +181,9 @@
       "name": "DL-1570",
       "nameView": "DL-1570",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 30,
+        "impressions": 604,
+        "clicks": 13,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -195,9 +195,9 @@
       "name": "DL-0010",
       "nameView": "DL-0010",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 15,
+        "impressions": 218,
+        "clicks": 7,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -209,9 +209,9 @@
       "name": "DL-0008",
       "nameView": "DL-0008",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 9,
+        "impressions": 179,
+        "clicks": 4,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -223,12 +223,12 @@
       "name": "HC-618S",
       "nameView": "HC-618S",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
-        "transactions": 0,
-        "sales": 0,
-        "costOfGoods": 0
+        "adSpend": 59,
+        "impressions": 934,
+        "clicks": 17,
+        "transactions": 1,
+        "sales": 237,
+        "costOfGoods": 124.5
       }
     },
     {
@@ -237,9 +237,9 @@
       "name": "Headlamp-HL2-1006",
       "nameView": "Headlamp-HL2-1006",
       "metrics": {
-        "adSpend": 0,
-        "impressions": 0,
-        "clicks": 0,
+        "adSpend": 25,
+        "impressions": 517,
+        "clicks": 6,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -248,12 +248,12 @@
   ],
   "totals": {
     "metrics": {
-      "adSpend": 0,
-      "impressions": 0,
-      "clicks": 0,
-      "transactions": 80,
-      "sales": 42157.56,
-      "costOfGoods": 22490.11
+      "adSpend": 19305,
+      "impressions": 196357,
+      "clicks": 5121,
+      "transactions": 97,
+      "sales": 49606.420000000006,
+      "costOfGoods": 26707.359999999997
     }
   }
 }

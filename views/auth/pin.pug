@@ -1,11 +1,11 @@
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Введіть пароль
+    title Введите пароль
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body.bg-light
     .container.py-5
@@ -13,24 +13,24 @@ html(lang="uk")
         .col-md-6.col-lg-4
           .card.shadow-sm
             .card-body
-              h1.h5.mb-3.text-primary Доступ до сервісу
-              p.text-muted.mb-4 Введіть ім'я користувача та пароль, щоб продовжити роботу зі звітами.
+              h1.h5.mb-3.text-primary Доступ к сервису
+              p.text-muted.mb-4 Введите имя пользователя и пароль, чтобы продолжить работу с отчётами.
               if errorMessage
                 .alert.alert-danger= errorMessage
               form(method="post", action="/auth/pin/verify", data-report-form)
                 input(type="hidden", name="next", value=nextUrl || '/')
                 .form-group
-                  label(for="usernameInput") Ім'я користувача
+                  label(for="usernameInput") Имя пользователя
                   input#usernameInput.form-control(type="text", name="username", value=expectedUsername || '', required, maxlength="32", autocomplete="username")
                   if expectedUsername
-                    small.form-text.text-muted Використовуйте ім'я користувача #{expectedUsername}.
+                    small.form-text.text-muted Используйте имя пользователя #{expectedUsername}.
                 .form-group
                   label(for="pinInput") Пароль
                   input#pinInput.form-control(type="password", name="pin", minlength="4", maxlength="32", required, autocomplete="current-password")
-                  small.form-text.text-muted Пароль може містити 4–32 символи.
-                button.btn.btn-primary.btn-block.mt-3(type="submit") Підтвердити
-    - const overlayMeta = { waitSeconds: null, message: 'Перевіряємо доступ…' }
-    - const pinOverlayMeta = { waitSeconds: null, message: 'Перевіряємо доступ…' }
+                  small.form-text.text-muted Пароль может содержать 4–32 символа.
+                button.btn.btn-primary.btn-block.mt-3(type="submit") Подтвердить
+    - const overlayMeta = { waitSeconds: null, message: 'Проверяем доступ…' }
+    - const pinOverlayMeta = { waitSeconds: null, message: 'Проверяем доступ…' }
     +reportLoadingOverlay(pinOverlayMeta, { id: 'pinOverlay' })
     script.
       document.addEventListener('DOMContentLoaded', function () {

@@ -12,8 +12,6 @@ const PLANS_DATA_DIR = path.join(ROOT_DATA_DIR, 'plans');
 const MONTHLY_START_YEAR = 2025;
 const MONTHLY_START_MONTH = 9; // September 2025
 
-const DECIMAL_DIGITS = 2;
-
 async function ensureDirectory(dirPath) {
     await fs.mkdir(dirPath, { recursive: true });
 }
@@ -139,7 +137,7 @@ function normalizePlanValue(value) {
     if (!Number.isFinite(value) || value < 0) {
         return 0;
     }
-    return value;
+    return Math.trunc(value);
 }
 
 function computeDerivedMetrics(base, plan, daysInMonth, elapsedDays) {
@@ -175,7 +173,7 @@ function computeDerivedMetrics(base, plan, daysInMonth, elapsedDays) {
         clickToTransConversion: base.clicks > 0 ? (base.transactions / base.clicks) * 100 : 0,
         costPerTransaction: base.transactions > 0 ? base.adSpend / base.transactions : 0,
         avgCheck: base.transactions > 0 ? base.sales / base.transactions : 0,
-        roi: base.adSpend > 0 ? (margin / base.adSpend) * 100 : 0,
+        roi: base.adSpend > 0 ? (margin / base.adSpend) : 0,
         avgProfitPerTransaction: base.transactions > 0 ? profit / base.transactions : 0,
         adSpendShare: base.sales > 0 ? (base.adSpend / base.sales) * 100 : 0,
         costShare: base.sales > 0 ? (base.costOfGoods / base.sales) * 100 : 0,
@@ -195,37 +193,46 @@ function computeDerivedMetrics(base, plan, daysInMonth, elapsedDays) {
     };
 }
 
-function roundTo(value, digits = DECIMAL_DIGITS) {
-    if (!Number.isFinite(value)) {
-        return 0;
-    }
-    const factor = 10 ** digits;
-    return Math.round(value * factor) / factor;
-}
-
 function formatNumber(value, options = {}) {
     if (value === null || value === undefined) {
         return '—';
     }
+    if (value === Infinity) {
+        return '∞';
+    }
+    if (value === -Infinity) {
+        return '-∞';
+    }
     if (!Number.isFinite(value)) {
         return '—';
     }
-    const { minimumFractionDigits = 0, maximumFractionDigits = 2, style = 'decimal' } = options;
-    return new Intl.NumberFormat('uk-UA', { style, minimumFractionDigits, maximumFractionDigits }).format(value);
+    const { style = 'decimal' } = options;
+    const integerValue = Math.trunc(value);
+    return new Intl.NumberFormat('ru-RU', {
+        style,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(integerValue);
 }
 
 function formatCurrency(value) {
     if (!Number.isFinite(value)) {
         return '—';
     }
-    return formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return formatNumber(value);
 }
 
 function formatPercent(value) {
     if (value === null || value === undefined || !Number.isFinite(value)) {
+        if (value === Infinity) {
+            return '∞%';
+        }
+        if (value === -Infinity) {
+            return '-∞%';
+        }
         return '—';
     }
-    return `${formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    return `${formatNumber(value)}%`;
 }
 
 function formatProjection(value) {
@@ -373,7 +380,7 @@ function setMonthPlan(plans, month, data) {
 
 function formatMonthLabel(year, month) {
     const date = new Date(Date.UTC(year, month - 1, 1));
-    return new Intl.DateTimeFormat('uk-UA', { month: 'long', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat('ru-RU', { month: 'long', year: 'numeric' }).format(date);
 }
 
 function buildDisplayMetrics(base, derived) {

@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 - `app.js` bootstraps Express, loads `.env` with `dotenv`, and mounts the root router.
 - `routes/index.js` обробляє домашню сторінку; нові звіти додавайте у `routes/reports.js`.
-- Контролери розділені за звітами (`homeController.js`, `summaryReportController.js`, `googleAdsReportController.js`, `salesDriveReportController.js`, `combinedReportController.js`, `monthlyReportController.js`), а спільна логіка винесена в `services/reportDataService.js` та `services/monthlyReportService.js`.
+- Контролери розділені за областями (`homeController.js`, `summaryReportController.js`, `monthlyReportController.js`, `monthlyScheduleController.js`, `sourcesController.js`, `settingsController.js`, `securityController.js`), а спільна логіка винесена в `services/reportDataService.js` та `services/monthlyReportService.js`.
 - Статичні місячні дані зберігаються у `data/monthly/YYYY-MM.json`, плани — у `data/plans/YYYY.json`.
 - Список джерел SalesDrive зберігається у `data/config/salesdrive-sources.json` (див. `services/salesdriveSourcesService.js`); керування доступне через `/reports/config/sources`.
 - `views/` містить шаблони (`home.pug`, `reports/*.pug`, `loading.pug`, `error.pug`); спільні фрагменти зберігайте у `views/partials/`.

@@ -1,21 +1,21 @@
 include ../partials/reportLoadingOverlay.pug
 
-- const WEEKDAY_OPTIONS = [{ value: 'monday', label: 'Понеділок' }, { value: 'tuesday', label: 'Вівторок' }, { value: 'wednesday', label: 'Середа' }, { value: 'thursday', label: 'Четвер' }, { value: 'friday', label: "П'ятниця" }, { value: 'saturday', label: 'Субота' }, { value: 'sunday', label: 'Неділя' }];
+- const WEEKDAY_OPTIONS = [{ value: 'monday', label: 'Понедельник' }, { value: 'tuesday', label: 'Вторник' }, { value: 'wednesday', label: 'Среда' }, { value: 'thursday', label: 'Четверг' }, { value: 'friday', label: 'Пятница' }, { value: 'saturday', label: 'Суббота' }, { value: 'sunday', label: 'Воскресенье' }];
 
 doctype html
-html(lang="uk")
+html(lang="ru")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Налаштування автоматичного формування звітів
+    title Настройки автоматического формирования отчётов
     link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
   body.bg-light
     .container.py-4
       .d-flex.justify-content-between.align-items-center.mb-4
         div
-          h1.mb-1.text-primary Налаштування автоматичного формування
-          p.text-muted.mb-0 Статичний місячний звіт
-        a.btn.btn-outline-secondary(href="/", data-report-link) До вибору звітів
+          h1.mb-1.text-primary Настройки автоматического формирования
+          p.text-muted.mb-0 Статический месячный отчёт
+        a.btn.btn-outline-secondary(href="/", data-report-link) К выбору отчётов
 
       if successMessage
         .alert.alert-success= successMessage
@@ -26,86 +26,86 @@ html(lang="uk")
         .col-lg-7
           .card.mb-4
             .card-header.bg-white
-              h2.h5.mb-0 Конфігурація планувальника
+              h2.h5.mb-0 Конфигурация планировщика
             .card-body
               form(method="post", action="/reports/monthly/schedule", data-report-form)
                 .custom-control.custom-switch.mb-3
                   input#enabled.custom-control-input(type="checkbox", name="enabled", checked=config.enabled ? true : false)
-                  label.custom-control-label(for="enabled") Автоматичне формування увімкнено
+                  label.custom-control-label(for="enabled") Автоматическое формирование включено
 
                 .form-group
-                  label.font-weight-bold Інтервал запуску
+                  label.font-weight-bold Интервал запуска
                   .form-check
                     input#frequency-daily.form-check-input(type="radio", name="frequency", value="daily", checked=config.frequency === 'daily')
-                    label.form-check-label(for="frequency-daily") Щодня
+                    label.form-check-label(for="frequency-daily") Ежедневно
                   .form-check
                     input#frequency-weekly.form-check-input(type="radio", name="frequency", value="weekly", checked=config.frequency === 'weekly')
-                    label.form-check-label(for="frequency-weekly") Щотижня
+                    label.form-check-label(for="frequency-weekly") Еженедельно
 
                 .form-row
                   .col-md-6.mb-3
-                    label(for="time") Час запуску
+                    label(for="time") Время запуска
                     input#time.form-control(type="time", name="time", required, value=config.time || '01:00')
                   .col-md-6.mb-3(id="weekday-wrapper")
-                    label(for="weekday") День тижня
+                    label(for="weekday") День недели
                     select#weekday.form-control(name="weekday", disabled=config.frequency !== 'weekly')
                       each option in WEEKDAY_OPTIONS
                         option(value=option.value selected=config.weekday === option.value)= option.label
 
                 .form-group.mt-3
-                  label.font-weight-bold Місяці для оновлення
+                  label.font-weight-bold Месяцы для обновления
                   .form-check
                     input#range-current.form-check-input(type="radio", name="rangeType", value="current", checked=config.range.type === 'current')
-                    label.form-check-label(for="range-current") Лише поточний місяць
+                    label.form-check-label(for="range-current") Только текущий месяц
                   .form-check
                     input#range-last.form-check-input(type="radio", name="rangeType", value="last", checked=config.range.type === 'last')
-                    label.form-check-label(for="range-last") Останні
+                    label.form-check-label(for="range-last") Последние
                       span.ml-1
                         input#rangeCount.form-control.form-control-sm.d-inline-block(type="number", name="rangeCount", min="1", max="12", value=config.range.type === 'last' ? config.range.count : 3, style="width: 80px;", disabled=config.range.type !== 'last')
-                        |  місяців
+                        |  мес.
                   .form-check
                     input#range-all.form-check-input(type="radio", name="rangeType", value="all", checked=config.range.type === 'all')
-                    label.form-check-label(for="range-all") Усі доступні місяці
+                    label.form-check-label(for="range-all") Все доступные месяцы
 
-                button.btn.btn-primary.mt-3(type="submit") Зберегти налаштування
+                button.btn.btn-primary.mt-3(type="submit") Сохранить настройки
 
         .col-lg-5
           .card.mb-4
             .card-header.bg-white
-              h2.h5.mb-0 Статус планувальника
+              h2.h5.mb-0 Статус планировщика
             .card-body
               dl.row.mb-0
-                dt.col-sm-5 Наступний запуск
+                dt.col-sm-5 Следующий запуск
                 dd.col-sm-7= nextRunAt
-                dt.col-sm-5 Останній запуск
+                dt.col-sm-5 Последний запуск
                 dd.col-sm-7= lastRunAt
-                dt.col-sm-5 Поточний стан
-                dd.col-sm-7= isRunning ? 'Виконується…' : 'Очікує графіка'
+                dt.col-sm-5 Текущее состояние
+                dd.col-sm-7= isRunning ? 'Выполняется…' : 'Ожидает расписания'
                 if lastRunStatus
                   dt.col-sm-5 Результат
                   dd.col-sm-7
                     if lastRunStatus === 'success'
-                      span.text-success Успішно
+                      span.text-success Успешно
                     else if lastRunStatus === 'partial'
-                      span.text-warning З попередженнями
+                      span.text-warning С предупреждениями
                     else if lastRunStatus === 'error'
-                      span.text-danger Помилка
+                      span.text-danger Ошибка
                     else
                       span.text-muted= lastRunStatus
                 if lastRunSummary && Array.isArray(lastRunSummary.processed)
-                  dt.col-sm-5 Оновлено місяців
+                  dt.col-sm-5 Обновлено месяцев
                   dd.col-sm-7= lastRunSummary.processed.length
                 if lastRunError
-                  dt.col-sm-5 Деталі
+                  dt.col-sm-5 Детали
                   dd.col-sm-7.text-danger= lastRunError
 
           .card
             .card-header.bg-white
-              h2.h5.mb-0 Запустити зараз
+              h2.h5.mb-0 Запустить сейчас
             .card-body
-              p.text-muted.mb-3 Використовуються поточні налаштування. Оновлення може тривати кілька хвилин.
+              p.text-muted.mb-3 Используются текущие настройки. Обновление может занять несколько минут.
               form(method="post", action="/reports/monthly/schedule/run", data-report-form)
-                button.btn.btn-outline-primary(type="submit" disabled=isRunning) Запустити формування
+                button.btn.btn-outline-primary(type="submit" disabled=isRunning) Запустить формирование
 
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
