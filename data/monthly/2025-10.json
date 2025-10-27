@@ -2,10 +2,10 @@
   "year": 2025,
   "month": 10,
   "startDate": "2025-10-01",
-  "endDate": "2025-10-24",
+  "endDate": "2025-10-27",
   "daysInMonth": 31,
-  "elapsedDays": 24,
-  "generatedAt": "2025-10-24T07:36:52.346Z",
+  "elapsedDays": 27,
+  "generatedAt": "2025-10-27T23:27:28.805Z",
   "sources": [
     {
       "id": 45,
@@ -13,12 +13,12 @@
       "name": "sh-1101",
       "nameView": "sh-1101",
       "metrics": {
-        "adSpend": 3033,
-        "impressions": 23571,
-        "clicks": 919,
+        "adSpend": 0,
+        "impressions": 0,
+        "clicks": 0,
         "transactions": 14,
-        "sales": 5530,
-        "costOfGoods": 3208.7
+        "sales": 5925,
+        "costOfGoods": 3449.34
       }
     },
     {
@@ -27,12 +27,12 @@
       "name": "BL-C861",
       "nameView": "BL-C861",
       "metrics": {
-        "adSpend": 2360,
-        "impressions": 28791,
-        "clicks": 588,
-        "transactions": 5,
-        "sales": 2752.96,
-        "costOfGoods": 1601.88
+        "adSpend": 2928,
+        "impressions": 35181,
+        "clicks": 731,
+        "transactions": 6,
+        "sales": 2780.96,
+        "costOfGoods": 1611.51
       }
     },
     {
@@ -41,12 +41,12 @@
       "name": "PL-151-LED ТЕСТ",
       "nameView": "PL-151-LED ТЕСТ",
       "metrics": {
-        "adSpend": 1743,
-        "impressions": 22632,
-        "clicks": 431,
-        "transactions": 30,
-        "sales": 17589.98,
-        "costOfGoods": 9161.54
+        "adSpend": 2060,
+        "impressions": 28998,
+        "clicks": 510,
+        "transactions": 24,
+        "sales": 14234,
+        "costOfGoods": 7320.35
       }
     },
     {
@@ -55,12 +55,12 @@
       "name": "WD-419",
       "nameView": "WD-419",
       "metrics": {
-        "adSpend": 7886,
-        "impressions": 63549,
-        "clicks": 2015,
+        "adSpend": 9457,
+        "impressions": 77416,
+        "clicks": 2418,
         "transactions": 28,
-        "sales": 16748.58,
-        "costOfGoods": 8472.66
+        "sales": 15407.559999999994,
+        "costOfGoods": 7696.96
       }
     },
     {
@@ -69,12 +69,12 @@
       "name": "X-Balog-8070",
       "nameView": "X-Balog-8070",
       "metrics": {
-        "adSpend": 96,
-        "impressions": 987,
-        "clicks": 24,
-        "transactions": 3,
-        "sales": 1820.96,
-        "costOfGoods": 933.75
+        "adSpend": 134,
+        "impressions": 1244,
+        "clicks": 33,
+        "transactions": 2,
+        "sales": 1209.98,
+        "costOfGoods": 622.5
       }
     },
     {
@@ -83,12 +83,12 @@
       "name": "HX-816",
       "nameView": "HX-816",
       "metrics": {
-        "adSpend": 3230,
-        "impressions": 44497,
-        "clicks": 794,
+        "adSpend": 3885,
+        "impressions": 53753,
+        "clicks": 955,
         "transactions": 9,
         "sales": 2521,
-        "costOfGoods": 1604.05
+        "costOfGoods": 1604.58
       }
     },
     {
@@ -97,9 +97,9 @@
       "name": "BL-2188-2",
       "nameView": "BL-2188-2",
       "metrics": {
-        "adSpend": 358,
-        "impressions": 3625,
-        "clicks": 93,
+        "adSpend": 432,
+        "impressions": 4309,
+        "clicks": 113,
         "transactions": 3,
         "sales": 1204.98,
         "costOfGoods": 791.0300000000001
@@ -111,9 +111,9 @@
       "name": "1837-T6",
       "nameView": "1837-T6",
       "metrics": {
-        "adSpend": 80,
-        "impressions": 892,
-        "clicks": 37,
+        "adSpend": 89,
+        "impressions": 1052,
+        "clicks": 41,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -125,9 +125,9 @@
       "name": "BL-1831-Т6",
       "nameView": "BL-1831-Т6",
       "metrics": {
-        "adSpend": 79,
-        "impressions": 1198,
-        "clicks": 35,
+        "adSpend": 87,
+        "impressions": 1361,
+        "clicks": 39,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -153,9 +153,9 @@
       "name": "RB-B14",
       "nameView": "RB-B14",
       "metrics": {
-        "adSpend": 301,
-        "impressions": 4120,
-        "clicks": 137,
+        "adSpend": 370,
+        "impressions": 4794,
+        "clicks": 167,
         "transactions": 4,
         "sales": 1200.96,
         "costOfGoods": 809.25
@@ -168,7 +168,7 @@
       "nameView": "BL-2804-T6",
       "metrics": {
         "adSpend": 1,
-        "impressions": 43,
+        "impressions": 51,
         "clicks": 1,
         "transactions": 0,
         "sales": 0,
@@ -181,9 +181,9 @@
       "name": "DL-1570",
       "nameView": "DL-1570",
       "metrics": {
-        "adSpend": 30,
-        "impressions": 604,
-        "clicks": 13,
+        "adSpend": 37,
+        "impressions": 725,
+        "clicks": 16,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -195,9 +195,9 @@
       "name": "DL-0010",
       "nameView": "DL-0010",
       "metrics": {
-        "adSpend": 15,
-        "impressions": 218,
-        "clicks": 7,
+        "adSpend": 17,
+        "impressions": 239,
+        "clicks": 8,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -210,7 +210,7 @@
       "nameView": "DL-0008",
       "metrics": {
         "adSpend": 9,
-        "impressions": 179,
+        "impressions": 192,
         "clicks": 4,
         "transactions": 0,
         "sales": 0,
@@ -223,9 +223,9 @@
       "name": "HC-618S",
       "nameView": "HC-618S",
       "metrics": {
-        "adSpend": 59,
-        "impressions": 934,
-        "clicks": 17,
+        "adSpend": 63,
+        "impressions": 1020,
+        "clicks": 18,
         "transactions": 1,
         "sales": 237,
         "costOfGoods": 124.5
@@ -237,9 +237,9 @@
       "name": "Headlamp-HL2-1006",
       "nameView": "Headlamp-HL2-1006",
       "metrics": {
-        "adSpend": 25,
-        "impressions": 517,
-        "clicks": 6,
+        "adSpend": 45,
+        "impressions": 624,
+        "clicks": 11,
         "transactions": 0,
         "sales": 0,
         "costOfGoods": 0
@@ -248,12 +248,2630 @@
   ],
   "totals": {
     "metrics": {
-      "adSpend": 19305,
-      "impressions": 196357,
-      "clicks": 5121,
-      "transactions": 97,
-      "sales": 49606.420000000006,
-      "costOfGoods": 26707.359999999997
+      "adSpend": 19614,
+      "impressions": 210959,
+      "clicks": 5065,
+      "transactions": 91,
+      "sales": 44721.439999999995,
+      "costOfGoods": 24030.019999999997
     }
+  },
+  "recentWindow": {
+    "startDate": "2025-10-23",
+    "endDate": "2025-10-26",
+    "dates": [
+      "2025-10-23",
+      "2025-10-24",
+      "2025-10-25",
+      "2025-10-26"
+    ],
+    "rangeLabel": "23.10.2025 – 26.10.2025",
+    "days": [
+      {
+        "date": "2025-10-23",
+        "dateLabel": "23.10.2025",
+        "metrics": {
+          "adSpend": 959,
+          "impressions": 9543,
+          "clicks": 253,
+          "transactions": 5,
+          "sales": 2382,
+          "costOfGoods": 1468.8100000000002,
+          "profit": 913.19
+        },
+        "display": {
+          "raw": {
+            "adSpend": 959,
+            "impressions": 9543,
+            "clicks": 253,
+            "transactions": 5,
+            "sales": 2382,
+            "costOfGoods": 1468.8100000000002,
+            "profit": 913.19
+          },
+          "formatted": {
+            "adSpend": "959",
+            "impressions": "9 543",
+            "clicks": "253",
+            "transactions": "5",
+            "sales": "2 382",
+            "costOfGoods": "1 468",
+            "profit": "913"
+          }
+        },
+        "hasFacts": true
+      },
+      {
+        "date": "2025-10-24",
+        "dateLabel": "24.10.2025",
+        "metrics": {
+          "adSpend": 1036,
+          "impressions": 10760,
+          "clicks": 262,
+          "transactions": 1,
+          "sales": 508.98,
+          "costOfGoods": 253.5,
+          "profit": 255.48
+        },
+        "display": {
+          "raw": {
+            "adSpend": 1036,
+            "impressions": 10760,
+            "clicks": 262,
+            "transactions": 1,
+            "sales": 508.98,
+            "costOfGoods": 253.5,
+            "profit": 255.48
+          },
+          "formatted": {
+            "adSpend": "1 036",
+            "impressions": "10 760",
+            "clicks": "262",
+            "transactions": "1",
+            "sales": "508",
+            "costOfGoods": "253",
+            "profit": "255"
+          }
+        },
+        "hasFacts": true
+      },
+      {
+        "date": "2025-10-25",
+        "dateLabel": "25.10.2025",
+        "metrics": {
+          "adSpend": 755,
+          "impressions": 9415,
+          "clicks": 200,
+          "transactions": 1,
+          "sales": 232,
+          "costOfGoods": 147.88,
+          "profit": 84.12
+        },
+        "display": {
+          "raw": {
+            "adSpend": 755,
+            "impressions": 9415,
+            "clicks": 200,
+            "transactions": 1,
+            "sales": 232,
+            "costOfGoods": 147.88,
+            "profit": 84.12
+          },
+          "formatted": {
+            "adSpend": "755",
+            "impressions": "9 415",
+            "clicks": "200",
+            "transactions": "1",
+            "sales": "232",
+            "costOfGoods": "147",
+            "profit": "84"
+          }
+        },
+        "hasFacts": true
+      },
+      {
+        "date": "2025-10-26",
+        "dateLabel": "26.10.2025",
+        "metrics": {
+          "adSpend": 737,
+          "impressions": 9724,
+          "clicks": 206,
+          "transactions": 0,
+          "sales": 0,
+          "costOfGoods": 0,
+          "profit": 0
+        },
+        "display": {
+          "raw": {
+            "adSpend": 737,
+            "impressions": 9724,
+            "clicks": 206,
+            "transactions": 0,
+            "sales": 0,
+            "costOfGoods": 0,
+            "profit": 0
+          },
+          "formatted": {
+            "adSpend": "737",
+            "impressions": "9 724",
+            "clicks": "206",
+            "transactions": "0",
+            "sales": "0",
+            "costOfGoods": "0",
+            "profit": "0"
+          }
+        },
+        "hasFacts": true
+      }
+    ],
+    "sources": [
+      {
+        "id": 45,
+        "ident": "sh-1101",
+        "name": "sh-1101",
+        "nameView": "sh-1101",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 2,
+              "sales": 1185,
+              "costOfGoods": 697.14,
+              "profit": 487.86
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 2,
+                "sales": 1185,
+                "costOfGoods": 697.14,
+                "profit": 487.86
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "2",
+                "sales": "1 185",
+                "costOfGoods": "697",
+                "profit": "487"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 47,
+        "ident": "BL-C861",
+        "name": "BL-C861",
+        "nameView": "BL-C861",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 122,
+              "impressions": 1590,
+              "clicks": 33,
+              "transactions": 2,
+              "sales": 798,
+              "costOfGoods": 464.76,
+              "profit": 333.24
+            },
+            "display": {
+              "raw": {
+                "adSpend": 122,
+                "impressions": 1590,
+                "clicks": 33,
+                "transactions": 2,
+                "sales": 798,
+                "costOfGoods": 464.76,
+                "profit": 333.24
+              },
+              "formatted": {
+                "adSpend": "122",
+                "impressions": "1 590",
+                "clicks": "33",
+                "transactions": "2",
+                "sales": "798",
+                "costOfGoods": "464",
+                "profit": "333"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 168,
+              "impressions": 1817,
+              "clicks": 42,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 168,
+                "impressions": 1817,
+                "clicks": 42,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "168",
+                "impressions": "1 817",
+                "clicks": "42",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 147,
+              "impressions": 1442,
+              "clicks": 36,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 147,
+                "impressions": 1442,
+                "clicks": 36,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "147",
+                "impressions": "1 442",
+                "clicks": "36",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 138,
+              "impressions": 1596,
+              "clicks": 38,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 138,
+                "impressions": 1596,
+                "clicks": 38,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "138",
+                "impressions": "1 596",
+                "clicks": "38",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 63,
+        "ident": "PL-151-LED",
+        "name": "PL-151-LED",
+        "nameView": "PL-151-LED ТЕСТ",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 94,
+              "impressions": 1553,
+              "clicks": 22,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 94,
+                "impressions": 1553,
+                "clicks": 22,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "94",
+                "impressions": "1 553",
+                "clicks": "22",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 126,
+              "impressions": 1627,
+              "clicks": 31,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 126,
+                "impressions": 1627,
+                "clicks": 31,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "126",
+                "impressions": "1 627",
+                "clicks": "31",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 51,
+              "impressions": 1799,
+              "clicks": 14,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 51,
+                "impressions": 1799,
+                "clicks": 14,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "51",
+                "impressions": "1 799",
+                "clicks": "14",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 66,
+              "impressions": 1817,
+              "clicks": 18,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 66,
+                "impressions": 1817,
+                "clicks": 18,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "66",
+                "impressions": "1 817",
+                "clicks": "18",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 114,
+        "ident": "WD-419",
+        "name": "WD-419",
+        "nameView": "WD-419",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 469,
+              "impressions": 3392,
+              "clicks": 123,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 469,
+                "impressions": 3392,
+                "clicks": 123,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "469",
+                "impressions": "3 392",
+                "clicks": "123",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 458,
+              "impressions": 3999,
+              "clicks": 115,
+              "transactions": 1,
+              "sales": 508.98,
+              "costOfGoods": 253.5,
+              "profit": 255.48
+            },
+            "display": {
+              "raw": {
+                "adSpend": 458,
+                "impressions": 3999,
+                "clicks": 115,
+                "transactions": 1,
+                "sales": 508.98,
+                "costOfGoods": 253.5,
+                "profit": 255.48
+              },
+              "formatted": {
+                "adSpend": "458",
+                "impressions": "3 999",
+                "clicks": "115",
+                "transactions": "1",
+                "sales": "508",
+                "costOfGoods": "253",
+                "profit": "255"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 364,
+              "impressions": 3297,
+              "clicks": 94,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 364,
+                "impressions": 3297,
+                "clicks": 94,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "364",
+                "impressions": "3 297",
+                "clicks": "94",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 337,
+              "impressions": 3424,
+              "clicks": 93,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 337,
+                "impressions": 3424,
+                "clicks": 93,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "337",
+                "impressions": "3 424",
+                "clicks": "93",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 163,
+        "ident": "X-Balog-8070",
+        "name": "X-Balog-8070",
+        "nameView": "X-Balog-8070",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 63,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 63,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "63",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 12,
+              "impressions": 89,
+              "clicks": 3,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 12,
+                "impressions": 89,
+                "clicks": 3,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "12",
+                "impressions": "89",
+                "clicks": "3",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 12,
+              "impressions": 81,
+              "clicks": 3,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 12,
+                "impressions": 81,
+                "clicks": 3,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "12",
+                "impressions": "81",
+                "clicks": "3",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 3,
+              "impressions": 57,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 3,
+                "impressions": 57,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "3",
+                "impressions": "57",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 168,
+        "ident": "HX-816",
+        "name": "HX-816",
+        "nameView": "HX-816",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 231,
+              "impressions": 2491,
+              "clicks": 59,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 231,
+                "impressions": 2491,
+                "clicks": 59,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "231",
+                "impressions": "2 491",
+                "clicks": "59",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 223,
+              "impressions": 2668,
+              "clicks": 53,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 223,
+                "impressions": 2668,
+                "clicks": 53,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "223",
+                "impressions": "2 668",
+                "clicks": "53",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 130,
+              "impressions": 2265,
+              "clicks": 33,
+              "transactions": 1,
+              "sales": 232,
+              "costOfGoods": 147.88,
+              "profit": 84.12
+            },
+            "display": {
+              "raw": {
+                "adSpend": 130,
+                "impressions": 2265,
+                "clicks": 33,
+                "transactions": 1,
+                "sales": 232,
+                "costOfGoods": 147.88,
+                "profit": 84.12
+              },
+              "formatted": {
+                "adSpend": "130",
+                "impressions": "2 265",
+                "clicks": "33",
+                "transactions": "1",
+                "sales": "232",
+                "costOfGoods": "147",
+                "profit": "84"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 149,
+              "impressions": 2327,
+              "clicks": 39,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 149,
+                "impressions": 2327,
+                "clicks": 39,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "149",
+                "impressions": "2 327",
+                "clicks": "39",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 175,
+        "ident": "BL-2188-2",
+        "name": "BL-2188-2",
+        "nameView": "BL-2188-2",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 22,
+              "impressions": 199,
+              "clicks": 7,
+              "transactions": 1,
+              "sales": 399,
+              "costOfGoods": 306.91,
+              "profit": 92.09
+            },
+            "display": {
+              "raw": {
+                "adSpend": 22,
+                "impressions": 199,
+                "clicks": 7,
+                "transactions": 1,
+                "sales": 399,
+                "costOfGoods": 306.91,
+                "profit": 92.09
+              },
+              "formatted": {
+                "adSpend": "22",
+                "impressions": "199",
+                "clicks": "7",
+                "transactions": "1",
+                "sales": "399",
+                "costOfGoods": "306",
+                "profit": "92"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 22,
+              "impressions": 247,
+              "clicks": 7,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 22,
+                "impressions": 247,
+                "clicks": 7,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "22",
+                "impressions": "247",
+                "clicks": "7",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 12,
+              "impressions": 186,
+              "clicks": 3,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 12,
+                "impressions": 186,
+                "clicks": 3,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "12",
+                "impressions": "186",
+                "clicks": "3",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 10,
+              "impressions": 140,
+              "clicks": 3,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 10,
+                "impressions": 140,
+                "clicks": 3,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "10",
+                "impressions": "140",
+                "clicks": "3",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 189,
+        "ident": "1837-T6",
+        "name": "1837-T6",
+        "nameView": "1837-T6",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 47,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 47,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "47",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 4,
+              "impressions": 52,
+              "clicks": 2,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 4,
+                "impressions": 52,
+                "clicks": 2,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "4",
+                "impressions": "52",
+                "clicks": "2",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 43,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 43,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "43",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 29,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 29,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "29",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 190,
+        "ident": "BL-1831-Т6",
+        "name": "BL-1831-Т6",
+        "nameView": "BL-1831-Т6",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 15,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 15,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "15",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 26,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 26,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "26",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 3,
+              "impressions": 44,
+              "clicks": 2,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 3,
+                "impressions": 44,
+                "clicks": 2,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "3",
+                "impressions": "44",
+                "clicks": "2",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 50,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 50,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "50",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 191,
+        "ident": "RB-206",
+        "name": "RB-206",
+        "nameView": "RB-206",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          }
+        ],
+        "hasFacts": false
+      },
+      {
+        "id": 192,
+        "ident": "RB-B14",
+        "name": "RB-B14",
+        "nameView": "RB-B14",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 11,
+              "impressions": 95,
+              "clicks": 5,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 11,
+                "impressions": 95,
+                "clicks": 5,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "11",
+                "impressions": "95",
+                "clicks": "5",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 11,
+              "impressions": 142,
+              "clicks": 5,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 11,
+                "impressions": 142,
+                "clicks": 5,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "11",
+                "impressions": "142",
+                "clicks": "5",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 28,
+              "impressions": 181,
+              "clicks": 12,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 28,
+                "impressions": 181,
+                "clicks": 12,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "28",
+                "impressions": "181",
+                "clicks": "12",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 20,
+              "impressions": 185,
+              "clicks": 9,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 20,
+                "impressions": 185,
+                "clicks": 9,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "20",
+                "impressions": "185",
+                "clicks": "9",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 193,
+        "ident": "BL-2804-T6",
+        "name": "BL-2804-T6",
+        "nameView": "BL-2804-T6",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 1,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 1,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "1",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 1,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 1,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "1",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 3,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 3,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "3",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 2,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 2,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "2",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 246,
+        "ident": "DL-1570",
+        "name": "DL-1570",
+        "nameView": "DL-1570",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 12,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 12,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "12",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 30,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 30,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "30",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 32,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 32,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "32",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 4,
+              "impressions": 39,
+              "clicks": 2,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 4,
+                "impressions": 39,
+                "clicks": 2,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "4",
+                "impressions": "39",
+                "clicks": "2",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 247,
+        "ident": "DL-0010",
+        "name": "DL-0010",
+        "nameView": "DL-0010",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 2,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 2,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "2",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 0,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 0,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "0",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": false
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 2,
+              "impressions": 5,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 2,
+                "impressions": 5,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "2",
+                "impressions": "5",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 11,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 11,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "11",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 248,
+        "ident": "DL-0008",
+        "name": "DL-0008",
+        "nameView": "DL-0008",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 1,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 1,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "1",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 5,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 5,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "5",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 1,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 1,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "1",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 6,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 6,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "6",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 249,
+        "ident": "HC-618S",
+        "name": "HC-618S",
+        "nameView": "HC-618S",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 6,
+              "impressions": 44,
+              "clicks": 2,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 6,
+                "impressions": 44,
+                "clicks": 2,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "6",
+                "impressions": "44",
+                "clicks": "2",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 4,
+              "impressions": 28,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 4,
+                "impressions": 28,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "4",
+                "impressions": "28",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 11,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 11,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "11",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 20,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 20,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "20",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      },
+      {
+        "id": 1006,
+        "ident": "Headlamp-HL2-1006",
+        "name": "Headlamp-HL2-1006",
+        "nameView": "Headlamp-HL2-1006",
+        "days": [
+          {
+            "date": "2025-10-23",
+            "dateLabel": "23.10.2025",
+            "metrics": {
+              "adSpend": 0,
+              "impressions": 38,
+              "clicks": 0,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 0,
+                "impressions": 38,
+                "clicks": 0,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "0",
+                "impressions": "38",
+                "clicks": "0",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-24",
+            "dateLabel": "24.10.2025",
+            "metrics": {
+              "adSpend": 4,
+              "impressions": 29,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 4,
+                "impressions": 29,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "4",
+                "impressions": "29",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-25",
+            "dateLabel": "25.10.2025",
+            "metrics": {
+              "adSpend": 4,
+              "impressions": 25,
+              "clicks": 1,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 4,
+                "impressions": 25,
+                "clicks": 1,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "4",
+                "impressions": "25",
+                "clicks": "1",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          },
+          {
+            "date": "2025-10-26",
+            "dateLabel": "26.10.2025",
+            "metrics": {
+              "adSpend": 10,
+              "impressions": 21,
+              "clicks": 3,
+              "transactions": 0,
+              "sales": 0,
+              "costOfGoods": 0,
+              "profit": 0
+            },
+            "display": {
+              "raw": {
+                "adSpend": 10,
+                "impressions": 21,
+                "clicks": 3,
+                "transactions": 0,
+                "sales": 0,
+                "costOfGoods": 0,
+                "profit": 0
+              },
+              "formatted": {
+                "adSpend": "10",
+                "impressions": "21",
+                "clicks": "3",
+                "transactions": "0",
+                "sales": "0",
+                "costOfGoods": "0",
+                "profit": "0"
+              }
+            },
+            "hasFacts": true
+          }
+        ],
+        "hasFacts": true
+      }
+    ],
+    "lengthDays": 4,
+    "hasData": true
   }
 }

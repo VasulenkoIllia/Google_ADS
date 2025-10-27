@@ -40,6 +40,8 @@ const DEFAULT_SALESDRIVE_RETRY_ATTEMPTS = 3;
 const DEFAULT_SALESDRIVE_RETRY_BASE_DELAY_MS = 5000;
 const DEFAULT_SALESDRIVE_HOURLY_LIMIT = 200;
 const DEFAULT_SALESDRIVE_DAILY_LIMIT = 2000;
+const ALLOWED_SALESDRIVE_STATUS_IDS = Object.freeze([2, 3, 4, 5]);
+const ALLOWED_SALESDRIVE_STATUS_SET = new Set(ALLOWED_SALESDRIVE_STATUS_IDS);
 const GOOGLE_ADS_TIMEOUT_MS = 30000;
 const GOOGLE_ADS_MAX_RETRY_ATTEMPTS = 3;
 export const MIN_PLACEHOLDER_WAIT_SECONDS = 5;
@@ -123,6 +125,25 @@ export const SALES_DRIVE_DAILY_LIMIT = parsePositiveInt(
     process.env.SALESDRIVE_DAILY_LIMIT,
     DEFAULT_SALESDRIVE_DAILY_LIMIT
 );
+
+function normalizeStatusId(value) {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function isOrderStatusAllowed(order) {
+    if (!order || typeof order !== 'object') {
+        return false;
+    }
+    const statusId = normalizeStatusId(order.statusId ?? order.status_id ?? order.statusID);
+    if (statusId === null) {
+        return false;
+    }
+    return ALLOWED_SALESDRIVE_STATUS_SET.has(statusId);
+}
 
 function alignToHour(timestamp = Date.now()) {
     const aligned = new Date(timestamp);
@@ -826,6 +847,7 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
         reportJob
     };
     let remainingPagesEstimate = 0;
+    let filteredStatusesApplied = false;
 
     try {
         // Paginate until the API signals no more data
@@ -849,7 +871,15 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
             const pageTotals = response.data?.totals || {};
             const pagination = response.data?.pagination || {};
 
-            aggregatedOrders.push(...pageOrders);
+            const filteredOrders = pageOrders.filter(order => {
+                const allowed = isOrderStatusAllowed(order);
+                if (!allowed) {
+                    filteredStatusesApplied = true;
+                }
+                return allowed;
+            });
+
+            aggregatedOrders.push(...filteredOrders);
 
             if (!totalsSnapshot && Object.keys(pageTotals).length > 0) {
                 totalsSnapshot = pageTotals;
@@ -899,7 +929,8 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
         return {
             orders: aggregatedOrders,
             totals: totalsSnapshot || {},
-            count: totalItemsHint || aggregatedOrders.length,
+            count: aggregatedOrders.length,
+            filterApplied: filteredStatusesApplied,
             errors: [],
         };
     } catch (error) {
@@ -915,10 +946,10 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
             remainingSources: rateLimitContext.remainingSources,
             remainingSourcesAfterCurrent,
             sourceIdent: rateLimitContext.sourceIdent,
-            sourceId,
-            status: error.response?.status || 'error'
-        });
-        return { orders: [], totals: {}, count: 0, errors: [apiMessage || 'Неизвестная ошибка SalesDrive'] };
+                sourceId,
+                status: error.response?.status || 'error'
+            });
+        return { orders: [], totals: {}, count: 0, filterApplied: false, errors: [apiMessage || 'Неизвестная ошибка SalesDrive'] };
     }
 }
 
@@ -1143,7 +1174,12 @@ async function buildReportData(
             remainingSources: sourcesToProcess.length - sourceIndex,
             remainingSourcesAfterCurrent
         });
-        const { orders, totals, errors: sourceErrors } = await getSalesDriveDataForSource(
+        const {
+            orders,
+            totals,
+            filterApplied: sourceStatusFilterApplied,
+            errors: sourceErrors
+        } = await getSalesDriveDataForSource(
             source.id,
             { startDate, endDate },
             salesDriveRequestOptions,
@@ -1224,10 +1260,11 @@ async function buildReportData(
         const hasTotalsCount = totalsCountRaw !== undefined && totalsCountRaw !== null && totalsCountRaw !== '';
         const hasTotalsCost = totalsCostRaw !== undefined && totalsCostRaw !== null && totalsCostRaw !== '';
 
-        const paymentShouldUseManual = !hasTotalsPayment || totalsPayment === null || (Math.abs(totalsPayment) <= ZERO_EPSILON && Math.abs(manualPaymentTotal) > ZERO_EPSILON);
-        const profitShouldUseManual = !hasTotalsProfit || totalsProfit === null || (Math.abs(totalsProfit) <= ZERO_EPSILON && Math.abs(manualProfitTotal) > ZERO_EPSILON);
-        const countShouldUseManual = !hasTotalsCount || totalsCount === null || (Math.round(totalsCount) === 0 && manualTransactionCount > 0);
-        const costShouldUseManual = !hasTotalsCost || totalsCost === null || (Math.abs(totalsCost) <= ZERO_EPSILON && Math.abs(manualCostTotal) > ZERO_EPSILON);
+        const statusFilterActive = Boolean(sourceStatusFilterApplied);
+        const paymentShouldUseManual = statusFilterActive || !hasTotalsPayment || totalsPayment === null || (Math.abs(totalsPayment) <= ZERO_EPSILON && Math.abs(manualPaymentTotal) > ZERO_EPSILON);
+        const profitShouldUseManual = statusFilterActive || !hasTotalsProfit || totalsProfit === null || (Math.abs(totalsProfit) <= ZERO_EPSILON && Math.abs(manualProfitTotal) > ZERO_EPSILON);
+        const countShouldUseManual = statusFilterActive || !hasTotalsCount || totalsCount === null || (Math.round(totalsCount) === 0 && manualTransactionCount > 0);
+        const costShouldUseManual = statusFilterActive || !hasTotalsCost || totalsCost === null || (Math.abs(totalsCost) <= ZERO_EPSILON && Math.abs(manualCostTotal) > ZERO_EPSILON);
 
         const paymentIncrement = paymentShouldUseManual ? manualPaymentTotal : (totalsPayment ?? 0);
         const profitIncrement = profitShouldUseManual ? manualProfitTotal : (totalsProfit ?? 0);

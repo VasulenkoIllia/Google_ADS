@@ -1,3 +1,33 @@
+mixin recentMetricsCard(day)
+  - const fallbackRecentFormatted = { adSpend: '0', impressions: '0', clicks: '0', transactions: '0', sales: '0', costOfGoods: '0', profit: '0' };
+  - const formatted = (day && day.display && day.display.formatted) ? day.display.formatted : fallbackRecentFormatted;
+  .card.recent-day-card.shadow-sm.mb-3
+    .card-header.bg-light.font-weight-bold= (day && day.dateLabel) ? day.dateLabel : '—'
+    .card-body.p-3
+      table.table.table-sm.mb-0
+        tbody
+          tr
+            th Реклама
+            td= formatted.adSpend || '0'
+          tr
+            th Показы
+            td= formatted.impressions || '0'
+          tr
+            th Клики
+            td= formatted.clicks || '0'
+          tr
+            th Транзакции
+            td= formatted.transactions || '0'
+          tr
+            th Продажи
+            td= formatted.sales || '0'
+          tr
+            th Себестоимость
+            td= formatted.costOfGoods || '0'
+          tr
+            th Прибыль
+            td= formatted.profit || '0'
+
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
@@ -48,6 +78,12 @@ html(lang="ru")
       .metric-green span,
       .metric-blue span {
         color: inherit !important;
+      }
+      .recent-day-card {
+        min-height: 100%;
+      }
+      .recent-day-card table th {
+        width: 60%;
       }
   body
     .container-fluid.py-4
@@ -369,6 +405,45 @@ html(lang="ru")
                 else
                   .alert.alert-warning Для этого месяца нет настроенных источников.
                 button.btn.btn-primary.mt-3(type="submit") Сохранить планы
+              if month.recentWindow && month.recentWindow.days && month.recentWindow.days.length
+                hr.my-4
+                - const recentWindowLength = month.recentWindow.lengthDays || 4
+                h3.h6.text-secondary.mb-3 Показатели за последние #{recentWindowLength} дня
+                if month.recentWindow.rangeLabel && month.recentWindow.rangeLabel !== '—'
+                  p.text-muted.small.mb-3= `Период: ${month.recentWindow.rangeLabel}`
+                .row
+                  each day in month.recentWindow.days
+                    .col-xl-3.col-lg-4.col-md-6
+                      +recentMetricsCard(day)
+                if month.recentWindow.sources && month.recentWindow.sources.length
+                  - const availableRecentSources = month.recentWindow.sources
+                  - const defaultRecentSourceObj = availableRecentSources.find(source => source.hasFacts) || availableRecentSources[0]
+                  - const defaultRecentSource = defaultRecentSourceObj ? defaultRecentSourceObj.ident : ''
+                  .mt-4
+                    label.font-weight-bold(for=`recent-source-select-${anchorId}`) Источник (последние #{recentWindowLength} дня)
+                    select.form-control.form-control-sm.recent-window-select(id=`recent-source-select-${anchorId}` data-default-recent-source=defaultRecentSource)
+                      each source in availableRecentSources
+                        - const recentSourceName = (typeof source.nameView === 'string' && source.nameView.trim().length) ? source.nameView : (source.name || source.ident)
+                        option(value=source.ident selected=(source.ident === defaultRecentSource) ? true : false)= recentSourceName
+                  each source, recentIndex in availableRecentSources
+                    - const recentSourceLabel = (typeof source.nameView === 'string' && source.nameView.trim().length) ? source.nameView : (source.name || source.ident)
+                    - const isRecentDefault = defaultRecentSource ? source.ident === defaultRecentSource : recentIndex === 0
+                    .recent-window-panel.mt-3(data-recent-source=source.ident class=isRecentDefault ? '' : 'd-none')
+                      h4.h6.text-secondary.mb-3= `Показатели для ${recentSourceLabel}`
+                      if source.days && source.days.length
+                        .row
+                          each day in source.days
+                            .col-xl-3.col-lg-4.col-md-6
+                              +recentMetricsCard(day)
+                      else
+                        .alert.alert-light.small.mb-0 Нет данных за выбранные дни.
+                else
+                  .alert.alert-light.small.mt-3 Нет данных по источникам за выбранные дни.
+                if !month.recentWindow.hasData
+                  .alert.alert-warning.mt-3.mb-0 Данные за выбранные дни отсутствуют.
+              else
+                hr.my-4
+                .alert.alert-info.mb-0 Нет данных за последние дни.
       else
         .alert.alert-info Нет доступных месяцев для отображения.
 
@@ -425,6 +500,46 @@ html(lang="ru")
 
           select.addEventListener('change', function () {
             updateSources(this.value);
+          });
+        });
+
+        document.querySelectorAll('.recent-window-select').forEach(function (select) {
+          var card = select.closest('[data-month-card]');
+          var defaultRecent = select.getAttribute('data-default-recent-source');
+          if (defaultRecent) {
+            var hasOption = Array.from(select.options).some(function (option) {
+              return option.value === defaultRecent;
+            });
+            if (hasOption) {
+              select.value = defaultRecent;
+            }
+          }
+          function updateRecentPanels(value) {
+            var panels = card.querySelectorAll('.recent-window-panel');
+            var matched = false;
+            panels.forEach(function (panel) {
+              if (panel.getAttribute('data-recent-source') === value) {
+                panel.classList.remove('d-none');
+                matched = true;
+              } else {
+                panel.classList.add('d-none');
+              }
+            });
+            if (!matched && panels.length) {
+              panels[0].classList.remove('d-none');
+              if (select.options.length) {
+                select.value = panels[0].getAttribute('data-recent-source');
+              }
+            }
+          }
+          if (select.value) {
+            updateRecentPanels(select.value);
+          } else if (select.options.length) {
+            select.value = select.options[0].value;
+            updateRecentPanels(select.value);
+          }
+          select.addEventListener('change', function () {
+            updateRecentPanels(this.value);
           });
         });
 

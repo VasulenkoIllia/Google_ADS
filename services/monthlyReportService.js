@@ -11,6 +11,7 @@ const MONTHLY_DATA_DIR = path.join(ROOT_DATA_DIR, 'monthly');
 const PLANS_DATA_DIR = path.join(ROOT_DATA_DIR, 'plans');
 const MONTHLY_START_YEAR = 2025;
 const MONTHLY_START_MONTH = 9; // September 2025
+const RECENT_WINDOW_DAYS = 4;
 
 async function ensureDirectory(dirPath) {
     await fs.mkdir(dirPath, { recursive: true });
@@ -54,6 +55,46 @@ function getElapsedDays(year, month, asOf = new Date()) {
     const diffMs = effectiveEnd.getTime() - start.getTime();
     const elapsed = Math.floor(diffMs / (24 * 60 * 60 * 1000)) + 1;
     return Math.max(0, Math.min(daysInThisMonth, elapsed));
+}
+
+function formatIsoDateLabel(isoDate) {
+    if (!isoDate || typeof isoDate !== 'string') {
+        return '';
+    }
+    const [year, month, day] = isoDate.split('-');
+    if (!year || !month || !day) {
+        return isoDate;
+    }
+    return `${day}.${month}.${year}`;
+}
+
+function resolveRecentWindowRange(asOf = new Date()) {
+    const asOfUtc = new Date(asOf);
+    const windowEnd = new Date(Date.UTC(
+        asOfUtc.getUTCFullYear(),
+        asOfUtc.getUTCMonth(),
+        asOfUtc.getUTCDate(),
+        23,
+        59,
+        59,
+        999
+    ));
+    windowEnd.setUTCDate(windowEnd.getUTCDate() - 1);
+    const windowStart = new Date(windowEnd);
+    windowStart.setUTCDate(windowStart.getUTCDate() - (RECENT_WINDOW_DAYS - 1));
+
+    const dateList = [];
+    for (let offset = 0; offset < RECENT_WINDOW_DAYS; offset += 1) {
+        const date = new Date(windowStart);
+        date.setUTCDate(windowStart.getUTCDate() + offset);
+        dateList.push(date.toISOString().slice(0, 10));
+    }
+
+    return {
+        startDate: windowStart.toISOString().slice(0, 10),
+        endDate: windowEnd.toISOString().slice(0, 10),
+        dates: dateList
+    };
 }
 
 async function readJson(filePath, fallback = null) {
@@ -106,6 +147,91 @@ function createEmptyMetrics() {
         sales: 0,
         costOfGoods: 0
     };
+}
+
+function createEmptyRecentMetrics() {
+    return {
+        adSpend: 0,
+        impressions: 0,
+        clicks: 0,
+        transactions: 0,
+        sales: 0,
+        costOfGoods: 0,
+        profit: 0
+    };
+}
+
+function combineRecentMetrics(googleEntry = {}, salesEntry = {}) {
+    const metrics = createEmptyRecentMetrics();
+    if (googleEntry) {
+        metrics.adSpend = toNumber(googleEntry.adSpend);
+        metrics.impressions = toNumber(googleEntry.impressions);
+        metrics.clicks = toNumber(googleEntry.clicks);
+    }
+    if (salesEntry) {
+        metrics.transactions = toNumber(salesEntry.transactions);
+        metrics.sales = toNumber(salesEntry.sales);
+        metrics.costOfGoods = toNumber(salesEntry.costOfGoods);
+        metrics.profit = toNumber(salesEntry.profit);
+    }
+    return metrics;
+}
+
+function hasRecentFacts(metrics) {
+    if (!metrics || typeof metrics !== 'object') {
+        return false;
+    }
+    return Object.values(metrics).some(value => Number.isFinite(value) && Math.abs(value) > 0);
+}
+
+function normalizeRecentDayEntries(dayEntries, orderedDates = []) {
+    const byDate = new Map();
+    if (Array.isArray(dayEntries)) {
+        dayEntries.forEach(entry => {
+            if (!entry) {
+                return;
+            }
+            const dateKey = typeof entry.date === 'string' && entry.date.length ? entry.date : null;
+            if (!dateKey) {
+                return;
+            }
+            byDate.set(dateKey, entry);
+        });
+    }
+    const datesToRender = Array.isArray(orderedDates) && orderedDates.length
+        ? orderedDates
+        : Array.from(byDate.keys());
+    return datesToRender.map(dateKey => {
+        const existing = byDate.get(dateKey) || {};
+        const metricsSource = existing.metrics || null;
+        const metrics = metricsSource
+            ? {
+                adSpend: toNumber(metricsSource.adSpend),
+                impressions: toNumber(metricsSource.impressions),
+                clicks: toNumber(metricsSource.clicks),
+                transactions: toNumber(metricsSource.transactions),
+                sales: toNumber(metricsSource.sales),
+                costOfGoods: toNumber(metricsSource.costOfGoods),
+                profit: toNumber(metricsSource.profit)
+            }
+            : createEmptyRecentMetrics();
+        const display = existing.display && existing.display.formatted
+            ? existing.display
+            : buildRecentDisplay(metrics);
+        const labelCandidate = typeof existing.dateLabel === 'string' && existing.dateLabel.length
+            ? existing.dateLabel
+            : formatIsoDateLabel(dateKey);
+        const hasFacts = typeof existing.hasFacts === 'boolean'
+            ? existing.hasFacts
+            : hasRecentFacts(metrics);
+        return {
+            date: dateKey,
+            dateLabel: labelCandidate,
+            metrics,
+            display,
+            hasFacts
+        };
+    });
 }
 
 function sumBaseMetrics(collection) {
@@ -242,6 +368,22 @@ function formatProjection(value) {
     return formatCurrency(value);
 }
 
+function buildRecentDisplay(metrics) {
+    const safe = metrics || createEmptyRecentMetrics();
+    return {
+        raw: { ...safe },
+        formatted: {
+            adSpend: formatCurrency(safe.adSpend),
+            impressions: formatNumber(safe.impressions),
+            clicks: formatNumber(safe.clicks),
+            transactions: formatNumber(safe.transactions),
+            sales: formatCurrency(safe.sales),
+            costOfGoods: formatCurrency(safe.costOfGoods),
+            profit: formatCurrency(safe.profit)
+        }
+    };
+}
+
 async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
     const now = asOf ? new Date(asOf) : new Date();
     const startDate = getMonthStartDate(year, month);
@@ -265,6 +407,122 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
 
     await waitForSalesDriveIdle();
 
+    const configuredSources = getSalesdriveSources();
+    let recentWindow = null;
+    try {
+        const recentRange = resolveRecentWindowRange(now);
+        const dateKeys = Array.isArray(recentRange.dates) ? recentRange.dates : [];
+        const overallDays = [];
+        for (let index = 0; index < dateKeys.length; index += 1) {
+            const dateKey = dateKeys[index];
+            try {
+                if (reportJob && typeof reportJob.updateProgress === 'function') {
+                    reportJob.updateProgress({
+                        message: `Собираем данные за ${formatIsoDateLabel(dateKey)} (${index + 1}/${dateKeys.length})`,
+                        recentWindowCurrent: dateKey
+                    });
+                }
+
+                const dayReport = await buildReportData(
+                    {
+                        startDate: dateKey,
+                        endDate: dateKey,
+                        selectedSourceIds: [],
+                        salesDriveRequestOptions: {},
+                        planOverrides: {}
+                    },
+                    { reportJob: reportJob || null }
+                );
+                await waitForSalesDriveIdle();
+
+                const googleTotals = {
+                    adSpend: toNumber(dayReport.googleAdsTotals?.totalCostUah),
+                    impressions: toNumber(dayReport.googleAdsTotals?.totalImpressions),
+                    clicks: toNumber(dayReport.googleAdsTotals?.totalClicks)
+                };
+                const salesTotals = {
+                    transactions: toNumber(dayReport.salesDriveTotals?.totalTransactions),
+                    sales: toNumber(dayReport.salesDriveTotals?.totalPaymentAmount),
+                    costOfGoods: toNumber(dayReport.salesDriveTotals?.totalCostPriceAmount),
+                    profit: toNumber(dayReport.salesDriveTotals?.totalProfitAmount)
+                };
+
+                const combinedMetrics = combineRecentMetrics(googleTotals, salesTotals);
+                const display = buildRecentDisplay(combinedMetrics);
+                overallDays.push({
+                    date: dateKey,
+                    dateLabel: formatIsoDateLabel(dateKey),
+                    metrics: combinedMetrics,
+                    display,
+                    hasFacts: hasRecentFacts(combinedMetrics),
+                    perSourceTotals: dayReport.sourceSummaries || []
+                });
+            } catch (dayError) {
+                console.error(`[monthlyReport] Failed to collect daily metrics for ${dateKey}:`, dayError);
+                const fallbackMetrics = createEmptyRecentMetrics();
+                const fallbackDisplay = buildRecentDisplay(fallbackMetrics);
+                overallDays.push({
+                    date: dateKey,
+                    dateLabel: formatIsoDateLabel(dateKey),
+                    metrics: fallbackMetrics,
+                    display: fallbackDisplay,
+                    hasFacts: false,
+                    perSourceTotals: []
+                });
+            }
+        }
+
+        const sourcesRecent = configuredSources.map(source => {
+            const ident = source.ident;
+            const days = overallDays.map(day => {
+                const summary = day.perSourceTotals.find(entry => entry.ident === ident);
+                const metrics = createEmptyRecentMetrics();
+                if (summary) {
+                    metrics.adSpend = toNumber(summary.googleTotals?.totalCostUah);
+                    metrics.impressions = toNumber(summary.googleTotals?.totalImpressions);
+                    metrics.clicks = toNumber(summary.googleTotals?.totalClicks);
+                    metrics.transactions = toNumber(summary.salesTotals?.totalTransactions);
+                    metrics.sales = toNumber(summary.salesTotals?.totalPaymentAmount);
+                    metrics.costOfGoods = toNumber(summary.salesTotals?.totalCostPriceAmount);
+                    metrics.profit = toNumber(summary.salesTotals?.totalProfitAmount);
+                }
+                const display = buildRecentDisplay(metrics);
+                return {
+                    date: day.date,
+                    dateLabel: day.dateLabel,
+                    metrics,
+                    display,
+                    hasFacts: hasRecentFacts(metrics)
+                };
+            });
+            const hasFacts = days.some(entry => entry.hasFacts);
+            return {
+                id: source.id,
+                ident,
+                name: source.name || source.ident,
+                nameView: source.nameView || source.name || source.ident,
+                days,
+                hasFacts
+            };
+        });
+
+        const overallHasData = overallDays.some(day => day.hasFacts);
+        recentWindow = {
+            startDate: recentRange.startDate,
+            endDate: recentRange.endDate,
+            dates: dateKeys,
+            rangeLabel: recentRange.startDate && recentRange.endDate
+                ? `${formatIsoDateLabel(recentRange.startDate)} – ${formatIsoDateLabel(recentRange.endDate)}`
+                : '—',
+            days: overallDays.map(({ perSourceTotals, ...rest }) => rest),
+            sources: sourcesRecent,
+            lengthDays: RECENT_WINDOW_DAYS,
+            hasData: overallHasData
+        };
+    } catch (recentError) {
+        console.error('[monthlyReport] Failed to compute recent window metrics:', recentError);
+    }
+
     const summaryByIdent = new Map();
     if (Array.isArray(report.sourceSummaries)) {
         report.sourceSummaries.forEach(entry => {
@@ -274,7 +532,6 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
         });
     }
 
-    const configuredSources = getSalesdriveSources();
     const sources = configuredSources.map(source => {
         const summary = summaryByIdent.get(source.ident) || {};
         const googleTotals = summary.googleTotals || {};
@@ -308,7 +565,8 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
         sources,
         totals: {
             metrics: totalsMetrics
-        }
+        },
+        recentWindow
     };
 
     return facts;
@@ -481,6 +739,81 @@ function buildMonthReportObject({ year, month, facts, planConfig, isCurrentMonth
     );
     const totalsDisplay = buildDisplayMetrics(totalsBase, totalsDerived);
 
+    let recentWindowDisplay = null;
+    if (facts?.recentWindow && Array.isArray(facts.recentWindow.days)) {
+        const dateKeysRaw = Array.isArray(facts.recentWindow.dates) && facts.recentWindow.dates.length
+            ? facts.recentWindow.dates
+            : facts.recentWindow.days.map(day => day?.date).filter(Boolean);
+        const normalizedDays = normalizeRecentDayEntries(facts.recentWindow.days, dateKeysRaw);
+        const normalizedDates = normalizedDays.map(day => day.date).filter(Boolean);
+        const normalizedDatesFormatted = normalizedDays.map(day => day.dateLabel).filter(Boolean);
+        const sourcesRaw = Array.isArray(facts.recentWindow.sources) && facts.recentWindow.sources.length
+            ? facts.recentWindow.sources
+            : fallbackSources;
+        const normalizedSources = sourcesRaw.map(source => {
+            const sourceDays = normalizeRecentDayEntries(
+                Array.isArray(source?.days) ? source.days : [],
+                normalizedDates
+            );
+            const hasFacts = sourceDays.some(day => day.hasFacts);
+            return {
+                id: source.id,
+                ident: source.ident,
+                name: source.name || source.ident,
+                nameView: source.nameView || source.name || source.ident,
+                days: sourceDays,
+                hasFacts
+            };
+        });
+        const hasData = normalizedDays.some(day => day.hasFacts);
+        const rangeLabel = facts.recentWindow.rangeLabel
+            || (facts.recentWindow.startDate && facts.recentWindow.endDate
+                ? `${formatIsoDateLabel(facts.recentWindow.startDate)} – ${formatIsoDateLabel(facts.recentWindow.endDate)}`
+                : '—');
+        recentWindowDisplay = {
+            startDate: facts.recentWindow.startDate || null,
+            endDate: facts.recentWindow.endDate || null,
+            dates: normalizedDates,
+            datesFormatted: normalizedDatesFormatted,
+            rangeLabel,
+            days: normalizedDays,
+            sources: normalizedSources,
+            lengthDays: facts.recentWindow.lengthDays || RECENT_WINDOW_DAYS,
+            hasData
+        };
+    } else {
+        const dateKeys = Array.isArray(facts?.recentWindow?.dates) ? facts.recentWindow.dates : [];
+        const normalizedDays = normalizeRecentDayEntries([], dateKeys);
+        const normalizedDates = normalizedDays.map(day => day.date).filter(Boolean);
+        const normalizedDatesFormatted = normalizedDays.map(day => day.dateLabel).filter(Boolean);
+        const rangeLabel = facts?.recentWindow?.rangeLabel
+            || (facts?.recentWindow?.startDate && facts?.recentWindow?.endDate
+                ? `${formatIsoDateLabel(facts.recentWindow.startDate)} – ${formatIsoDateLabel(facts.recentWindow.endDate)}`
+                : '—');
+        const fallbackRecentSources = fallbackSources.map(source => {
+            const sourceDays = normalizeRecentDayEntries([], normalizedDates);
+            return {
+                id: source.id,
+                ident: source.ident,
+                name: source.name || source.ident,
+                nameView: source.nameView || source.name || source.ident,
+                days: sourceDays,
+                hasFacts: false
+            };
+        });
+        recentWindowDisplay = {
+            startDate: facts?.recentWindow?.startDate || null,
+            endDate: facts?.recentWindow?.endDate || null,
+            dates: normalizedDates,
+            datesFormatted: normalizedDatesFormatted,
+            rangeLabel,
+            days: normalizedDays,
+            sources: fallbackRecentSources,
+            lengthDays: facts?.recentWindow?.lengthDays || RECENT_WINDOW_DAYS,
+            hasData: false
+        };
+    }
+
     return {
         year,
         month,
@@ -499,6 +832,7 @@ function buildMonthReportObject({ year, month, facts, planConfig, isCurrentMonth
             derived: totalsDerived,
             display: totalsDisplay
         },
+        recentWindow: recentWindowDisplay,
         planConfig: {
             sources: planSources
         }
