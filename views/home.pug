@@ -1,3 +1,4 @@
+include partials/simpleLoadingOverlay.pug
 include partials/reportLoadingOverlay.pug
 
 doctype html
@@ -210,6 +211,7 @@ html(lang="ru")
         .d-flex.justify-content-between.align-items-center.mb-3
           h3.mb-0 Выберите отчёт
           small.text-muted Построение учитывает лимиты SalesDrive.
+        - const heavyReportIds = ['summary', 'monthly']
         .row
           each report in reports
             .col-lg-6.col-md-6.mb-4
@@ -217,7 +219,8 @@ html(lang="ru")
                 .card-body.d-flex.flex-column
                   h5.card-title.font-weight-semibold.text-dark= report.title
                   p.text-muted.flex-grow-1= report.description
-                  a.btn.btn-primary.mt-3.align-self-start(data-report-link href=`/reports/${report.id}`)
+                  - const overlayTarget = heavyReportIds.includes(report.id) ? 'heavy' : 'simple'
+                  a.btn.btn-primary.mt-3.align-self-start(data-report-link, data-overlay-target=overlayTarget href=`/reports/${report.id}`)
                     i.bi.bi-arrow-right-circle.mr-2
                     | Открыть
       section.status-bar.mt-5
@@ -227,8 +230,8 @@ html(lang="ru")
             span= scheduleInfo.statusLabel
           div.mt-3.mt-md-0
             small Последние действия синхронизируются автоматически. Настраивайте параметры через значок шестерёнки.
-    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
-    +reportLoadingOverlay(overlayMeta)
+    +simpleLoadingOverlay({ id: 'homeSimpleOverlay' })
+    +reportLoadingOverlay({ message: 'Готовим отчёт…' })
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

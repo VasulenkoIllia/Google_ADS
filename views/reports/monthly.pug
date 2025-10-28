@@ -28,6 +28,7 @@ mixin recentMetricsCard(day)
             th Прибыль
             td= formatted.profit || '0'
 
+include ../partials/simpleLoadingOverlay.pug
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
@@ -105,7 +106,7 @@ html(lang="ru")
         - const activeCandidate = typeof activeMonthKey === 'string' ? months.find(m => m.key === activeMonthKey) : null
         if activeCandidate
           - defaultMonth = activeCandidate
-        form#rebuildForm.form-inline.mb-3(method="post", action="/reports/monthly/rebuild", data-report-form)
+        form#rebuildForm.form-inline.mb-3(method="post", action="/reports/monthly/rebuild", data-report-form, data-overlay-target="heavy")
           input#rebuildYear(type="hidden", name="year", value=defaultMonth.year)
           input#rebuildMonth(type="hidden", name="month", value=defaultMonth.month)
           button.btn.btn-outline-primary(type="submit") Пересобрать выбранный месяц
@@ -179,13 +180,13 @@ html(lang="ru")
                     thead.thead-light
                       tr
                         th План продаж (грн)
-                        th Прогноз продаж (грн)
+                        th Закончим месяц с продажами (грн)
                         th % отклонения (план периода)
                         th План продаж накопит.
                         th Факт продаж накопит.
                         th % отклонения (накопит.)
                         th План прибыли (грн)
-                        th Прогноз прибыли (грн)
+                        th Закончим месяц с прибылью (грн)
                         th % отклонения (план прибыли)
                         th План прибыли накопит.
                         th Факт прибыли накопит.
@@ -242,13 +243,13 @@ html(lang="ru")
                           tr
                             th Источник
                             th План продаж (грн)
-                            th Прогноз продаж (грн)
+                            th Закончим месяц с продажами (грн)
                             th % отклонения (план периода)
                             th План продаж накопит.
                             th Факт продаж накопит.
                             th % отклонения (накопит.)
                             th План прибыли (грн)
-                            th Прогноз прибыли (грн)
+                            th Закончим месяц с прибылью (грн)
                             th % отклонения (план прибыли)
                             th План прибыли накопит.
                             th Факт прибыли накопит.
@@ -267,14 +268,14 @@ html(lang="ru")
                               td= displayName
                               - const salesClass = sourceSalesCompletion === null ? '' : (sourceSalesCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
                               - const profitClass = sourceProfitCompletion === null ? '' : (sourceProfitCompletion >= 100 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold')
-                              td= source.display.formatted.planSalesMonthly
-                              td= source.display.formatted.projectedSales
+                            td= source.display.formatted.planSalesMonthly
+                            td= source.display.formatted.projectedSales
                               td(class=salesClass)= source.display.formatted.deviationProjectedSales
                               td= source.display.formatted.planSalesCumulative
                               td= source.display.formatted.factSalesCumulative
                               td(class=salesClass)= source.display.formatted.deviationSalesCumulative
-                              td= source.display.formatted.planProfitMonthly
-                              td= source.display.formatted.projectedProfit
+                            td= source.display.formatted.planProfitMonthly
+                            td= source.display.formatted.projectedProfit
                               td(class=profitClass)= source.display.formatted.deviationProjectedProfit
                               td= source.display.formatted.planProfitCumulative
                               td= source.display.formatted.factProfitCumulative
@@ -447,6 +448,7 @@ html(lang="ru")
       else
         .alert.alert-info Нет доступных месяцев для отображения.
 
+    +simpleLoadingOverlay({ id: 'monthlySimpleOverlay' })
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
     script.

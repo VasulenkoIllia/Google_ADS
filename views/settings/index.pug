@@ -1,3 +1,4 @@
+include ../partials/simpleLoadingOverlay.pug
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
@@ -207,6 +208,7 @@ html(lang="ru")
             include ../partials/settings/access.pug
           else
             include ../partials/settings/sources.pug
+    +simpleLoadingOverlay({ id: 'settingsSimpleOverlay' })
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta, { id: 'settingsOverlay' })
     script.

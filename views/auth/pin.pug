@@ -1,4 +1,4 @@
-include ../partials/reportLoadingOverlay.pug
+include ../partials/simpleLoadingOverlay.pug
 
 doctype html
 html(lang="ru")
@@ -29,20 +29,7 @@ html(lang="ru")
                   input#pinInput.form-control(type="password", name="pin", minlength="4", maxlength="32", required, autocomplete="current-password")
                   small.form-text.text-muted Пароль может содержать 4–32 символа.
                 button.btn.btn-primary.btn-block.mt-3(type="submit") Подтвердить
-    - const overlayMeta = { waitSeconds: null, message: 'Проверяем доступ…' }
-    - const pinOverlayMeta = { waitSeconds: null, message: 'Проверяем доступ…' }
-    +reportLoadingOverlay(pinOverlayMeta, { id: 'pinOverlay' })
-    script.
-      document.addEventListener('DOMContentLoaded', function () {
-        var form = document.querySelector('form[data-report-form]');
-        var overlay = document.getElementById('pinOverlay');
-        if (!form || !overlay) {
-          return;
-        }
-        form.addEventListener('submit', function () {
-          overlay.classList.add('active');
-        });
-      });
+    +simpleLoadingOverlay({ id: 'pinOverlay', message: 'Проверяем доступ…' })
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")
     script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")

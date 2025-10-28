@@ -1,3 +1,4 @@
+include ../partials/simpleLoadingOverlay.pug
 include ../partials/reportLoadingOverlay.pug
 
 doctype html
@@ -78,7 +79,7 @@ html(lang="ru")
             br
             | За сутки выполнено #{dailyUsed}, осталось #{dailyRemaining}. Обновление суточного лимита примерно через #{dailyResetHours} ч #{dailyResetMinutes} мин.
 
-      form.form-inline.mb-4(action="/reports/summary", method="get", data-report-form)
+      form.form-inline.mb-4(action="/reports/summary", method="get", data-report-form, data-overlay-target="heavy")
         .form-group.mr-2
           label.sr-only(for="startDate") Начало
           input#startDate.form-control(type="date", name="startDate", value=startDate)
@@ -98,7 +99,7 @@ html(lang="ru")
             else
               option(value="", selected=false) Источники не настроены
         button.btn.btn-primary(type="submit") Обновить
-        a.btn.btn-outline-secondary.ml-2(href="/reports/summary", data-report-link) Сбросить
+        a.btn.btn-outline-secondary.ml-2(href="/reports/summary", data-report-link, data-overlay-target="heavy") Сбросить
         if salesDriveLimit
           input(type="hidden", name="limit", value=salesDriveLimit)
 
@@ -135,33 +136,7 @@ html(lang="ru")
       else
         .alert.alert-warning Не найдено данных за выбранный период.
 
-      h3.mt-5.text-secondary Заказы SalesDrive
-      .table-responsive.mt-3
-        table.table.table-striped.table-bordered
-          thead.thead-dark
-            tr
-              th Номер заказа
-              th Клиент
-              th Время заказа
-              th Товары
-              th Статус
-              th Сумма
-              th Источник
-          tbody
-            if salesDriveData && salesDriveData.length
-              each item in salesDriveData
-                tr
-                  td= item.id
-                  td= `${item.fName} ${item.lName}`.trim()
-                  td= item.orderTime
-                  td= item.products
-                  td= item.statusName
-                  td= item.totalCost
-                  td= item.istocnikProdaziIdent
-            else
-              tr
-                td(colspan="7").text-center Данные отсутствуют
-
+    +simpleLoadingOverlay({ id: 'summarySimpleOverlay' })
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
     script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js")

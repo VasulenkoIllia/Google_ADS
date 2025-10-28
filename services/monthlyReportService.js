@@ -161,6 +161,17 @@ function createEmptyRecentMetrics() {
     };
 }
 
+function recalcRecentProfit(metrics) {
+    if (!metrics || typeof metrics !== 'object') {
+        return metrics;
+    }
+    const adSpend = Number.isFinite(metrics.adSpend) ? metrics.adSpend : 0;
+    const sales = Number.isFinite(metrics.sales) ? metrics.sales : 0;
+    const costOfGoods = Number.isFinite(metrics.costOfGoods) ? metrics.costOfGoods : 0;
+    metrics.profit = sales - costOfGoods - adSpend;
+    return metrics;
+}
+
 function combineRecentMetrics(googleEntry = {}, salesEntry = {}) {
     const metrics = createEmptyRecentMetrics();
     if (googleEntry) {
@@ -172,9 +183,8 @@ function combineRecentMetrics(googleEntry = {}, salesEntry = {}) {
         metrics.transactions = toNumber(salesEntry.transactions);
         metrics.sales = toNumber(salesEntry.sales);
         metrics.costOfGoods = toNumber(salesEntry.costOfGoods);
-        metrics.profit = toNumber(salesEntry.profit);
     }
-    return metrics;
+    return recalcRecentProfit(metrics);
 }
 
 function hasRecentFacts(metrics) {
@@ -215,6 +225,7 @@ function normalizeRecentDayEntries(dayEntries, orderedDates = []) {
                 profit: toNumber(metricsSource.profit)
             }
             : createEmptyRecentMetrics();
+        recalcRecentProfit(metrics);
         const display = existing.display && existing.display.formatted
             ? existing.display
             : buildRecentDisplay(metrics);
@@ -486,6 +497,7 @@ async function collectMonthlyFacts(year, month, { asOf, reportJob } = {}) {
                     metrics.costOfGoods = toNumber(summary.salesTotals?.totalCostPriceAmount);
                     metrics.profit = toNumber(summary.salesTotals?.totalProfitAmount);
                 }
+                recalcRecentProfit(metrics);
                 const display = buildRecentDisplay(metrics);
                 return {
                     date: day.date,

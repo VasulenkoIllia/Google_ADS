@@ -1,4 +1,4 @@
-include ../partials/reportLoadingOverlay.pug
+include ../partials/simpleLoadingOverlay.pug
 
 doctype html
 html(lang="ru")
@@ -66,5 +66,4 @@ html(lang="ru")
                 label(for="new-nameView") Отображаемое название
                 input#new-nameView.form-control(type="text", name="nameView")
             button.btn.btn-success(type="submit") Добавить источник
-    - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
-    +reportLoadingOverlay(overlayMeta)
+    +simpleLoadingOverlay({ id: 'sourcesOverlay' })

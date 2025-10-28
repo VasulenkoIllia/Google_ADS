@@ -67,7 +67,7 @@
             span.text-danger Ошибка
           else
             span.text-muted= runStatus
-      form.mt-4(method="post", action="/reports/monthly/schedule/run", data-report-form)
+      form.mt-4(method="post", action="/reports/monthly/schedule/run", data-report-form, data-overlay-target="heavy")
         input(type="hidden", name="returnTo", value="/settings?tab=scheduler")
         button.btn.btn-outline-secondary.rounded-pill(type="submit" disabled=scheduleOverview && scheduleOverview.isRunning ? true : false)
           if scheduleOverview && scheduleOverview.isRunning

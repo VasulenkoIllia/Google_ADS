@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, statSync } from 'fs';
 import path from 'path';
 
 const DATA_ROOT = path.resolve('data');
@@ -26,6 +26,9 @@ const DEFAULT_SOURCES = [
     { id: 249, ident: 'HC-618S', nameView: '' }
 ];
 
+let cachedSources = null;
+let cachedMtimeMs = null;
+
 async function ensureConfigFile() {
     await fs.mkdir(CONFIG_DIR, { recursive: true });
     try {
@@ -41,22 +44,56 @@ async function ensureConfigFile() {
 
 export async function loadSalesdriveSources() {
     await ensureConfigFile();
+    let stat = null;
+    try {
+        stat = await fs.stat(SOURCES_FILE);
+    } catch (error) {
+        if (error.code !== 'ENOENT') {
+            throw error;
+        }
+    }
+    const mtimeMs = stat?.mtimeMs ?? null;
+    if (cachedSources && mtimeMs !== null && cachedMtimeMs === mtimeMs) {
+        return cachedSources.map(source => ({ ...source }));
+    }
     const raw = await fs.readFile(SOURCES_FILE, 'utf8');
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
+        cachedSources = [];
+        cachedMtimeMs = mtimeMs;
         return [];
     }
-    return parsed.map(normalizeSource);
+    const normalized = parsed.map(normalizeSource);
+    cachedSources = normalized;
+    cachedMtimeMs = mtimeMs;
+    return normalized.map(source => ({ ...source }));
 }
 
 export function loadSalesdriveSourcesSync() {
     try {
+        let stat = null;
+        try {
+            stat = statSync(SOURCES_FILE);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
+            }
+        }
+        const mtimeMs = stat?.mtimeMs ?? null;
+        if (cachedSources && mtimeMs !== null && cachedMtimeMs === mtimeMs) {
+            return cachedSources.map(source => ({ ...source }));
+        }
         const raw = readFileSync(SOURCES_FILE, 'utf8');
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) {
+            cachedSources = [];
+            cachedMtimeMs = mtimeMs;
             return [];
         }
-        return parsed.map(normalizeSource);
+        const normalized = parsed.map(normalizeSource);
+        cachedSources = normalized;
+        cachedMtimeMs = mtimeMs;
+        return normalized.map(source => ({ ...source }));
     } catch (error) {
         if (error.code === 'ENOENT') {
             try {
@@ -69,7 +106,10 @@ export function loadSalesdriveSourcesSync() {
             } catch (writeError) {
                 // ignore inability to write during sync fallback
             }
-            return DEFAULT_SOURCES.map(normalizeSource);
+            const normalizedDefaults = DEFAULT_SOURCES.map(normalizeSource);
+            cachedSources = normalizedDefaults;
+            cachedMtimeMs = null;
+            return normalizedDefaults.map(source => ({ ...source }));
         }
         throw error;
     }
@@ -88,7 +128,17 @@ async function saveSalesdriveSources(sources) {
     const normalized = sources.map(normalizeSource).filter(source => source.id > 0 && source.ident !== '');
     normalized.sort((a, b) => a.id - b.id);
     await fs.writeFile(SOURCES_FILE, JSON.stringify(normalized, null, 2), 'utf8');
-    return normalized;
+    let stat = null;
+    try {
+        stat = await fs.stat(SOURCES_FILE);
+    } catch (error) {
+        if (error.code !== 'ENOENT') {
+            throw error;
+        }
+    }
+    cachedSources = normalized;
+    cachedMtimeMs = stat?.mtimeMs ?? Date.now();
+    return normalized.map(source => ({ ...source }));
 }
 
 export async function addSalesdriveSource(payload) {

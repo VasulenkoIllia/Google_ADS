@@ -1,3 +1,4 @@
+include ../partials/simpleLoadingOverlay.pug
 include ../partials/reportLoadingOverlay.pug
 
 - const WEEKDAY_OPTIONS = [{ value: 'monday', label: 'Понедельник' }, { value: 'tuesday', label: 'Вторник' }, { value: 'wednesday', label: 'Среда' }, { value: 'thursday', label: 'Четверг' }, { value: 'friday', label: 'Пятница' }, { value: 'saturday', label: 'Суббота' }, { value: 'sunday', label: 'Воскресенье' }];
@@ -104,9 +105,10 @@ html(lang="ru")
               h2.h5.mb-0 Запустить сейчас
             .card-body
               p.text-muted.mb-3 Используются текущие настройки. Обновление может занять несколько минут.
-              form(method="post", action="/reports/monthly/schedule/run", data-report-form)
+              form(method="post", action="/reports/monthly/schedule/run", data-report-form, data-overlay-target="heavy")
                 button.btn.btn-outline-primary(type="submit" disabled=isRunning) Запустить формирование
 
+    +simpleLoadingOverlay({ id: 'monthlyScheduleSimpleOverlay' })
     - const overlayMeta = typeof reportOverlayMeta !== 'undefined' ? reportOverlayMeta : {}
     +reportLoadingOverlay(overlayMeta)
     script.

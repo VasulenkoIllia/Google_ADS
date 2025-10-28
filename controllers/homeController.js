@@ -1,4 +1,4 @@
-import { getSalesdriveSources, buildOverlayMeta } from '../services/reportDataService.js';
+import { getSalesdriveSources } from '../services/reportDataService.js';
 import { getMonthlyScheduleOverview } from '../services/monthlyScheduleService.js';
 import { loadSecurityConfig } from '../services/securityConfigService.js';
 
@@ -51,11 +51,6 @@ export async function renderHome(req, res, next) {
                 ? securityConfig.username
                 : 'gouads'
         };
-        const overlayMeta = buildOverlayMeta({
-            extraQueuedRequests: Math.max(sourcesCount - 1, 0),
-            remainingSources: sourcesCount,
-            message: 'Готовим панель данных…'
-        });
         return res.render('home', {
             reports: REPORT_LIST,
             sourcesCount,
@@ -63,8 +58,7 @@ export async function renderHome(req, res, next) {
             accessInfo,
             scheduleEnabled,
             successMessage: typeof success === 'string' && success.length > 0 ? success : null,
-            errorMessage: typeof error === 'string' && error.length > 0 ? error : null,
-            reportOverlayMeta: overlayMeta
+            errorMessage: typeof error === 'string' && error.length > 0 ? error : null
         });
     } catch (error) {
         next(error);

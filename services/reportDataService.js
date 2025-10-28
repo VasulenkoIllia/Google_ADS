@@ -27,6 +27,50 @@ const {
     SALESDRIVE_RETRY_BASE_DELAY_MS
 } = process.env;
 
+const REQUIRED_SALESDRIVE_ENV = Object.freeze([
+    'SALESDRIVE_URL',
+    'SALESDRIVE_API_KEY'
+]);
+
+const REQUIRED_GOOGLE_ADS_ENV = Object.freeze([
+    'CUSTOMER_ID',
+    'LOGIN_CUSTOMER_ID',
+    'DEVELOPER_TOKEN',
+    'CLIENT_ID',
+    'CLIENT_SECRET',
+    'REFRESH_TOKEN'
+]);
+
+function collectMissingEnv(requiredNames) {
+    return requiredNames.filter((name) => {
+        const raw = process.env[name];
+        return typeof raw !== 'string' || raw.trim().length === 0;
+    });
+}
+
+function assertRequiredEnv() {
+    const missing = [
+        ...collectMissingEnv(REQUIRED_SALESDRIVE_ENV),
+        ...collectMissingEnv(REQUIRED_GOOGLE_ADS_ENV)
+    ];
+
+    if (missing.length > 0) {
+        const hint = missing.join(', ');
+        throw new Error(`[config] Missing required environment variables: ${hint}. Populate them in .env before starting the app.`);
+    }
+
+    try {
+        const parsedUrl = new URL(SALESDRIVE_URL);
+        if (!parsedUrl.protocol || !parsedUrl.hostname) {
+            throw new Error('Invalid URL components');
+        }
+    } catch {
+        throw new Error('[config] SALESDRIVE_URL must be a valid absolute URL (e.g. https://example.salesdrive.me/api/orders).');
+    }
+}
+
+assertRequiredEnv();
+
 function getSalesdriveSourcesInternal() {
     return loadSalesdriveSourcesSync();
 }
@@ -670,7 +714,9 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
         sourceId,
         remainingSources,
         reason,
-        reportJob
+        reportJob,
+        totalSources,
+        processedSources
     } = context || {};
 
     const sanitizedQueuedRequests = Math.max(extraQueuedRequests, 0);
@@ -685,6 +731,8 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
         sourceIdent,
         sourceId,
         reason,
+        totalSources,
+        processedSources,
         intervalMs: baselineEstimate.intervalMs ?? SALES_DRIVE_RATE_LIMIT_INTERVAL,
         maxPerInterval: baselineEstimate.maxRequests ?? SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS,
         attempt
@@ -713,6 +761,8 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
             sourceIdent,
             sourceId,
             reason,
+            totalSources,
+            processedSources,
             intervalMs: baselineEstimate.intervalMs ?? SALES_DRIVE_RATE_LIMIT_INTERVAL,
             maxPerInterval: baselineEstimate.maxRequests ?? SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS,
             hourlyLimit: hourlyStats.limit,
@@ -737,6 +787,8 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
             sourceIdent,
             sourceId,
             reason,
+            totalSources,
+            processedSources,
             intervalMs: postEstimate.intervalMs ?? SALES_DRIVE_RATE_LIMIT_INTERVAL,
             maxPerInterval: postEstimate.maxRequests ?? SALES_DRIVE_RATE_LIMIT_MAX_REQUESTS
         });
@@ -776,6 +828,8 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
                 sourceIdent,
                 sourceId,
                 reason,
+                totalSources,
+                processedSources,
                 status,
                 message: `Повторная отправка через ${Math.ceil(boundedDelay / 1000)} с`
             });
@@ -798,8 +852,10 @@ async function rateLimitedSalesDriveRequest(params, context = {}, attempt = 1) {
                     sourceIdent,
                     sourceId,
                     reason,
+                    totalSources,
+                    processedSources,
                     status,
-                message: `SalesDrive ограничил частоту, ждём ${Math.ceil(waitMsCandidate / 1000)} с`
+                    message: `SalesDrive ограничил частоту, ждём ${Math.ceil(waitMsCandidate / 1000)} с`
                 });
                 await wait(waitMsCandidate);
                 return rateLimitedSalesDriveRequest(params, context, nextAttempt);
@@ -945,10 +1001,12 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
             extraQueuedRequests: rateLimitContext.extraQueuedRequests ?? 0,
             remainingSources: rateLimitContext.remainingSources,
             remainingSourcesAfterCurrent,
+            totalSources: rateLimitContext.totalSources,
+            processedSources: rateLimitContext.processedSources,
             sourceIdent: rateLimitContext.sourceIdent,
-                sourceId,
-                status: error.response?.status || 'error'
-            });
+            sourceId,
+            status: error.response?.status || 'error'
+        });
         return { orders: [], totals: {}, count: 0, filterApplied: false, errors: [apiMessage || 'Неизвестная ошибка SalesDrive'] };
     }
 }
@@ -1143,6 +1201,8 @@ async function buildReportData(
         : salesDriveRateLimiter.pendingRequests ?? 0;
     reportJobPushProgress(reportJob, {
         message: `Начинаем формирование отчёта (${sourcesToProcess.length} источников)`,
+        totalSources: sourcesToProcess.length,
+        processedSources: 0,
         sourceIdent: null,
         sourceId: null,
         remainingSources: sourcesToProcess.length,
@@ -1165,12 +1225,16 @@ async function buildReportData(
             remainingSources: sourcesToProcess.length - sourceIndex,
             remainingSourcesAfterCurrent,
             extraQueuedRequests: Math.max(remainingSourcesAfterCurrent, 0),
-            reason: `source:${source.ident}`
+            reason: `source:${source.ident}`,
+            totalSources: sourcesToProcess.length,
+            processedSources: sourceIndex
         };
         reportJobPushProgress(reportJob, {
             message: `Собираем данные для ${source.ident}`,
             sourceIdent: source.ident,
             sourceId: source.id,
+            totalSources: sourcesToProcess.length,
+            processedSources: sourceIndex,
             remainingSources: sourcesToProcess.length - sourceIndex,
             remainingSourcesAfterCurrent
         });
@@ -1206,6 +1270,8 @@ async function buildReportData(
             message: `Обрабатываем заказы для ${source.ident}`,
             sourceIdent: source.ident,
             sourceId: source.id,
+            totalSources: sourcesToProcess.length,
+            processedSources: sourceIndex,
             remainingSources: sourcesToProcess.length - sourceIndex,
             remainingSourcesAfterCurrent,
             pendingPagesForSource: rateLimitContext.pendingPagesForSource ?? 0
@@ -1244,7 +1310,7 @@ async function buildReportData(
             manualTransactionCount += 1;
         }
 
-        allOrders = allOrders.concat(ordersWithSource);
+        allOrders.push(...ordersWithSource);
         const totalsPaymentRaw = totals?.paymentAmount;
         const totalsProfitRaw = totals?.profitAmount;
         const totalsCountRaw = totals?.count;
@@ -1287,6 +1353,8 @@ async function buildReportData(
             message: `Источник ${source.ident} обработан`,
             sourceIdent: source.ident,
             sourceId: source.id,
+            totalSources: sourcesToProcess.length,
+            processedSources: sourceIndex + 1,
             remainingSources: Math.max(remainingSourcesAfterCurrent, 0),
             remainingSourcesAfterCurrent: Math.max(remainingSourcesAfterCurrent, 0),
             pendingPagesForSource: 0
@@ -1297,6 +1365,8 @@ async function buildReportData(
         message: 'Финализируем отчёт',
         sourceIdent: null,
         sourceId: null,
+        totalSources: sourcesToProcess.length,
+        processedSources: sourcesToProcess.length,
         remainingSources: 0,
         remainingSourcesAfterCurrent: 0,
         pendingPagesForSource: 0,

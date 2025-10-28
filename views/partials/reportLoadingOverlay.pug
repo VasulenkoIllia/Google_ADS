@@ -145,22 +145,48 @@ mixin reportLoadingOverlay(meta = {}, options = {})
           }, 1000);
         };
         var showOverlay = function () {
+          if (!overlay) {
+            return;
+          }
           overlay.classList.add('active');
           startCountdown();
         };
         document.querySelectorAll('[data-report-link]').forEach(function (linkEl) {
-          linkEl.addEventListener('click', function (event) {
-            if (!event.defaultPrevented) {
+          var target = (linkEl.getAttribute('data-overlay-target') || '').toLowerCase();
+          if (target === 'heavy') {
+            linkEl.addEventListener('click', function (event) {
+              if (event.defaultPrevented) {
+                return;
+              }
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
+                return;
+              }
+              var href = linkEl.getAttribute('href');
+              if (!href) {
+                return;
+              }
+              event.preventDefault();
               showOverlay();
-            }
-          });
+              requestAnimationFrame(function () {
+                window.location.href = href;
+              });
+            });
+          }
         });
         document.querySelectorAll('form[data-report-form]').forEach(function (formEl) {
-          formEl.addEventListener('submit', function (event) {
-            if (!event.defaultPrevented) {
+          var target = (formEl.getAttribute('data-overlay-target') || '').toLowerCase();
+          if (target === 'heavy') {
+            formEl.addEventListener('submit', function (event) {
+              if (event.defaultPrevented) {
+                return;
+              }
+              event.preventDefault();
               showOverlay();
-            }
-          });
+              requestAnimationFrame(function () {
+                HTMLFormElement.prototype.submit.call(formEl);
+              });
+            });
+          }
         });
         if (overlay.getAttribute('data-auto-show') === 'true') {
           showOverlay();

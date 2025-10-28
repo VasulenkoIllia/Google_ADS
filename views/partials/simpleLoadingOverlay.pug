@@ -1,0 +1,77 @@
+mixin simpleLoadingOverlay(options = {})
+  - const overlayId = options && options.id ? options.id : 'simpleLoadingOverlay';
+  - const message = (options && typeof options.message === 'string' && options.message.length) ? options.message : 'Загружаем данные…';
+
+  style.
+    .simple-loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1045;
+      padding: 1.5rem;
+      transition: opacity 0.2s ease-in-out;
+    }
+    .simple-loading-overlay.active {
+      display: flex;
+    }
+    .simple-loading-overlay .simple-card {
+      text-align: center;
+      max-width: 280px;
+      width: 100%;
+    }
+  .simple-loading-overlay(id=overlayId)
+    .simple-card
+      div.spinner-border.text-primary.mb-3(role="status")
+        span.sr-only Загрузка…
+      p.text-muted.mb-0= message
+  script.
+    (function () {
+      if (window.__simpleOverlayInit) {
+        return;
+      }
+      window.__simpleOverlayInit = true;
+      document.addEventListener('DOMContentLoaded', function () {
+        var overlay = document.getElementById('#{overlayId}');
+        if (!overlay) {
+          return;
+        }
+        var showOverlay = function () {
+          overlay.classList.add('active');
+        };
+        var resetOverlay = function () {
+          overlay.classList.remove('active');
+        };
+        window.addEventListener('pageshow', function () {
+          resetOverlay();
+        });
+        var handleLink = function (linkEl) {
+          linkEl.addEventListener('click', function (event) {
+            if (!event.defaultPrevented) {
+              showOverlay();
+            }
+          });
+        };
+        var handleForm = function (formEl) {
+          formEl.addEventListener('submit', function (event) {
+            if (!event.defaultPrevented) {
+              showOverlay();
+            }
+          });
+        };
+        document.querySelectorAll('[data-report-link]').forEach(function (linkEl) {
+          var target = (linkEl.getAttribute('data-overlay-target') || 'simple').toLowerCase();
+          if (target !== 'heavy') {
+            handleLink(linkEl);
+          }
+        });
+        document.querySelectorAll('form[data-report-form]').forEach(function (formEl) {
+          var target = (formEl.getAttribute('data-overlay-target') || 'simple').toLowerCase();
+          if (target !== 'heavy') {
+            handleForm(formEl);
+          }
+        });
+      });
+    })();
