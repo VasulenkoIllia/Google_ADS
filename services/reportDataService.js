@@ -712,7 +712,10 @@ export async function getGoogleAdsData({ startDate, endDate }) {
         };
 
         const response = await executeGoogleAdsRequest();
-        const results = response.data.flatMap(batch => batch.results || []);
+        const rawData = response.data;
+        const results = Array.isArray(rawData)
+            ? rawData.flatMap(batch => batch.results || [])
+            : [];
 
         const adsData = results
             .map(item => {
@@ -736,6 +739,9 @@ export async function getGoogleAdsData({ startDate, endDate }) {
             .filter(Boolean);
 
         console.log(`✅ Received ${adsData.length} records from Google Ads.`);
+        if (adsData.length === 0) {
+            console.warn('[googleAds] Ответ Google Ads не содержит результатов. Сырые данные:', JSON.stringify(rawData, null, 2));
+        }
 
         // Aggregate Google Ads data by identifier
         const aggregatedAds = adsData.reduce((acc, ad) => {
@@ -1001,6 +1007,12 @@ async function getSalesDriveDataForSource(sourceId, { startDate, endDate }, over
                 }
                 return allowed;
             });
+            if (filteredOrders.length === 0 && Array.isArray(pageOrders) && pageOrders.length > 0) {
+                console.warn(
+                    `[salesDrive] Все ${pageOrders.length} заказов для источника ${sourceId} отфильтрованы по статусу. Проверьте ALLOWED_SALESDRIVE_STATUS_IDS. Пример:`,
+                    pageOrders[0]
+                );
+            }
 
             aggregatedOrders.push(...filteredOrders);
 
