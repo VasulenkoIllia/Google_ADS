@@ -198,12 +198,17 @@ html(lang="ru")
           a(class=activeTab === 'scheduler' ? 'active' : '', href='?tab=scheduler')
             i.bi.bi-calendar3-event
             span Планировщик статического отчёта
+          a(class=activeTab === 'google-auth' ? 'active' : '', href='?tab=google-auth')
+            i.bi.bi-google
+            span Google Ads
           a(class=activeTab === 'access' ? 'active' : '', href='?tab=access')
             i.bi.bi-shield-lock
             span Доступ по паролю
         .settings-panel
           if activeTab === 'scheduler'
             include ../partials/settings/scheduler.pug
+          else if activeTab === 'google-auth'
+            include ../partials/settings/googleAuth.pug
           else if activeTab === 'access'
             include ../partials/settings/access.pug
           else

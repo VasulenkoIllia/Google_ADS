@@ -1,0 +1,55 @@
+.settings-section
+  - const status = googleAuthStatus && googleAuthStatus.status ? googleAuthStatus.status : 'missing';
+  - const hasToken = googleAuthStatus && googleAuthStatus.hasRefreshToken && googleAuthStatus.refreshToken;
+  - const badgeClass = status === 'ok' ? 'status-tag badge badge-success' : (status === 'warning' ? 'status-tag badge badge-warning text-dark' : 'status-tag badge badge-danger');
+  - const statusLabel = status === 'ok' ? 'Активно' : (status === 'warning' ? 'Скоро истекает' : 'Не подключено');
+  - const issuedAt = hasToken && Number.isFinite(googleAuthStatus.issuedAt) ? new Date(googleAuthStatus.issuedAt) : null;
+  - const expiresAt = Number.isFinite(googleAuthStatus.expiresAt) ? new Date(googleAuthStatus.expiresAt) : null;
+  - const daysRemaining = Number.isFinite(googleAuthStatus.daysRemaining) ? Math.max(googleAuthStatus.daysRemaining, 0) : null;
+  - const loginUrl = '/auth/google?returnTo=' + encodeURIComponent('/settings?tab=google-auth');
+  - const disconnectReturnTo = '/settings?tab=google-auth';
+  .panel-card
+    .panel-header
+      h2 Google Ads интеграция
+      span(class=badgeClass)= statusLabel
+    .panel-body
+      if hasToken
+        if googleAuthStatus.isExpired
+          .alert.alert-danger
+            strong Токен истёк.
+            |  Обновите авторизацию, иначе данные Google Ads недоступны.
+        else if status === 'warning'
+          .alert.alert-warning.text-dark
+            strong Пора обновить.
+            |  Токен истечёт менее чем через двое суток — выполните вход снова.
+        p.text-muted.mb-3 Ваш текущий refresh_token хранится локально и требует повторного входа каждые #{googleAuthStatus.maxAgeDays || 6} дней.
+        dl.row
+          dt.col-sm-4.text-muted Последнее обновление
+          dd.col-sm-8.mb-2 #{issuedAt ? issuedAt.toLocaleString('uk-UA') : '—'}
+          dt.col-sm-4.text-muted Следующее обновление
+          dd.col-sm-8.mb-2 #{expiresAt ? expiresAt.toLocaleString('uk-UA') : '—'}
+          dt.col-sm-4.text-muted Дней осталось
+          dd.col-sm-8.mb-0 #{daysRemaining !== null ? daysRemaining : '—'}
+      else
+        .alert.alert-info.mb-4
+          strong Привязка отсутствует.
+          |  Нажмите кнопку ниже, чтобы авторизоваться в Google и получить refresh_token.
+        p.text-muted.mb-0 После авторизации токен будет сохранён на сервере и действителен 6 дней. По истечении срока доступ к отчётам будет остановлен до повторного входа.
+    .panel-footer.d-flex.align-items-center.justify-content-between.flex-wrap
+      a.btn.btn-primary.mb-2(href=loginUrl data-report-link)
+        i.bi.bi-google.mr-2
+        | Обновить токен Google Ads
+      if hasToken
+        form(method="post", action="/auth/google/disconnect", data-report-form).mb-2
+          input(type="hidden", name="returnTo", value=disconnectReturnTo)
+          button.btn.btn-outline-danger(type="submit", onclick="return confirm('Удалить сохранённый refresh_token Google Ads?');")
+            i.bi.bi-x-circle.mr-1
+            | Сбросить привязку
+  .panel-card
+    .panel-header
+      h2 Как работает ограничение на 6 дней
+    .panel-body
+      ul.mb-0
+        li При каждом входе мы запрашиваем новый offline refresh_token у Google.
+        li Токен хранится локально и используется для формирования отчётов без участия пользователя.
+        li Через 6 дней после выдачи доступ блокируется, чтобы вы успели обновить токен до автоматического истечения на седьмые сутки.

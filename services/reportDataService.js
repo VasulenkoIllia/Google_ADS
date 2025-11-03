@@ -1,8 +1,13 @@
-import { OAuth2Client } from 'google-auth-library';
 import axios from "axios";
 import dotenv from 'dotenv';
 import { RateLimiter } from '../utils/rateLimiter.js';
 import { loadSalesdriveSourcesSync } from './salesdriveSourcesService.js';
+import {
+    createOAuthClient,
+    getGoogleAuthStatus,
+    persistGoogleRefreshToken,
+    GOOGLE_REFRESH_TOKEN_MAX_AGE_DAYS
+} from './googleAuthService.js';
 
 dotenv.config();
 
@@ -15,9 +20,6 @@ const {
     CUSTOMER_ID,
     LOGIN_CUSTOMER_ID,
     DEVELOPER_TOKEN,
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REFRESH_TOKEN,
     PLAN_SALES_MONTH,
     PLAN_PROFIT_MONTH,
     SALESDRIVE_RATE_LIMIT_MAX_PER_MINUTE,
@@ -37,8 +39,7 @@ const REQUIRED_GOOGLE_ADS_ENV = Object.freeze([
     'LOGIN_CUSTOMER_ID',
     'DEVELOPER_TOKEN',
     'CLIENT_ID',
-    'CLIENT_SECRET',
-    'REFRESH_TOKEN'
+    'CLIENT_SECRET'
 ]);
 
 function collectMissingEnv(requiredNames) {
@@ -606,15 +607,46 @@ function determineProfitRatioColor(value) {
 // --- GOOGLE ADS API FUNCTIONS ---
 
 export async function getGoogleAdsData({ startDate, endDate }) {
+    const preflightAlerts = [];
     try {
-        console.log('1. Getting a fresh access_token for Google Ads...');
-        const auth = new OAuth2Client({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET, redirectUri: 'http://localhost' });
-        auth.setCredentials({ refresh_token: REFRESH_TOKEN });
+        const googleAuthStatus = await getGoogleAuthStatus();
+        if (!googleAuthStatus.hasRefreshToken || !googleAuthStatus.refreshToken) {
+            const message = 'Google Ads авторизация не настроена. Откройте раздел настроек и выполните вход.';
+            console.warn(`[googleAds] ${message}`);
+            return { data: {}, errors: [message] };
+        }
+        if (googleAuthStatus.isExpired) {
+            const message = `Срок действия refresh_token Google Ads истёк (больше ${GOOGLE_REFRESH_TOKEN_MAX_AGE_DAYS} дней). Авторизуйтесь заново.`;
+            console.warn(`[googleAds] ${message}`);
+            return { data: {}, errors: [message] };
+        }
+        if (googleAuthStatus.status === 'warning') {
+            preflightAlerts.push('Внимание: токен Google Ads устареет менее чем через 48 часов. Обновите авторизацию в настройках.');
+        }
+
+        console.log('1. Getting a fresh access_token for Google Ads via saved refresh token...');
+        const auth = createOAuthClient();
+        auth.setCredentials({ refresh_token: googleAuthStatus.refreshToken });
+        auth.on('tokens', async (tokens) => {
+            if (tokens && typeof tokens.refresh_token === 'string' && tokens.refresh_token.trim().length > 0) {
+                try {
+                    await persistGoogleRefreshToken({
+                        refreshToken: tokens.refresh_token,
+                        scope: tokens.scope || null
+                    });
+                    console.log('[googleAds] Получен новый refresh_token от Google. Состояние сохранено.');
+                } catch (saveError) {
+                    console.error('[googleAds] Не удалось сохранить обновлённый refresh_token:', saveError);
+                }
+            }
+        });
+
         const { token } = await auth.getAccessToken();
-        if (!token) throw new Error('Failed to get access_token for Google Ads.');
+        if (!token) {
+            throw new Error('Failed to get access_token for Google Ads.');
+        }
         console.log('Access token for Google Ads obtained successfully.');
         console.log('\n2. Requesting product data from Google Ads...');
-
 
         const query = `
             SELECT shopping_product.item_id, shopping_product.title, metrics.cost_micros, metrics.impressions, metrics.clicks
@@ -692,8 +724,7 @@ export async function getGoogleAdsData({ startDate, endDate }) {
             aggregatedAds[key].impressions = aggregatedAds[key].impressions.toString();
             aggregatedAds[key].clicks = aggregatedAds[key].clicks.toString();
         });
-
-        return { data: aggregatedAds, errors: [] };
+        return { data: aggregatedAds, errors: preflightAlerts };
     } catch (err) {
         const contextualError = err.response?.data?.error?.message
             || err.response?.data?.message
@@ -701,7 +732,7 @@ export async function getGoogleAdsData({ startDate, endDate }) {
             || 'Неизвестная ошибка Google Ads API';
         const message = `Ошибка Google Ads: ${contextualError}`;
         console.error('\n❌ An error occurred in Google Ads:', err.response ? JSON.stringify(err.response.data, null, 2) : err.message);
-        return { data: {}, errors: [message] };
+        return { data: {}, errors: [...preflightAlerts, message] };
     }
 }
 
