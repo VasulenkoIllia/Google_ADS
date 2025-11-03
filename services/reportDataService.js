@@ -604,6 +604,36 @@ function determineProfitRatioColor(value) {
     return 'red';
 }
 
+function extractProductIdent(product) {
+    if (!product || typeof product !== 'object') {
+        return null;
+    }
+
+    const title = typeof product.title === 'string' ? product.title.trim() : '';
+    if (title.length > 0) {
+        const candidates = title.split(/\s+/).reverse();
+        for (const rawCandidate of candidates) {
+            const cleaned = rawCandidate.replace(/^[^A-Za-z0-9-]+|[^A-Za-z0-9-]+$/g, '').trim();
+            if (cleaned.length > 0) {
+                return cleaned;
+            }
+        }
+    }
+
+    const rawItemId = product.itemId ?? product.item_id ?? product.itemID;
+    if (typeof rawItemId === 'string') {
+        const trimmedId = rawItemId.trim();
+        if (trimmedId.length > 0) {
+            return trimmedId;
+        }
+    }
+    if (Number.isFinite(rawItemId)) {
+        return rawItemId.toString();
+    }
+
+    return null;
+}
+
 // --- GOOGLE ADS API FUNCTIONS ---
 
 export async function getGoogleAdsData({ startDate, endDate }) {
@@ -684,20 +714,26 @@ export async function getGoogleAdsData({ startDate, endDate }) {
         const response = await executeGoogleAdsRequest();
         const results = response.data.flatMap(batch => batch.results || []);
 
-        const adsData = results.map(item => {
-            const titleParts = item.shoppingProduct.title.split(' ');
-            const istocnikProdaziIdent = titleParts[titleParts.length - 1];
-            const costMicros = parseFloat(item.metrics.costMicros || 0);
-            const costUah = (costMicros / 1_000_000) * 1.2; // Convert to UAH and add 20%
+        const adsData = results
+            .map(item => {
+                const product = item?.shoppingProduct || {};
+                const istocnikProdaziIdent = extractProductIdent(product);
+                if (!istocnikProdaziIdent) {
+                    console.warn('[googleAds] Пропущен товар без item_id. Проверьте товар в Merchant Center:', product.title || '(без названия)');
+                    return null;
+                }
+                const costMicros = parseFloat(item?.metrics?.costMicros || 0);
+                const costUah = (costMicros / 1_000_000) * 1.2; // Convert to UAH and add 20%
 
-            return {
-                istocnikProdaziIdent: istocnikProdaziIdent,
-                title: item.shoppingProduct.title,
-                costUah: costUah,
-                impressions: BigInt(item.metrics.impressions || 0),
-                clicks: BigInt(item.metrics.clicks || 0),
-            };
-        });
+                return {
+                    istocnikProdaziIdent,
+                    title: product.title || istocnikProdaziIdent,
+                    costUah,
+                    impressions: BigInt(item?.metrics?.impressions || 0),
+                    clicks: BigInt(item?.metrics?.clicks || 0),
+                };
+            })
+            .filter(Boolean);
 
         console.log(`✅ Received ${adsData.length} records from Google Ads.`);
 
